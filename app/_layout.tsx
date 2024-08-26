@@ -4,6 +4,7 @@ import { useColorScheme } from "@/hooks/useColorScheme.web";
 import { useFonts } from "expo-font";
 import { Slot, SplashScreen } from "expo-router";
 import { useEffect } from "react";
+import { RootSiblingParent } from "react-native-root-siblings";
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
@@ -22,10 +23,12 @@ export default function Root() {
     return null;
   }
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <SessionProvider>
-        <Slot />
-      </SessionProvider>
-    </ThemeProvider>
+    <RootSiblingParent>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <SessionProvider>
+          <Slot />
+        </SessionProvider>
+      </ThemeProvider>
+    </RootSiblingParent>
   );
 }
