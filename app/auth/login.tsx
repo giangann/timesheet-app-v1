@@ -3,6 +3,12 @@ import { useSession } from "@/contexts/ctx";
 import { useEffect, useState } from "react";
 import { Image, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
+import { BaseInput } from "@/components/BaseInput";
+const PwIconLeft = require("@/assets/images/lock-password.png");
+const PwIconRight = require("@/assets/images/password-show.png");
+const IdCardIconLeft = require("@/assets/images/identify-card.png");
+const IdCardIconRight = require("@/assets/images/x-clear.png");
+const LoginBanner = require("@/assets/images/banner-login.png")
 
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
@@ -27,7 +33,7 @@ const Login = () => {
       <View style={{ height: 48 }} />
 
       <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image source={require("@/assets/images/banner-login.png")} style={{ opacity: 0.5 }} />
+        <Image source={LoginBanner} style={{ opacity: 0.5 }} />
       </View>
 
       <View style={{ height: 32 }} />
@@ -38,73 +44,40 @@ const Login = () => {
       <View style={{ height: 16 }} />
 
       {/* Input_1 - Identify Card  */}
-      <View style={{ position: "relative", marginBottom: 8 }}>
-        <TextInput
-          placeholder="Nhập số CCCD"
-          style={{
-            padding: 10,
-            paddingLeft: 36,
-            paddingRight: 36,
-            borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
-            borderWidth: 1,
-            height: 40,
-            borderRadius: 4,
-            fontFamily: "Nunito",
-          }}
-        />
-
-        <View style={{ position: "absolute", top: 0, left: 0, width: 36, height: "100%" }}>
-          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-            <Image source={require("@/assets/images/identify-card.png")} style={{ opacity: 0.5 }} />
-          </View>
-        </View>
-        <View style={{ position: "absolute", top: 0, right: 0, width: 36, height: "100%" }}>
-          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-            <TouchableHighlight>
-              <View>
-                <Image source={require("@/assets/images/x-clear.png")} style={{ opacity: 0.5 }} />
+      <BaseInput
+        leftIconImage={IdCardIconLeft}
+        rightIconImage={IdCardIconRight}
+        placeholder="Nhập số CCCD"
+        rightIconEl={
+          <TouchableOpacity onPress={() => console.log("cleared")} activeOpacity={0.7}>
+            <View style={{ padding: 8 }}>
+              <View style={{ width: 18, height: 18 }}>
+                <Image source={IdCardIconRight} style={{ opacity: 0.5 }} />
               </View>
-            </TouchableHighlight>
-          </View>
-        </View>
-      </View>
+            </View>
+          </TouchableOpacity>
+        }
+      />
 
       {/* Input_2 - Password  */}
-      <View style={{ position: "relative" }}>
-        <TextInput
-          secureTextEntry={!showPw}
-          placeholder="Nhập mật khẩu"
-          style={{
-            padding: 10,
-            paddingLeft: 36,
-            paddingRight: 36,
-            borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
-            borderWidth: 1,
-            height: 40,
-            borderRadius: 4,
-            fontFamily: "Nunito",
-          }}
-        />
-        <View style={{ position: "absolute", top: 0, left: 0, width: 36, height: "100%" }}>
-          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-            <Image source={require("@/assets/images/lock-password.png")} style={{ opacity: 0.5 }} />
-          </View>
-        </View>
-        <View style={{ position: "absolute", top: 0, right: 0, width: 36, height: "100%" }}>
-          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-            <TouchableOpacity onPress={onToggleShowPw} activeOpacity={0.7}>
-              <View style={{ padding: 8 }}>
-                <View style={{ width: 18, height: 18 }}>
-                  <Image
-                    source={require("@/assets/images/password-show.png")}
-                    style={{ opacity: 0.5, width: "100%", height: "100%", resizeMode: "contain" }}
-                  />
-                </View>
+      <BaseInput
+        leftIconImage={PwIconLeft}
+        rightIconImage={PwIconRight}
+        placeholder="Nhập mật khẩu"
+        secureTextEntry={!showPw}
+        rightIconEl={
+          <TouchableOpacity onPress={onToggleShowPw} activeOpacity={0.7}>
+            <View style={{ padding: 8 }}>
+              <View style={{ width: 18, height: 18 }}>
+                <Image
+                  source={require("@/assets/images/password-show.png")}
+                  style={{ opacity: 0.5, width: "100%", height: "100%", resizeMode: "contain" }}
+                />
               </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+            </View>
+          </TouchableOpacity>
+        }
+      />
 
       {/*  */}
       <View style={{ height: 16 }} />
