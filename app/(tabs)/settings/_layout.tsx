@@ -6,6 +6,9 @@ export default function SettingLayout() {
       <Stack.Screen name="index" options={{ title: "Setting" }} />
       <Stack.Screen name="holidays/index" options={{ title: "List holidays" }} />
       <Stack.Screen name="holidays/add-holiday" options={{ title: "Create new holiday" }} />
+      <Stack.Screen name="out_of_working_time_types/index" options={{ title: "Loại ngoài giờ" }} />
+      <Stack.Screen name="out_of_working_time_types/add-out-of-working-time-type" options={{ title: "Thêm loại ngoài giờ" }} />
+
     </Stack>
   );
 }
