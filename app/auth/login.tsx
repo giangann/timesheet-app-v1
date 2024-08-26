@@ -1,16 +1,26 @@
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useSession } from "@/contexts/ctx";
 import { useEffect, useState } from "react";
 import { Image, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
 
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
+  const { signIn } = useSession();
 
   const onToggleShowPw = () => {
     setShowPw(!showPw);
   };
 
+  const onLogin = () => {
+    signIn();
+    // Navigate after signing in. You may want to tweak this to ensure sign-in is
+    // successful before navigating.
+    router.replace("/");
+  };
+
   useEffect(() => {
-    console.log('Login screen rendered');
+    console.log("Login screen rendered");
   }, []);
   return (
     <View style={{ padding: 16 }}>
@@ -22,8 +32,7 @@ const Login = () => {
 
       <View style={{ height: 32 }} />
 
-
-      <Text style={{ fontFamily: "Nunito", fontWeight: 800, fontSize: 16, alignSelf:'center' }}>Đăng nhập</Text>
+      <Text style={{ fontFamily: "Nunito", fontWeight: 800, fontSize: 16, alignSelf: "center" }}>Đăng nhập</Text>
 
       {/*  */}
       <View style={{ height: 16 }} />
@@ -101,7 +110,7 @@ const Login = () => {
       <View style={{ height: 16 }} />
 
       {/* Button - Login */}
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity activeOpacity={0.8} onPress={onLogin}>
         <View style={{ justifyContent: "center", alignItems: "center", backgroundColor: "#0B3A82", height: 40, width: "100%", borderRadius: 4 }}>
           <Text style={{ fontFamily: "Nunito", color: "white", fontWeight: 600, fontSize: 14 }}>Đăng nhập</Text>
         </View>
