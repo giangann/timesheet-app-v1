@@ -45,6 +45,13 @@ export default function AppLayout() {
           tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "code-slash" : "code-slash-outline"} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="holidays"
+        options={{
+          title: "Holidays",
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "bed" : "bed-outline"} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
