@@ -8,7 +8,7 @@ export default function HolidayList() {
   return (
     <View>
       <ThemedText type="title">Holiday List</ThemedText>
-      <Pressable onPress={() => router.push("/holidays/holiday-add")}>
+      <Pressable onPress={() => router.push("/settings/holidays/add-holiday")}>
         <ThemedText>Create new holiday</ThemedText>
       </Pressable>
     </View>

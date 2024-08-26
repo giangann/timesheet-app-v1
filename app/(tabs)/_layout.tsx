@@ -46,10 +46,10 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="holidays"
+        name="settings"
         options={{
-          title: "Holidays",
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "bed" : "bed-outline"} color={color} />,
+          title: "Setting",
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "settings" : "settings-outline"} color={color} />,
         }}
       />
     </Tabs>
