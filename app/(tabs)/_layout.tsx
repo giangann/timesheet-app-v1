@@ -1,9 +1,13 @@
-import { Text } from 'react-native';
-import { Redirect, Stack } from 'expo-router';
-import { useSession } from '@/contexts/ctx';
-
+import { useSession } from "@/contexts/ctx";
+import { Redirect, Stack, Tabs } from "expo-router";
+import { Text } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 
 export default function AppLayout() {
+  const colorScheme = useColorScheme();
+
   const { session, isLoading } = useSession();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
@@ -20,5 +24,27 @@ export default function AppLayout() {
   }
 
   // This layout can be deferred because it's not the root layout.
-  return <Stack />;
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "code-slash" : "code-slash-outline"} color={color} />,
+        }}
+      />
+    </Tabs>
+  );
 }
