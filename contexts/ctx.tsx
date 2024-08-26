@@ -2,12 +2,12 @@ import { useStorageState } from "@/hooks/useStorageState";
 import { useContext, createContext, type PropsWithChildren } from "react";
 
 const AuthContext = createContext<{
-  signIn: () => void;
+  signIn: () => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
 }>({
-  signIn: () => null,
+  signIn: () => Promise.resolve(), // Corrected this line
   signOut: () => null,
   session: null,
   isLoading: false,

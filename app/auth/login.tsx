@@ -12,8 +12,8 @@ const Login = () => {
     setShowPw(!showPw);
   };
 
-  const onLogin = () => {
-    signIn();
+  const onLogin = async () => {
+    await signIn();
     // Navigate after signing in. You may want to tweak this to ensure sign-in is
     // successful before navigating.
     router.replace("/");
