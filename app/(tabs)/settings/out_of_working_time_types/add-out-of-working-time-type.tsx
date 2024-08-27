@@ -1,7 +1,4 @@
 import { FormInput } from "@/components/FormInput";
-import { FormPickDate } from "@/components/FormPickDate";
-import { FormSelect } from "@/components/FormSelect";
-import { ThemedText } from "@/components/ThemedText";
 import { useForm } from "react-hook-form";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-root-toast";
@@ -34,8 +31,7 @@ export default function AddOutOfWorkingTimeType() {
   };
 
   return (
-    <View>
-      <ThemedText type="title">Tạo loại ngoài giờ</ThemedText>
+    <View style={{ padding: 16 }}>
       <FormInput
         formInputProps={{ control: control, name: "name" }}
         label="Tên loại nghỉ"
@@ -44,19 +40,6 @@ export default function AddOutOfWorkingTimeType() {
         leftIconImage={LeaveTypeIconLeft}
         rightIconImage={LeaveTypeIconLeft}
       />
-
-      <FormSelect
-        options={[
-          { value: "2024-07-24", label: "24/07/2024" },
-          { value: "2024-07-25", label: "25/07/2024" },
-          { value: "2024-07-26", label: "26/07/2024" },
-        ]}
-        useControllerProps={{ control: control, name: "day" }}
-        label="Tên loại nghỉ"
-        required
-      />
-
-      <FormPickDate useControllerProps={{ control: control, name: "date" }} />
 
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)}>
         <View style={{ justifyContent: "center", alignItems: "center", backgroundColor: "#0B3A82", height: 40, width: "100%", borderRadius: 4 }}>

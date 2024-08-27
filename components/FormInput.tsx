@@ -2,6 +2,7 @@ import { OPACITY_TO_HEX } from "@/constants/Colors";
 import React, { memo } from "react";
 import { UseControllerProps, useController, type FieldValues } from "react-hook-form";
 import { Image, ImageStyle, StyleSheet, Text, TextInput, TextStyle, TouchableHighlight, View, ViewStyle, type TextInputProps } from "react-native";
+import { NunitoText } from "./text/NunitoText";
 const XClearIconImage = require("@/assets/images/x-clear.png");
 
 export type FormInputProps<T extends FieldValues> = {
@@ -32,8 +33,12 @@ function RawFormInput<T extends FieldValues>({
   return (
     <View>
       {/* label */}
-      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center" }}>
-        {label && <Text style={{ marginRight: 6 }}>{label}</Text>}
+      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center", marginBottom: 6 }}>
+        {label && (
+          <NunitoText type="body2" style={{ marginRight: 6 }}>
+            {label}
+          </NunitoText>
+        )}
         {required && <Text style={{ color: "red" }}>*</Text>}
       </View>
 
@@ -74,7 +79,7 @@ function RawFormInput<T extends FieldValues>({
           </View>
         </View>
       </View>
-      {Boolean(error) && <Text style={{ color: "red" }}>{error?.message}</Text>}
+      {Boolean(error) && <NunitoText type="body4" style={{ color: "red" }}>{error?.message}</NunitoText>}
     </View>
   );
 }
