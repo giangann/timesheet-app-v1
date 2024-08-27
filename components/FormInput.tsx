@@ -79,7 +79,11 @@ function RawFormInput<T extends FieldValues>({
           </View>
         </View>
       </View>
-      {Boolean(error) && <NunitoText type="body4" style={{ color: "red" }}>{error?.message}</NunitoText>}
+      {Boolean(error) && (
+        <NunitoText type="body4" style={{ color: "red" }}>
+          {error?.message}
+        </NunitoText>
+      )}
     </View>
   );
 }
@@ -91,7 +95,7 @@ const baseInputStyle: ViewStyle | TextStyle | ImageStyle = {
   paddingLeft: 36,
   paddingRight: 36,
   borderWidth: 1,
-  height: 40,
+  height: 48,
   borderRadius: 4,
   fontFamily: "Nunito",
 };
