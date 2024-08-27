@@ -47,14 +47,13 @@ export function SessionProvider({ children }: PropsWithChildren) {
       console.log(responseJson);
 
       if (responseJson.statusCode === 200) {
-        console.log("success");
+        console.log("login success");
+        setSession(responseJson.data.token);
       } else {
         console.log("failure", responseJson.message);
       }
     } catch (error: any) {
       console.log("An error occured", error.message);
-    } finally {
-      setSession("xxx");
     }
   };
 

@@ -1,33 +1,63 @@
 import { FormInput } from "@/components/FormInput";
+import { useSession } from "@/contexts/ctx";
+import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import Toast from "react-native-root-toast";
+import Toast, { ToastOptions } from "react-native-root-toast";
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type CreateItem = {
   name: string;
-  day: string;
-  date: string | Date;
 };
 
 export default function AddOutOfWorkingTimeType() {
-  const { control, handleSubmit, setError } = useForm<CreateItem>({ defaultValues: { name: "", date: new Date("2024-08-21") } });
+  const { control, handleSubmit, setError } = useForm<CreateItem>({ defaultValues: { name: "" } });
+  const { session } = useSession();
+  const router = useRouter();
 
   const onCreate = async (data: CreateItem) => {
-    console.log("data", data);
-    console.log(data.date.toLocaleString());
+    const token = `Bearer ${session}` ?? "xxx";
 
-    const toastEl = (
-      <>
-        <Image style={{ backgroundColor: "white" }} source={LeaveTypeIconLeft} />
-        <Text>heeloo</Text>
-      </>
-    );
+    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const endpoint = "/leave-form-types";
+    const url = `${baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+    const responseJson = await response.json();
+
+    let toastEl: any = null;
+    let toastOptions: ToastOptions;
+    if (responseJson.statusCode === 200) {
+      toastEl = (
+        <>
+          <Image style={{ backgroundColor: "white" }} source={LeaveTypeIconLeft} />
+          <Text>{"create success"}</Text>
+        </>
+      );
+      toastOptions = {
+        backgroundColor: "green",
+      };
+
+      router.back();
+    } else {
+      toastEl = (
+        <>
+          <Image style={{ backgroundColor: "white" }} source={LeaveTypeIconLeft} />
+          <Text>{responseJson.error}</Text>
+        </>
+      );
+      toastOptions = {
+        backgroundColor: "red",
+      };
+    }
 
     // @ts-ignore
-    Toast.show(toastEl, { shadow: false, backgroundColor: "green" });
-
-    setError("name", { message: "This field is required" });
+    Toast.show(toastEl, toastOptions);
   };
 
   return (
