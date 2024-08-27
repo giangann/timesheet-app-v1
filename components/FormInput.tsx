@@ -1,5 +1,5 @@
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import React from "react";
+import React, { memo } from "react";
 import { UseControllerProps, useController, type FieldValues } from "react-hook-form";
 import { Image, ImageStyle, StyleSheet, Text, TextInput, TextStyle, TouchableHighlight, View, ViewStyle, type TextInputProps } from "react-native";
 const XClearIconImage = require("@/assets/images/x-clear.png");
@@ -17,7 +17,7 @@ export type BaseInputProps<T extends FieldValues> = TextInputProps &
     rightIconEl?: React.ReactNode;
   };
 
-export function FormInput<T extends FieldValues>({
+function RawFormInput<T extends FieldValues>({
   label,
   required,
   leftIconImage,
@@ -78,50 +78,7 @@ export function FormInput<T extends FieldValues>({
   );
 }
 
-// export const FormInput = React.memo(function FormInput<T extends FieldValues>({
-//   placeholder,
-//   leftIconImage,
-//   rightIconImage,
-//   rightIconEl,
-//   formInputProps,
-// }: BaseInputProps<T>) {
-//   const { field, formState } = useController(formInputProps);
-//   const error = formState.errors[field.name];
-//   return (
-//     <View style={{ position: "relative", marginBottom: 8 }}>
-//       {/* input */}
-//       <TextInput
-//         placeholder={placeholder}
-//         style={formState.errors[field.name] ? inputStyles.error : inputStyles.default}
-//         value={field.value}
-//         onChangeText={field.onChange}
-//       />
-
-//       {/* left icon */}
-//       <View style={{ position: "absolute", top: 0, left: 0, width: 36, height: "100%" }}>
-//         <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-//           <Image source={leftIconImage} style={imageStyles.icon} />
-//         </View>
-//       </View>
-
-//       {/* right icon */}
-//       <View style={{ position: "absolute", top: 0, right: 0, width: 36, height: "100%" }}>
-//         <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-//           {rightIconEl && rightIconEl}
-//           {!rightIconEl && (
-//             <TouchableHighlight>
-//               <View style={{ width: 18, height: 18 }}>
-//                 <Image source={rightIconImage} style={imageStyles.icon} />
-//               </View>
-//             </TouchableHighlight>
-//           )}
-//         </View>
-//       </View>
-
-//       {Boolean(error) && <Text style={{ color: "red" }}>{error?.message as string}</Text>}
-//     </View>
-//   );
-// });
+export const FormInput = memo(RawFormInput) as typeof RawFormInput;
 
 const baseInputStyle: ViewStyle | TextStyle | ImageStyle = {
   padding: 10,
