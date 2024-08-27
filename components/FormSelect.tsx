@@ -50,9 +50,10 @@ export function FormSelect<T extends FieldValues>({ label, required, options, us
   return (
     <View>
       {/* label */}
-      <Text>
-        {label} {required && <span style={{ color: "red" }}>*</span>}
-      </Text>
+      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center" }}>
+        {label && <Text style={{ marginRight: 6 }}>{label}</Text>}
+        {required && <Text style={{ color: "red" }}>*</Text>}
+      </View>
 
       {/* select button*/}
       <Pressable onPress={onToggleOpenModal}>

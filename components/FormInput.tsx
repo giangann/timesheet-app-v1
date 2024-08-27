@@ -32,9 +32,10 @@ function RawFormInput<T extends FieldValues>({
   return (
     <View>
       {/* label */}
-      <Text>
-        {label} {required && <span style={{ color: "red" }}>*</span>}
-      </Text>
+      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center" }}>
+        {label && <Text style={{ marginRight: 6 }}>{label}</Text>}
+        {required && <Text style={{ color: "red" }}>*</Text>}
+      </View>
 
       {/* input container */}
       <View style={{ position: "relative", marginBottom: 8 }}>
