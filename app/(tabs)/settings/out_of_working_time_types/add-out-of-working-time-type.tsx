@@ -1,4 +1,5 @@
 import { FormInput } from "@/components/FormInput";
+import { FormSelect } from "@/components/FormSelect";
 import { ThemedText } from "@/components/ThemedText";
 import { useForm } from "react-hook-form";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -7,6 +8,7 @@ const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type CreateItem = {
   name: string;
+  date: string;
 };
 
 export default function AddOutOfWorkingTimeType() {
@@ -38,6 +40,17 @@ export default function AddOutOfWorkingTimeType() {
         placeholder="Nhập tên loại nghỉ..."
         leftIconImage={LeaveTypeIconLeft}
         rightIconImage={LeaveTypeIconLeft}
+      />
+
+      <FormSelect
+        options={[
+          { value: "2024-07-24", label: "24/07/2024" },
+          { value: "2024-07-25", label: "25/07/2024" },
+          { value: "2024-07-26", label: "26/07/2024" },
+        ]}
+        useControllerProps={{ control: control, name: "date" }}
+        label="Tên loại nghỉ"
+        required
       />
 
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)}>
