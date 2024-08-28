@@ -18,9 +18,9 @@ export default function Settings() {
       </Pressable>
 
       <View>
-        <Pressable onPress={() => router.push("/settings/out_of_working_time_types")}>
+        <Pressable onPress={() => router.push("/settings/leave_types")}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <ThemedText type="subtitle">Cài đặt loại ngoài giờ</ThemedText>
+            <ThemedText type="subtitle">Cài đặt loại nghỉ</ThemedText>
             <ThemedText type="subtitle">{">"}</ThemedText>
           </View>
         </Pressable>
