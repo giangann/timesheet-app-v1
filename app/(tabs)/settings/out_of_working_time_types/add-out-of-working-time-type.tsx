@@ -8,26 +8,35 @@ import Toast, { ToastOptions } from "react-native-root-toast";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
+type CreateItemForm = {
+  name: string;
+  coefficient: string;
+};
 type CreateItem = {
   name: string;
+  coefficient: number;
 };
 
-export default function AddLeaveType() {
-  const { control, handleSubmit } = useForm<CreateItem>({ defaultValues: { name: "" } });
+export default function AddOutOfWorkingTimeType() {
+  const { control, handleSubmit } = useForm<CreateItemForm>({ defaultValues: { name: "", coefficient: "1" } });
   const { session } = useSession();
   const router = useRouter();
 
-  const onCreate = async (data: CreateItem) => {
+  const onCreate = async (data: CreateItemForm) => {
+    const bodyData: CreateItem = {
+      ...data,
+      coefficient: parseFloat(data.coefficient),
+    };
+    
     const token = `Bearer ${session}` ?? "xxx";
-
     const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = "/leave-form-types";
+    const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(data),
+      body: JSON.stringify(bodyData),
       credentials: "include",
     });
     const responseJson = await response.json();
@@ -68,13 +77,21 @@ export default function AddLeaveType() {
         {/* Your scrollable form inputs go here */}
         <FormInput
           formInputProps={{ control: control, name: "name" }}
-          label="Tên loại nghỉ"
+          label="Tên loại ngoài giờ"
           required
-          placeholder="Nhập tên loại nghỉ..."
+          placeholder="Nhập tên loại ngoài giờ..."
           leftIconImage={LeaveTypeIconLeft}
           rightIconImage={LeaveTypeIconLeft}
         />
         {/* Add more FormInput components as needed */}
+        <FormInput
+          formInputProps={{ control: control, name: "coefficient" }}
+          label="Hệ số"
+          required
+          placeholder="Nhập hệ số..."
+          leftIconImage={LeaveTypeIconLeft}
+          rightIconImage={LeaveTypeIconLeft}
+        />
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>
         <View style={styles.button}>
