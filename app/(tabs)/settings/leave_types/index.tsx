@@ -1,10 +1,14 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
-import { useRouter } from "expo-router";
+import { useSession } from "@/contexts/ctx";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ToastOptions } from "react-native-root-toast";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
+const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TLeaveType = {
   id: number;
@@ -12,11 +16,50 @@ type TLeaveType = {
 };
 
 export default function HolidayList() {
+  const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
+  const { session } = useSession();
+
+  const fetchLeaveTypes = useCallback(async () => {
+    const token = `Bearer ${session}` ?? "xxx";
+
+    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const endpoint = "/leave-form-types";
+    const url = `${baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      credentials: "include",
+    });
+    const responseJson = await response.json();
+
+    if (responseJson.statusCode === 200) {
+      setLeaveTypes(responseJson.data.leaveFormTypes);
+    } else {
+      let toastEl: any = null;
+      let toastOptions: ToastOptions;
+      toastEl = (
+        <>
+          <NunitoText lightColor="white" type="body3">
+            {responseJson.error}
+          </NunitoText>
+        </>
+      );
+      toastOptions = {
+        backgroundColor: "#C84851",
+      };
+    }
+  }, []);
+
+  useFocusEffect(() => {
+    fetchLeaveTypes();
+  });
+
   return (
     <View style={styles.container}>
       <ToolBar />
       <ScrollView contentContainerStyle={styles.listBox}>
-        <List />
+        <List leaveTypes={leaveTypes} />
       </ScrollView>
     </View>
   );
@@ -36,10 +79,13 @@ const ToolBar = () => {
   );
 };
 
-const List = () => {
+type ListProps = {
+  leaveTypes: TLeaveType[];
+};
+const List: React.FC<ListProps> = ({ leaveTypes }) => {
   return (
     <>
-      {data.map((leaveType) => (
+      {leaveTypes.map((leaveType) => (
         <Item key={leaveType.id} {...leaveType} />
       ))}
     </>
@@ -64,7 +110,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "white",
-    minHeight:'100%'
+    minHeight: "100%",
   },
   toolbar: {
     flexDirection: "row",
