@@ -86,14 +86,17 @@ const List: React.FC<ListProps> = ({ leaveTypes }) => {
   return (
     <>
       {leaveTypes.map((leaveType) => (
-        <Item key={leaveType.id} {...leaveType} />
+        <Item key={leaveType.id} leaveType={leaveType} />
       ))}
     </>
   );
 };
 
-type ItemProps = TLeaveType;
-const Item: React.FC<ItemProps> = ({ id, name }) => {
+type ItemProps = {
+  leaveType: TLeaveType;
+};
+const Item: React.FC<ItemProps> = ({ leaveType }) => {
+  const { id, name } = leaveType;
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
