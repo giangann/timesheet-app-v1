@@ -1,9 +1,12 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
+import { useSession } from "@/contexts/ctx";
 import { dayFromDate, getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ToastOptions } from "react-native-root-toast";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
@@ -19,11 +22,49 @@ type THoliday = {
 };
 
 export default function HolidayList() {
+  const [holidays, setHolidays] = useState<THoliday[]>([]);
+  const { session } = useSession();
+
+  const fetchHolidays = useCallback(async () => {
+    const token = `Bearer ${session}` ?? "xxx";
+
+    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const endpoint = "/holidays?year=2024";
+    const url = `${baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      credentials: "include",
+    });
+    const responseJson = await response.json();
+
+    if (responseJson.statusCode === 200) {
+      setHolidays(responseJson.data.holidays);
+    } else {
+      let toastEl: any = null;
+      let toastOptions: ToastOptions;
+      toastEl = (
+        <>
+          <NunitoText lightColor="white" type="body3">
+            {responseJson.error}
+          </NunitoText>
+        </>
+      );
+      toastOptions = {
+        backgroundColor: "#C84851",
+      };
+    }
+  }, []);
+
+  useFocusEffect(() => {
+    fetchHolidays();
+  });
   return (
     <View style={styles.container}>
       <ToolBar />
       <ScrollView contentContainerStyle={styles.listBox}>
-        <List holidays={sortByDate(data)} />
+        <List holidays={sortByDate(holidays)} />
       </ScrollView>
     </View>
   );
@@ -133,69 +174,6 @@ const styles = StyleSheet.create({
     marginRight: 12 * UNIT_DIMENSION,
   },
 });
-
-const data: THoliday[] = [
-  {
-    id: 2,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Nghỉ lễ đặc biệt",
-    date: "2024-06-04",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-  {
-    id: 3,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Tết dương lịch",
-    date: "2024-01-01",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-  {
-    id: 4,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Tết nguyên đán ",
-    date: "2024-02-17",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-  {
-    id: 5,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Rằm tháng Giêng",
-    date: "2024-02-29",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-  {
-    id: 6,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Lễ Chiến Thắng",
-    date: "2024-04-30",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-  {
-    id: 7,
-    isDeleted: false,
-    createdAt: "2024-08-29T15:10:03.505+00:00",
-    updatedAt: "2024-08-29T15:10:03.505+00:00",
-    name: "Quốc tế Lao Động",
-    date: "2024-05-01",
-    salaryCoefficientTypeId: 1,
-    activeOutsideWorkingTime: true,
-  },
-];
 
 type TGroupedHolidays = {
   id: number;
