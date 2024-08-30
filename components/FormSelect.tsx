@@ -65,45 +65,47 @@ export function FormSelect<T extends FieldValues>({ useControllerProps, options,
       </View>
 
       {/* select button*/}
-      <Pressable onPress={onToggleOpenModal}>
-        <View style={styles.showChooseValueBox}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {/* left icon */}
-            <Image source={LeaveTypeIconLeft} style={{ ...imageStyles.icon }} />
+      <View>
+        <Pressable onPress={onToggleOpenModal}>
+          <View style={!openModal ? styles.showChooseValueBox : styles.showChooseValueBoxFocus}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {/* left icon */}
+              <Image source={LeaveTypeIconLeft} style={{ ...imageStyles.icon }} />
 
-            {/* value */}
-            <>
-              {!value && (
-                <NunitoText type="body3" style={{ opacity: 0.5 }}>
-                  Select
-                </NunitoText>
-              )}
-              {value && <Text>{labelOfValue}</Text>}
-            </>
+              {/* value */}
+              <>
+                {!value && (
+                  <NunitoText type="body3" style={{ opacity: 0.5 }}>
+                    Select
+                  </NunitoText>
+                )}
+                {value && <Text>{labelOfValue}</Text>}
+              </>
+            </View>
+
+            {/* right icon - arrow*/}
+            <Image source={ArrowDownSelectIconImage} style={{ ...imageStyles.icon }} />
           </View>
+        </Pressable>
 
-          {/* right icon - arrow*/}
-          <Image source={ArrowDownSelectIconImage} style={{ ...imageStyles.icon }} />
-        </View>
-      </Pressable>
-
-      {/* select modal */}
-      {openModal && (
-        // modal
-        <View style={{ padding: 10, backgroundColor: `#000000${OPACITY_TO_HEX["10"]}` }}>
-          {options.length <= 0 && <NunitoText type="body3">No options</NunitoText>}
-          {options.length > 0 && (
-            <>
-              {options.map((opt) => (
-                //item
-                <Pressable key={opt.value} onPress={() => onSelect(opt.value, opt.label)}>
-                  <NunitoText type="body3">{opt.label}</NunitoText>
-                </Pressable>
-              ))}
-            </>
-          )}
-        </View>
-      )}
+        {/* select modal */}
+        {openModal && (
+          // modal
+          <View style={styles.modal}>
+            {options.length <= 0 && <NunitoText type="body3">No options</NunitoText>}
+            {options.length > 0 && (
+              <>
+                {options.map((opt) => (
+                  //item
+                  <Pressable key={opt.value} onPress={() => onSelect(opt.value, opt.label)}>
+                    <NunitoText type="body3">{opt.label}</NunitoText>
+                  </Pressable>
+                ))}
+              </>
+            )}
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -125,6 +127,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     height: 40,
+
     borderRadius: 4,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
 
@@ -132,6 +135,33 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     gap: 8,
+  },
+  showChooseValueBoxFocus: {
+    padding: 10,
+    height: 40,
+
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    borderWidth: 1,
+    borderColor: `#000000`,
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
+  },
+  modal: {
+    padding: 10,
+    backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
+
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: `#000000`,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+
+    gap: 12,
   },
 });
 /**
