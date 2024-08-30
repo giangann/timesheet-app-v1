@@ -33,14 +33,13 @@ export function FormPickDate<T extends FieldValues>({ useControllerProps, label,
 
   const onToggleShowDatePicker = () => setShowDatePicker(!showDatePicker);
 
-  const onDateChange = (e: DateTimePickerEvent, newValue: Date | undefined) => {
+  const onDateChange = (_e: DateTimePickerEvent, newValue: Date | undefined) => {
     if (newValue) {
-      console.log(newValue.toLocaleString());
+      onChange(new Date(newValue));
     }
-    onChange(newValue);
-
     setShowDatePicker(false);
   };
+  
   return (
     <View style={styles.container}>
       {/* label */}
