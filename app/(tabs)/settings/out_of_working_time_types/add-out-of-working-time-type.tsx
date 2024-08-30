@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollContent: {
+    gap: 20,
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
   },
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#0B3A82",
-    height: 48,
+    height: 40,
     borderRadius: 4,
   },
 });

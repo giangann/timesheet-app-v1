@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#0B3A82",
-    height: 48,
+    height: 40,
     borderRadius: 4,
   },
 });
