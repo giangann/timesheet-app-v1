@@ -6,25 +6,25 @@ import moment from "moment";
 import { NunitoText } from "./text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 
-type FormPickDateProps<T extends FieldValues> = {
+type FormPickTimeProps<T extends FieldValues> = {
   useControllerProps: UseControllerProps<T>;
   placeholder?: string;
   label?: string;
   required?: boolean;
   leftIconImage: any;
-  dateFormat?: string;
+  timeFormat?: string;
   locale?: string;
 };
 
-export function FormPickDate<T extends FieldValues>({
+export function FormPickTime<T extends FieldValues>({
   useControllerProps,
   label,
   required,
   leftIconImage,
   placeholder = "Select Date",
-  dateFormat = "DD/MM/YYYY",
+  timeFormat = "HH:mm",
   locale = "en",
-}: FormPickDateProps<T>) {
+}: FormPickTimeProps<T>) {
   const { field } = useController(useControllerProps);
   const { onChange, value } = field;
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -40,7 +40,7 @@ export function FormPickDate<T extends FieldValues>({
     setShowDatePicker(false);
   };
 
-  const formattedDate = value ? moment(value).locale(locale).format(dateFormat) : placeholder;
+  const formattedDate = value ? moment(value).locale(locale).format(timeFormat) : placeholder;
 
   return (
     <View style={styles.container}>
@@ -69,7 +69,7 @@ export function FormPickDate<T extends FieldValues>({
 
       {/* date picker modal */}
       {showDatePicker && (
-        <DateTimePicker testID="dateTimePicker" value={value || new Date()} display="default" mode="date" is24Hour={true} onChange={onDateChange} />
+        <DateTimePicker testID="dateTimePicker" value={value || new Date()} display="default" mode="time" is24Hour={true} onChange={onDateChange} />
       )}
     </View>
   );
