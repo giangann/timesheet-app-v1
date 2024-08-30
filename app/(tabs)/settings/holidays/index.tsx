@@ -25,7 +25,7 @@ export default function HolidayList() {
   const [holidays, setHolidays] = useState<THoliday[]>([]);
   const { session } = useSession();
 
-  const fetchHolidays = useCallback(async () => {
+  const fetchHolidays = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
@@ -55,11 +55,14 @@ export default function HolidayList() {
         backgroundColor: "#C84851",
       };
     }
-  }, []);
+  };
 
-  useFocusEffect(() => {
-    fetchHolidays();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      fetchHolidays();
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <ToolBar />

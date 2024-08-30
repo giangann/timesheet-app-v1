@@ -20,7 +20,7 @@ export default function OutOfWorkingTimeType() {
   const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
   const { session } = useSession();
 
-  const fetchSalaryCoefTypes = useCallback(async () => {
+  const fetchSalaryCoefTypes = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
@@ -50,11 +50,13 @@ export default function OutOfWorkingTimeType() {
         backgroundColor: "#C84851",
       };
     }
-  }, []);
+  };
 
-  useFocusEffect(() => {
-    fetchSalaryCoefTypes();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      fetchSalaryCoefTypes();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

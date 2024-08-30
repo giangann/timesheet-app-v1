@@ -19,7 +19,7 @@ export default function LeaveTypeList() {
   const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
   const { session } = useSession();
 
-  const fetchLeaveTypes = useCallback(async () => {
+  const fetchLeaveTypes = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
@@ -49,11 +49,13 @@ export default function LeaveTypeList() {
         backgroundColor: "#C84851",
       };
     }
-  }, []);
+  };
 
-  useFocusEffect(() => {
-    fetchLeaveTypes();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      fetchLeaveTypes();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
