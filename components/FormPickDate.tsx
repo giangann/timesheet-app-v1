@@ -14,15 +14,19 @@ import {
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState } from "react";
+import moment from "moment";
+import { NunitoText } from "./text/NunitoText";
+import { OPACITY_TO_HEX } from "@/constants/Colors";
 
 type FormPickDateProps<T extends FieldValues> = {
+  useControllerProps: UseControllerProps<T>;
   placeholder?: string;
   label?: string;
   required?: boolean;
-  useControllerProps: UseControllerProps<T>;
+  leftIconImage: any;
 };
 
-export function FormPickDate<T extends FieldValues>({ useControllerProps }: FormPickDateProps<T>) {
+export function FormPickDate<T extends FieldValues>({ useControllerProps, label, required, leftIconImage }: FormPickDateProps<T>) {
   const { field } = useController(useControllerProps);
   const { onChange, value } = field;
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -38,12 +42,25 @@ export function FormPickDate<T extends FieldValues>({ useControllerProps }: Form
     setShowDatePicker(false);
   };
   return (
-    <View>
+    <View style={styles.container}>
+      {/* label */}
+      <View style={styles.labelWrapper}>
+        {label && (
+          <NunitoText type="body2" style={{ marginRight: 6 }}>
+            {label}
+          </NunitoText>
+        )}
+        {required && <Text style={{ color: "red" }}>*</Text>}
+      </View>
+
       {/* open date picker modal when press */}
       <Pressable onPress={onToggleShowDatePicker}>
-        <View style={selectInputStyles.default}>
+        <View style={styles.showDateBox}>
+          {/* left icon */}
+          <Image source={leftIconImage} style={{ ...imageStyles.icon }} />
+
           {/* display date */}
-          <Text>{value.toLocaleString()}</Text>
+          <NunitoText type="body3">{moment(value).format("DD/MM/YYYY")}</NunitoText>
         </View>
       </Pressable>
 
@@ -55,25 +72,35 @@ export function FormPickDate<T extends FieldValues>({ useControllerProps }: Form
   );
 }
 
-const baseSelectInputStyle: ViewStyle | TextStyle | ImageStyle = {
-  padding: 10,
-  paddingLeft: 36,
-  paddingRight: 36,
-  borderWidth: 1,
-  height: 40,
-  borderRadius: 4,
-  fontFamily: "Nunito",
-};
+/**
+ * -------------------------------------------
+ */
 
-const selectInputStyles = StyleSheet.create({
-  default: {
-    ...baseSelectInputStyle,
+const styles = StyleSheet.create({
+  container: {
+    gap: 6,
   },
-  error: {
-    ...baseSelectInputStyle,
-    borderColor: "red",
+  labelWrapper: {
+    flexDirection: "row",
+    alignContent: "flex-start",
+    alignItems: "center",
+  },
+  showDateBox: {
+    padding: 10,
+    borderWidth: 1,
+    height: 40,
+    borderRadius: 4,
+    borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
+
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 8,
   },
 });
+/**
+ * --------------------------------------------
+ */
 
 const imageStyles = StyleSheet.create({
   icon: {

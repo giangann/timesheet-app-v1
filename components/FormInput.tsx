@@ -43,7 +43,7 @@ function RawFormInput<T extends FieldValues>({
       </View>
 
       {/* input container */}
-      <View style={{ position: "relative", marginBottom: 8 }}>
+      <View style={{ position: "relative" }}>
         {/* input */}
         <TextInput
           placeholderTextColor={`#000000${OPACITY_TO_HEX["50"]}`}
@@ -54,14 +54,14 @@ function RawFormInput<T extends FieldValues>({
         />
 
         {/* left icon */}
-        <View style={{ position: "absolute", top: 0, left: 0, width: 36, height: "100%" }}>
+        <View style={{ position: "absolute", top: 0, left: 0, width: 42, height: "100%" }}>
           <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
             <Image source={leftIconImage} style={{ ...imageStyles.icon }} />
           </View>
         </View>
 
         {/* right icon */}
-        <View style={{ position: "absolute", top: 0, right: 0, width: 36, height: "100%" }}>
+        <View style={{ position: "absolute", top: 0, right: 0, width: 42, height: "100%" }}>
           <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
             {rightIconEl && rightIconEl}
             {!rightIconEl && (
@@ -92,10 +92,10 @@ export const FormInput = memo(RawFormInput) as typeof RawFormInput;
 
 const baseInputStyle: ViewStyle | TextStyle | ImageStyle = {
   padding: 10,
-  paddingLeft: 36,
-  paddingRight: 36,
+  paddingLeft: 42,
+  paddingRight: 42,
   borderWidth: 1,
-  height: 48,
+  height: 40,
   borderRadius: 4,
   fontFamily: "Nunito",
 };

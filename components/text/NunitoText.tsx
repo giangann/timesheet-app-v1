@@ -1,6 +1,7 @@
 import { Text, type TextProps, StyleSheet, TextStyle } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { UNIT_FONTSIZE } from "@/constants/Misc";
 
 export type NunitoTextProps = TextProps & {
   lightColor?: string;
@@ -35,51 +36,49 @@ const fontStyles: TextStyle = {
   fontFamily: "Nunito",
 };
 
-const unit = 1.125;
-
 const styles = StyleSheet.create({
   default: {
     ...fontStyles,
-    fontSize: 16 * unit,
+    fontSize: 16 * UNIT_FONTSIZE,
   },
   heading3: {
     ...fontStyles,
-    fontSize: 16 * unit,
+    fontSize: 16 * UNIT_FONTSIZE,
     fontWeight: "700",
   },
   subtitle1: {
     ...fontStyles,
-    fontSize: 16 * unit,
+    fontSize: 16 * UNIT_FONTSIZE,
     fontWeight: "700",
   },
   subtitle2: {
     ...fontStyles,
-    fontSize: 13 * unit,
+    fontSize: 13 * UNIT_FONTSIZE,
     fontWeight: "500",
   },
   body1: {
     ...fontStyles,
-    fontSize: 16 * unit,
+    fontSize: 16 * UNIT_FONTSIZE,
     fontWeight: "400",
   },
   body2: {
     ...fontStyles,
-    fontSize: 14 * unit,
+    fontSize: 14 * UNIT_FONTSIZE,
     fontWeight: "700",
   },
   body3: {
     ...fontStyles,
-    fontSize: 14 * unit,
+    fontSize: 14 * UNIT_FONTSIZE,
     fontWeight: "500",
   },
   body4: {
     ...fontStyles,
-    fontSize: 13 * unit,
+    fontSize: 13 * UNIT_FONTSIZE,
     fontWeight: "500",
   },
   caption: {
     ...fontStyles,
-    fontSize: 10 * unit,
+    fontSize: 10 * UNIT_FONTSIZE,
     fontWeight: "400",
   },
 });
