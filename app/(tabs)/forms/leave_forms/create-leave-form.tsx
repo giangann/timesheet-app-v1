@@ -1,4 +1,5 @@
 import { FormInput } from "@/components/FormInput";
+import { FormPickDateTime } from "@/components/FormPickDateTime";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
 import { useRouter } from "expo-router";
@@ -7,10 +8,18 @@ import { ScrollView, Image, Text, TouchableOpacity, View, StyleSheet } from "rea
 import Toast, { ToastOptions } from "react-native-root-toast";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
+
+type CreateItemForm = {
+  startDate: string | Date;
+};
 export default function CreateLeaveForm() {
+  const { control, handleSubmit } = useForm<CreateItemForm>({ defaultValues: { startDate: undefined } });
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}></ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <FormPickDateTime useControllerProps={{ control: control, name: "startDate" }} leftIconImage={LeaveTypeIconLeft} />
+      </ScrollView>
       <TouchableOpacity activeOpacity={0.8} style={styles.buttonContainer}>
         <View style={styles.button}>
           <NunitoText type="body3" style={{ color: "white" }}>
