@@ -16,7 +16,7 @@ export default function Settings() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listBox}>
-        <Pressable onPress={() => console.log("go to team setting")}>
+        <Pressable onPress={() => router.push("/settings/teams")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
