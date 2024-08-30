@@ -1,19 +1,7 @@
-import {
-  Image,
-  ImageStyle,
-  StyleSheet,
-  Text,
-  TextInput,
-  TextStyle,
-  TouchableHighlight,
-  View,
-  ViewStyle,
-  type TextInputProps,
-  Pressable,
-} from "react-native";
-import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { useState } from "react";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useState } from "react";
+import { FieldValues, UseControllerProps, useController } from "react-hook-form";
+import { Image, ImageStyle, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import { NunitoText } from "./text/NunitoText";
 const ArrowDownSelectIconImage = require("@/assets/images/arrow-down-select.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
@@ -74,12 +62,12 @@ export function FormSelect<T extends FieldValues>({ useControllerProps, options,
 
               {/* value */}
               <>
-                {!value && (
+                {(value === undefined || value === null) && (
                   <NunitoText type="body3" style={{ opacity: 0.5 }}>
                     Select
                   </NunitoText>
                 )}
-                {value && <Text>{labelOfValue}</Text>}
+                {!(value === undefined || value === null) && <NunitoText type="body3">{labelOfValue}</NunitoText>}
               </>
             </View>
 
@@ -95,9 +83,9 @@ export function FormSelect<T extends FieldValues>({ useControllerProps, options,
             {options.length <= 0 && <NunitoText type="body3">No options</NunitoText>}
             {options.length > 0 && (
               <>
-                {options.map((opt) => (
+                {options.map((opt, index) => (
                   //item
-                  <Pressable key={opt.value} onPress={() => onSelect(opt.value, opt.label)}>
+                  <Pressable key={index} onPress={() => onSelect(opt.value, opt.label)}>
                     <NunitoText type="body3">{opt.label}</NunitoText>
                   </Pressable>
                 ))}
