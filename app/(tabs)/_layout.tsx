@@ -39,9 +39,9 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="forms"
         options={{
-          title: "Explore",
+          title: "Form",
           tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "code-slash" : "code-slash-outline"} color={color} />,
         }}
       />
