@@ -1,14 +1,17 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
-import { StyleSheet, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Button, StyleSheet, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 export default function LeaveForms() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <NunitoText>Leave forms</NunitoText>
+      <Button title="Tạo đơn xin nghỉ" onPress={() => router.push("/forms/leave_forms/create-leave-form")} />
     </View>
   );
 }
