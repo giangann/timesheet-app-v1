@@ -56,7 +56,7 @@ export function FormSelect<T extends FieldValues>({ useControllerProps, options,
       <View>
         <Pressable onPress={onToggleOpenModal}>
           <View style={!openModal ? styles.showChooseValueBox : styles.showChooseValueBoxFocus}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, overflow: "hidden" }}>
               {/* left icon */}
               <Image source={LeaveTypeIconLeft} style={{ ...imageStyles.icon }} />
 
