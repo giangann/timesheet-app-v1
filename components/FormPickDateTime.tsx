@@ -35,19 +35,15 @@ export function FormPickDateTime<T extends FieldValues>({
 
   const onOpenDatePicker = () => {
     setShowDatePicker(true);
-    console.log("datePicker opened!");
   };
   const onCloseDatePicker = () => {
     setShowDatePicker(false);
-    console.log("datePicker closed!");
   };
   const onOpenTimePicker = () => {
     setShowTimePicker(true);
-    console.log("timePicker opened!");
   };
   const onCloseTimePicker = () => {
     setShowTimePicker(false);
-    console.log("timePicker closed!");
   };
 
   const onDateChange = (_e: DateTimePickerEvent, newValue: Date | undefined) => {
