@@ -3,12 +3,12 @@ import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelect } from "@/components/FormSelect";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
+import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Toast, { ToastOptions } from "react-native-root-toast";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TSalaryCoefficientType = {
@@ -57,25 +57,14 @@ export default function CreateHoliday() {
     if (responseJson.statusCode === 200) {
       setSalaryCoefficientTypes(responseJson.data.salaryCoefficientTypes);
     } else {
-      let toastEl: any = null;
-      let toastOptions: ToastOptions;
-      toastEl = (
-        <>
-          <NunitoText lightColor="white" type="body3">
-            {responseJson.error}
-          </NunitoText>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "#C84851",
-      };
+      MyToast.error(responseJson.error)
     }
-  }
+  };
 
   useFocusEffect(
-    useCallback(()=>{
-      fetchSalaryCoefTypes()
-    },[])
+    useCallback(() => {
+      fetchSalaryCoefTypes();
+    }, [])
   );
 
   const onCreate = async (data: CreateItemForm) => {
@@ -95,34 +84,12 @@ export default function CreateHoliday() {
     });
     const responseJson = await response.json();
 
-    let toastEl: any = null;
-    let toastOptions: ToastOptions;
     if (responseJson.statusCode === 200) {
-      toastEl = (
-        <>
-          <Image style={{ backgroundColor: "white" }} source={LeaveTypeIconLeft} />
-          <Text>{"create success"}</Text>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "green",
-      };
-
+      MyToast.success("Thành công");
       router.back();
     } else {
-      toastEl = (
-        <>
-          <Image style={{ backgroundColor: "white" }} source={LeaveTypeIconLeft} />
-          <Text>{responseJson.error}</Text>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "red",
-      };
+      MyToast.error(responseJson.error);
     }
-
-    // @ts-ignore
-    Toast.show(toastEl, toastOptions);
   };
   return (
     <View style={styles.container}>

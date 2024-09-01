@@ -1,10 +1,10 @@
 import { FormInput } from "@/components/FormInput";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
+import { MyToast } from "@/ui/MyToast";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { ScrollView, Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import Toast, { ToastOptions } from "react-native-root-toast";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const TeamIconLeft = require("@/assets/images/identify-card.png");
 
@@ -32,34 +32,12 @@ export default function AddTeam() {
     });
     const responseJson = await response.json();
 
-    let toastEl: any = null;
-    let toastOptions: ToastOptions;
     if (responseJson.statusCode === 200) {
-      toastEl = (
-        <>
-          <Image style={{ backgroundColor: "white" }} source={TeamIconLeft} />
-          <Text>{"create success"}</Text>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "green",
-      };
-
+      MyToast.success("Thành công");
       router.back();
     } else {
-      toastEl = (
-        <>
-          <Image style={{ backgroundColor: "white" }} source={TeamIconLeft} />
-          <Text>{responseJson.error}</Text>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "red",
-      };
+      MyToast.error(responseJson.error);
     }
-
-    // @ts-ignore
-    Toast.show(toastEl, toastOptions);
   };
 
   return (

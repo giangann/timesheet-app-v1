@@ -6,12 +6,12 @@ import { FormSelect } from "@/components/FormSelect";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
+import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import Toast, { ToastOptions } from "react-native-root-toast";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
@@ -75,18 +75,7 @@ export default function CreateLeaveForm() {
     if (responseJson.statusCode === 200) {
       setLeaveTypes(responseJson.data.leaveFormTypes);
     } else {
-      let toastEl: any = null;
-      let toastOptions: ToastOptions;
-      toastEl = (
-        <>
-          <NunitoText lightColor="white" type="body3">
-            {responseJson.error}
-          </NunitoText>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "#C84851",
-      };
+      MyToast.error(responseJson.error);
     }
   };
 
@@ -107,18 +96,7 @@ export default function CreateLeaveForm() {
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);
     } else {
-      let toastEl: any = null;
-      let toastOptions: ToastOptions;
-      toastEl = (
-        <>
-          <NunitoText lightColor="white" type="body3">
-            {responseJson.error}
-          </NunitoText>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "#C84851",
-      };
+      MyToast.error(responseJson.error);
     }
   };
 

@@ -2,10 +2,10 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { ToastOptions } from "react-native-root-toast";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
@@ -36,18 +36,7 @@ export default function LeaveTypeList() {
     if (responseJson.statusCode === 200) {
       setLeaveTypes(responseJson.data.leaveFormTypes);
     } else {
-      let toastEl: any = null;
-      let toastOptions: ToastOptions;
-      toastEl = (
-        <>
-          <NunitoText lightColor="white" type="body3">
-            {responseJson.error}
-          </NunitoText>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "#C84851",
-      };
+      MyToast.error(responseJson.error);
     }
   };
 

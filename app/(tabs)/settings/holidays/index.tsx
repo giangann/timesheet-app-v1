@@ -3,10 +3,10 @@ import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { dayFromDate, getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
+import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { ToastOptions } from "react-native-root-toast";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
@@ -42,18 +42,7 @@ export default function HolidayList() {
     if (responseJson.statusCode === 200) {
       setHolidays(responseJson.data.holidays);
     } else {
-      let toastEl: any = null;
-      let toastOptions: ToastOptions;
-      toastEl = (
-        <>
-          <NunitoText lightColor="white" type="body3">
-            {responseJson.error}
-          </NunitoText>
-        </>
-      );
-      toastOptions = {
-        backgroundColor: "#C84851",
-      };
+      MyToast.error(responseJson.error);
     }
   };
 
