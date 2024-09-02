@@ -1,9 +1,8 @@
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 
-export default function FormUploadImage() {
-  const [file, setFile] = useState<string | null>(null);
+export default function FormUploadImage({ fileUri, setFileUri }: { fileUri: string | null; setFileUri: Dispatch<SetStateAction<string | null>> }) {
   // Stores any error message
   const [error, setError] = useState(null);
   // Function to pick an image from
@@ -26,8 +25,9 @@ export default function FormUploadImage() {
       if (!result.canceled) {
         // If an image is selected (not cancelled),
         // update the file state variable
-        console.log("result", result.assets);
-        setFile(result.assets[0].uri);
+
+        const fileUri = result.assets[0].uri;
+        setFileUri(fileUri);
 
         // Clear any previous errors
         setError(null);
@@ -46,10 +46,10 @@ export default function FormUploadImage() {
 
       {/* Conditionally render the image 
         or error message */}
-      {file ? (
+      {fileUri ? (
         // Display the selected image
         <View style={styles.imageContainer}>
-          <Image source={{ uri: file }} style={styles.image} />
+          <Image source={{ uri: fileUri }} style={styles.image} />
         </View>
       ) : (
         // Display an error message if there's

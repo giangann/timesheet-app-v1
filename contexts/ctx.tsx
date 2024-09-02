@@ -33,7 +33,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       const baseUrl = "http://13.228.145.165:8080/api/v1";
       const endpoint = "/auth/login";
       const url = `${baseUrl}${endpoint}`;
-      const params = { identifyCard: "0123456789", password: "!Daxuti01011970" };
+      const params = { identifyCard: "000011111111", password: "!Khai01011970" };
 
       const response = await fetch(url, {
         method: "POST",

@@ -1,17 +1,15 @@
 import { FormInput } from "@/components/FormInput";
-import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickDateTime } from "@/components/FormPickDateTime";
-import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelect } from "@/components/FormSelect";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
+import { uriToFormDataValidImage } from "@/helper/file-handler";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
-import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
@@ -43,7 +41,11 @@ type TUserApprove = {
 export default function CreateLeaveForm() {
   const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
+  const [fileUri, setFileUri] = useState<string | null>(null);
+
   const { session } = useSession();
+  const router = useRouter();
+
   const { control, handleSubmit } = useForm<CreateItemForm>({
     defaultValues: { startDate: undefined, endDate: undefined },
   });
@@ -52,10 +54,55 @@ export default function CreateLeaveForm() {
   const userApproveOpts = userApproves.map((user) => ({ value: user.identifyCard, label: user.name }));
 
   const onCreate = async (value: CreateItemForm) => {
-    const bodyData: CreateItem = {
-      ...value,
-    };
-    console.log(bodyData);
+    try {
+      const bodyData: CreateItem = {
+        ...value,
+      };
+
+      const formData = new FormData();
+
+      Object.entries(bodyData).forEach(([k, v]) => {
+        // formData.append(k, v);
+        if (typeof v === "number") formData.append(k, v.toString());
+        else if (v instanceof Date) {
+          // const formattedDate = v.toISOString()// 'yyyy-MM-ddTHH:mm:ss'
+          const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
+          formData.append(k, formattedDate);
+        } else formData.append(k, v);
+      });
+      if (fileUri) {
+        const validImageField = uriToFormDataValidImage(fileUri);
+        formData.append("attachFile", validImageField as any);
+      }
+
+      const token = `Bearer ${session}` ?? "xxx";
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = "/leave-forms/create";
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: token,
+        }, // do not set content-type for formData, let browser do it automatically
+        body: formData,
+        credentials: "include",
+      });
+
+      const responseJson = await response.json();
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+        router.back();
+      } else {
+        MyToast.error(responseJson.error);
+        console.log(responseJson);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+      console.log(error);
+    }
   };
 
   const fetchLeaveTypes = async () => {
@@ -118,14 +165,14 @@ export default function CreateLeaveForm() {
         <FormPickDateTime
           useControllerProps={{ control: control, name: "startDate" }}
           leftIconImage={LeaveTypeIconLeft}
-          label="Ngày giờ bắt đầu"
+          label="Thời gian bắt đầu"
           required
           placeholder="Chọn ngày và giờ"
         />
         <FormPickDateTime
           useControllerProps={{ control: control, name: "endDate" }}
           leftIconImage={LeaveTypeIconLeft}
-          label="Ngày giờ bắt đầu"
+          label="Thời gian kết thúc"
           required
           placeholder="Chọn ngày và giờ"
         />
@@ -144,7 +191,7 @@ export default function CreateLeaveForm() {
           placeholder="Chọn lãnh đạo phê duyệt"
         />
 
-        <FormUploadImage />
+        <FormUploadImage fileUri={fileUri} setFileUri={setFileUri} />
 
         <FormInput
           formInputProps={{ control: control, name: "note" }}
