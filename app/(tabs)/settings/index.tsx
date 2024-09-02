@@ -71,6 +71,21 @@ export default function Settings() {
             </View>
           </View>
         </Pressable>
+
+
+        <Pressable onPress={() => router.push("/settings/duty_types")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <Image source={SettingHolidayIconImage} />
+              </View>
+              <NunitoText type="body1">Cài đặt trực</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Image source={GotoDetailIconImage} />
+            </View>
+          </View>
+        </Pressable>
       </ScrollView>
     </View>
   );
