@@ -4,7 +4,7 @@ import { FormSelect } from "@/components/FormSelect";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
-import { uriToFormDataValidImage } from "@/helper/file-handler";
+import { hasNullishValue } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -13,14 +13,6 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
-type CreateItem = {
-  startDate: string | Date;
-  endDate: string | Date;
-  leaveFormTypeId: number;
-  userApproveIdentifyCard: number;
-  attachFile: File;
-  note: string;
-};
 type CreateItemForm = {
   startDate: string | Date;
   endDate: string | Date;
@@ -41,7 +33,6 @@ type TUserApprove = {
 export default function CreateLeaveForm() {
   const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
-  const [fileUri, setFileUri] = useState<string | null>(null);
 
   const { session } = useSession();
   const router = useRouter();
@@ -55,25 +46,20 @@ export default function CreateLeaveForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
-      const bodyData: CreateItem = {
+      if (hasNullishValue(value)) return;
+      const bodyData: CreateItemForm = {
         ...value,
       };
 
       const formData = new FormData();
 
       Object.entries(bodyData).forEach(([k, v]) => {
-        // formData.append(k, v);
         if (typeof v === "number") formData.append(k, v.toString());
         else if (v instanceof Date) {
-          // const formattedDate = v.toISOString()// 'yyyy-MM-ddTHH:mm:ss'
           const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
           formData.append(k, formattedDate);
-        } else formData.append(k, v);
+        } else formData.append(k, v as File);
       });
-      if (fileUri) {
-        const validImageField = uriToFormDataValidImage(fileUri);
-        formData.append("attachFile", validImageField as any);
-      }
 
       const token = `Bearer ${session}` ?? "xxx";
       const baseUrl = "http://13.228.145.165:8080/api/v1";
@@ -91,6 +77,7 @@ export default function CreateLeaveForm() {
       });
 
       const responseJson = await response.json();
+      console.log(responseJson)
 
       if (responseJson.statusCode === 200) {
         MyToast.success("Thành công");
@@ -191,7 +178,7 @@ export default function CreateLeaveForm() {
           placeholder="Chọn lãnh đạo phê duyệt"
         />
 
-        <FormUploadImage fileUri={fileUri} setFileUri={setFileUri} />
+        <FormUploadImage label="Ảnh đính kèm" required useControllerProps={{ control: control, name: "attachFile" }} />
 
         <FormInput
           formInputProps={{ control: control, name: "note" }}
