@@ -20,7 +20,7 @@ export default function TeamList() {
   const [teams, setTeams] = useState<TTeam[]>([]);
   const { session } = useSession();
 
-  const fetchLeaveTypes = async () => {
+  const fetchTeams = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
@@ -43,7 +43,7 @@ export default function TeamList() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchLeaveTypes();
+      fetchTeams();
     }, [])
   );
 
