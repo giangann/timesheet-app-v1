@@ -1,5 +1,5 @@
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { UNIT_DIMENSION } from "@/constants/Misc";
+import { FORM_STATUS, FORM_STATUS_NAME, UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -18,7 +18,7 @@ type TLeaveForm = {
   userName: string;
   userApproveName: string;
   leaveFormTypeName: string;
-  status: number;
+  status: FORM_STATUS;
   filePath: string;
   isDeleted: false;
   userRole: {
@@ -75,7 +75,7 @@ export default function LeaveForms() {
         {leaveForms.map((leaveForm) => (
           <Button
             key={leaveForm.id}
-            title={`${leaveForm.id}`}
+            title={`${leaveForm.id} - ${FORM_STATUS_NAME[leaveForm.status]}`}
             onPress={() => {
               router.push({
                 pathname: "/(tabs)/forms/leave_forms/[id]",

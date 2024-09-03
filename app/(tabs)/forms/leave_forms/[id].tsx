@@ -1,5 +1,7 @@
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
@@ -33,13 +35,44 @@ type TLeaveFormDetail = {
 
 export default function DetailForm() {
   const [form, setForm] = useState<TLeaveFormDetail | null>(null);
+  const [openCfModal, setOpenCfModal] = useState(false);
   const { session } = useSession();
   const local = useLocalSearchParams();
   const formId = local.id;
 
-  const onApprove = async () => {
-    console.log("approve");
+  const onApprove = async (formId: string) => {
+    try {
+      const bodyData = {
+        status: FORM_STATUS.ACCEPTED,
+        leaveFormId: parseInt(formId),
+        reason: "ok",
+      };
+      const token = `Bearer ${session}` ?? "xxx";
+
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = `/leave-forms/approve`;
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(bodyData),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.message);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
   };
+
+  const onApproveCache = useCallback(async () => {
+    await onApprove(formId as string);
+  }, [formId]);
 
   const fetchLeaveFormDetail = async (formId: string) => {
     const token = `Bearer ${session}` ?? "xxx";
@@ -58,7 +91,7 @@ export default function DetailForm() {
     if (responseJson.statusCode === 200) {
       setForm(responseJson.data.leaveFormDetail);
     } else {
-      MyToast.error(responseJson.error);
+      MyToast.error(responseJson.message);
     }
   };
 
@@ -95,7 +128,7 @@ export default function DetailForm() {
 
           <View style={styles.approveContainer}>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={onApprove} activeOpacity={0.8} style={styles.buttonItem}>
+              <TouchableOpacity onPress={onApproveCache} activeOpacity={0.8} style={styles.buttonItem}>
                 <View style={styles.buttonOutlined}>
                   <NunitoText type="body3" style={{ color: "#0B3A82" }}>
                     Từ chối
@@ -103,7 +136,7 @@ export default function DetailForm() {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={onApprove} activeOpacity={0.8} style={styles.buttonItem}>
+              <TouchableOpacity onPress={() => setOpenCfModal(true)} activeOpacity={0.8} style={styles.buttonItem}>
                 <View style={styles.buttonContained}>
                   <NunitoText type="body3" style={{ color: "white" }}>
                     Chấp thuận
@@ -113,6 +146,19 @@ export default function DetailForm() {
             </View>
           </View>
         </View>
+      )}
+
+      {openCfModal && (
+        <MyModal
+          title={"Xác nhận phê duyệt"}
+          onClose={() => setOpenCfModal(false)}
+          cb={onApprove}
+          modalProps={{ animationType: "slide", transparent: true }}
+        >
+          <View>
+            <NunitoText type="body3">Chấp Thuận đơn xin nghỉ?</NunitoText>
+          </View>
+        </MyModal>
       )}
     </>
   );
