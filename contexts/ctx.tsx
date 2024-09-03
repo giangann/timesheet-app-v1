@@ -1,8 +1,9 @@
+import { loginByCredentials, TCredentials } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
-import { useContext, createContext, type PropsWithChildren } from "react";
+import { createContext, useContext, type PropsWithChildren } from "react";
 
 const AuthContext = createContext<{
-  signIn: () => Promise<void>;
+  signIn: (credentials: TCredentials) => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -28,32 +29,14 @@ export function useSession() {
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
 
-  const signIn = async () => {
-    try {
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = "/auth/login";
-      const url = `${baseUrl}${endpoint}`;
-      const params = { identifyCard: "000011111111", password: "!Khai01011970" };
+  const signIn = async (credentials: TCredentials) => {
+    const responseJson = await loginByCredentials(credentials);
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(params),
-        credentials: "include",
-      });
-
-      const responseJson = await response.json();
-
-      console.log(responseJson);
-
-      if (responseJson.statusCode === 200) {
-        console.log("login success");
-        setSession(responseJson.data.token);
-      } else {
-        console.log("failure", responseJson.message);
-      }
-    } catch (error: any) {
-      console.log("An error occured", error.message);
+    if (responseJson.statusCode === 200) {
+      console.log("login success");
+      setSession(responseJson.data.token);
+    } else {
+      throw new Error(responseJson.message);
     }
   };
 
