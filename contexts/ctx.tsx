@@ -1,15 +1,17 @@
-import { loginByCredentials, TCredentials } from "@/api/auth";
+import { loginByCredentials, verifyToken, TCredentials } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
 import { createContext, useContext, type PropsWithChildren } from "react";
 
 const AuthContext = createContext<{
   signIn: (credentials: TCredentials) => Promise<void>;
   signOut: () => void;
+  verifySessionToken: (token: string) => Promise<boolean>;
   session?: string | null;
   isLoading: boolean;
 }>({
   signIn: () => Promise.resolve(), // Corrected this line
   signOut: () => null,
+  verifySessionToken: () => Promise.resolve(false),
   session: null,
   isLoading: false,
 });
@@ -40,13 +42,23 @@ export function SessionProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const signOut = () => {
+    setSession(null);
+  };
+
+  const verifySessionToken = async (token: string) => {
+    const responseJson = await verifyToken(token);
+
+    if (responseJson.statusCode === 200) return true;
+    return false;
+  };
+
   return (
     <AuthContext.Provider
       value={{
-        signIn: signIn,
-        signOut: () => {
-          setSession(null);
-        },
+        signIn,
+        signOut,
+        verifySessionToken,
         session,
         isLoading,
       }}

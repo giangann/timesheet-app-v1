@@ -1,25 +1,34 @@
-import { useSession } from "@/contexts/ctx";
-import { Redirect, Stack, Tabs } from "expo-router";
-import { Text } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { Colors } from "@/constants/Colors";
+import { useSession } from "@/contexts/ctx";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Redirect, Tabs, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { Text } from "react-native";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
+  const { session, isLoading, verifySessionToken } = useSession();
+  const router = useRouter();
 
-  const { session, isLoading } = useSession();
+  useEffect(() => {
+    async function checkIsValidSessionToken(session: string) {
+      const isValidSession = await verifySessionToken(session);
+      if (!isValidSession) {
+        router.replace("/auth/login");
+      }
+    }
 
-  // You can keep the splash screen open, or render a loading screen like we do here.
+    if (session) {
+      checkIsValidSessionToken(session);
+    }
+  }, [session]);
+
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  // Only require authentication within the (app) group's layout as users
-  // need to be able to access the (auth) group and sign in again.
   if (!session) {
-    // On web, static rendering will stop here as the user is not authenticated
-    // in the headless Node process that the pages are rendered in.
     return <Redirect href="/auth/login" />;
   }
 
