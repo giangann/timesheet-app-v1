@@ -1,4 +1,5 @@
 import { MyModal } from "@/components/MyModal";
+import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
@@ -237,7 +238,7 @@ const AttachImageFile = ({ path }: { path: string }) => {
       <NunitoText type="body3" style={{ opacity: 0.5, marginBottom: 4 }}>
         {"Ảnh đính kèm"}
       </NunitoText>
-      <Image source={{ uri: path }} style={{ width: "100%", height: 250 }} />
+      <ViewImageFullScreen imagePath={path} />
     </View>
   );
 };
