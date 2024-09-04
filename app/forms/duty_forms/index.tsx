@@ -16,6 +16,7 @@ export default function LeaveForms() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   listBox: {
+    paddingBottom: 16,
     gap: 20,
   },
   itemBox: {

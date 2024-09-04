@@ -112,8 +112,8 @@ const Item: React.FC<ItemProps> = ({ id, name, teams, createdAt, updatedAt }) =>
       </View>
       {/* right */}
       <View style={styles.chipBox}>
-        {teams.map((teamName) => (
-          <View style={styles.chip}>
+        {teams.map((teamName, index) => (
+          <View key={index} style={styles.chip}>
             <NunitoText lightColor="white" type="body4">
               {teamName}
             </NunitoText>
@@ -127,8 +127,15 @@ const Item: React.FC<ItemProps> = ({ id, name, teams, createdAt, updatedAt }) =>
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
+    height: "100%",
+    /**
+     * if not set height 100%, container will overflow screen,
+     * so scrollView will fill container => scrollView also overflow screen
+     * => can't see all element inside scrollView
+     */
   },
   toolbar: {
     flexDirection: "row",
@@ -137,6 +144,7 @@ const styles = StyleSheet.create({
     marginBottom: 20 * UNIT_DIMENSION,
   },
   listBox: {
+    paddingBottom: 16,
     gap: 20 * UNIT_DIMENSION,
   },
   itemBox: {
@@ -153,8 +161,8 @@ const styles = StyleSheet.create({
     flexBasis: "60%",
     flexDirection: "row",
   },
-  indexBoxWrapper:{
-    justifyContent:'flex-start'
+  indexBoxWrapper: {
+    justifyContent: "flex-start",
   },
   indexBox: {
     backgroundColor: `#0B3A82`,

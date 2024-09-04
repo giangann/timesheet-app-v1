@@ -130,8 +130,15 @@ const Item: React.FC<ItemProps> = ({ holiday }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "white",
+    paddingBottom: 0,
+    backgroundColor: `white`,
     minHeight: "100%",
+    height: "100%",
+    /**
+     * if not set height 100%, container will overflow screen,
+     * so scrollView will fill container => scrollView also overflow screen
+     * => can't see all element inside scrollView
+     */
   },
   toolbar: {
     flexDirection: "row",
@@ -140,7 +147,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   listBox: {
+    paddingBottom: 16,
     gap: 24,
+    // paddingBottom:60,
   },
 
   groupItemsBox: {

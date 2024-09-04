@@ -65,10 +65,12 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
   listBox: {
+    paddingBottom: 16,
     gap: 20 * UNIT_DIMENSION,
   },
   itemBox: {

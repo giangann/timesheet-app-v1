@@ -246,10 +246,12 @@ const AttachImageFile = ({ path }: { path: string }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
   listBox: {
+    paddingBottom: 16,
     gap: 20,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
   },

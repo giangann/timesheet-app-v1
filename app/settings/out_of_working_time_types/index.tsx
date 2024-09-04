@@ -37,7 +37,7 @@ export default function OutOfWorkingTimeType() {
     if (responseJson.statusCode === 200) {
       setSalaryCoefficientTypes(responseJson.data.salaryCoefficientTypes);
     } else {
-      MyToast.error(responseJson.error)
+      MyToast.error(responseJson.error);
     }
   };
 
@@ -113,8 +113,15 @@ const Item: React.FC<ItemProps> = ({ id, name, coefficient }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
+    height: "100%",
+    /**
+     * if not set height 100%, container will overflow screen,
+     * so scrollView will fill container => scrollView also overflow screen
+     * => can't see all element inside scrollView
+     */
   },
   toolbar: {
     flexDirection: "row",
@@ -123,6 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 20 * UNIT_DIMENSION,
   },
   listBox: {
+    paddingBottom: 16,
     gap: 20 * UNIT_DIMENSION,
   },
   itemBox: {
