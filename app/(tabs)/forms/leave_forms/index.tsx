@@ -75,7 +75,7 @@ export default function LeaveForms() {
         {leaveForms.map((leaveForm) => (
           <Button
             key={leaveForm.id}
-            title={`${leaveForm.id} - ${FORM_STATUS_NAME[leaveForm.status]}`}
+            title={`${leaveForm.id} - ${FORM_STATUS_NAME[leaveForm.status]} - ${leaveForm.userApproveName}`}
             onPress={() => {
               router.push({
                 pathname: "/(tabs)/forms/leave_forms/[id]",

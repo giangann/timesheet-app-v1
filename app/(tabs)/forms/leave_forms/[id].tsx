@@ -35,12 +35,50 @@ type TLeaveFormDetail = {
 
 export default function DetailForm() {
   const [form, setForm] = useState<TLeaveFormDetail | null>(null);
-  const [openCfModal, setOpenCfModal] = useState(false);
+  const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
+  const [openCfRejectModal, setOpenCfRejectModal] = useState(false);
+
   const { session } = useSession();
   const local = useLocalSearchParams();
   const formId = local.id;
 
-  const onApprove = async (formId: string) => {
+  const onApproveReject = async (formId: string) => {
+    try {
+      const bodyData = {
+        status: FORM_STATUS.REJECTED,
+        leaveFormId: parseInt(formId),
+        reason: "ok",
+      };
+      const token = `Bearer ${session}` ?? "xxx";
+
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = `/leave-forms/approve`;
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(bodyData),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      if (responseJson.statusCode === 200) {
+        if (form) {
+          setForm({ ...form, status: FORM_STATUS.REJECTED });
+        }
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.message);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+  const onApproveRejectCache = useCallback(() => {
+    onApproveReject(formId as string);
+  }, [formId, form]);
+
+  const onApproveAccept = async (formId: string) => {
     try {
       const bodyData = {
         status: FORM_STATUS.ACCEPTED,
@@ -61,6 +99,9 @@ export default function DetailForm() {
       });
       const responseJson = await response.json();
       if (responseJson.statusCode === 200) {
+        if (form) {
+          setForm({ ...form, status: FORM_STATUS.ACCEPTED });
+        }
         MyToast.success("Thành công");
       } else {
         MyToast.error(responseJson.message);
@@ -70,9 +111,9 @@ export default function DetailForm() {
     }
   };
 
-  const onApproveCache = useCallback(async () => {
-    await onApprove(formId as string);
-  }, [formId]);
+  const onApproveAcceptCache = useCallback(() => {
+    onApproveAccept(formId as string);
+  }, [formId, form]);
 
   const fetchLeaveFormDetail = async (formId: string) => {
     const token = `Bearer ${session}` ?? "xxx";
@@ -126,33 +167,48 @@ export default function DetailForm() {
             <AttachImageFile path={form.attachFilePath} />
           </ScrollView>
 
-          <View style={styles.approveContainer}>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={onApproveCache} activeOpacity={0.8} style={styles.buttonItem}>
-                <View style={styles.buttonOutlined}>
-                  <NunitoText type="body3" style={{ color: "#0B3A82" }}>
-                    Từ chối
-                  </NunitoText>
-                </View>
-              </TouchableOpacity>
+          {form.status === FORM_STATUS.WATING_APPROVE && (
+            <View style={styles.approveContainer}>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={() => setOpenCfRejectModal(true)} activeOpacity={0.8} style={styles.buttonItem}>
+                  <View style={styles.buttonOutlined}>
+                    <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+                      Từ chối
+                    </NunitoText>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => setOpenCfModal(true)} activeOpacity={0.8} style={styles.buttonItem}>
-                <View style={styles.buttonContained}>
-                  <NunitoText type="body3" style={{ color: "white" }}>
-                    Chấp thuận
-                  </NunitoText>
-                </View>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => setOpenCfAcceptModal(true)} activeOpacity={0.8} style={styles.buttonItem}>
+                  <View style={styles.buttonContained}>
+                    <NunitoText type="body3" style={{ color: "white" }}>
+                      Chấp thuận
+                    </NunitoText>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          )}
         </View>
       )}
 
-      {openCfModal && (
+      {openCfRejectModal && (
         <MyModal
-          title={"Xác nhận phê duyệt"}
-          onClose={() => setOpenCfModal(false)}
-          cb={onApprove}
+          title={"Xác nhận phê duyệt Từ Chối"}
+          onClose={() => setOpenCfRejectModal(false)}
+          cb={onApproveRejectCache}
+          modalProps={{ animationType: "slide", transparent: true }}
+        >
+          <View>
+            <NunitoText type="body3">Từ chối đơn xin nghỉ?</NunitoText>
+          </View>
+        </MyModal>
+      )}
+
+      {openCfAcceptModal && (
+        <MyModal
+          title={"Xác nhận phê duyệt Chấp Thuận"}
+          onClose={() => setOpenCfAcceptModal(false)}
+          cb={onApproveAcceptCache}
           modalProps={{ animationType: "slide", transparent: true }}
         >
           <View>
