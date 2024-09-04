@@ -95,7 +95,7 @@ const baseInputStyle: ViewStyle | TextStyle | ImageStyle = {
   paddingLeft: 42,
   paddingRight: 42,
   borderWidth: 1,
-  height: 40,
+  height: 44,
   borderRadius: 4,
   fontFamily: "Nunito",
 };

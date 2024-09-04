@@ -100,7 +100,7 @@ const Login = () => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "#0B3A82",
-            height: 40,
+            height: 44,
             width: "100%",
             borderRadius: 4,
             gap: 8,

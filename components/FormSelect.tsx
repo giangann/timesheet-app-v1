@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   showChooseValueBox: {
     padding: 10,
     borderWidth: 1,
-    height: 40,
+    height: 44,
 
     borderRadius: 4,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   showChooseValueBoxFocus: {
     padding: 10,
-    height: 40,
+    height: 44,
 
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
@@ -161,7 +161,7 @@ const baseSelectInputStyle: ViewStyle | TextStyle | ImageStyle = {
   paddingLeft: 36,
   paddingRight: 36,
   borderWidth: 1,
-  height: 40,
+  height: 44,
   borderRadius: 4,
   fontFamily: "Nunito",
 };

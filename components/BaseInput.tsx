@@ -47,7 +47,7 @@ const inputStyles = StyleSheet.create({
     paddingLeft: 36,
     paddingRight: 36,
     borderWidth: 1,
-    height: 40,
+    height: 44,
     borderRadius: 4,
     fontFamily: "Nunito",
 
@@ -58,7 +58,7 @@ const inputStyles = StyleSheet.create({
     paddingLeft: 36,
     paddingRight: 36,
     borderWidth: 1,
-    height: 40,
+    height: 44,
     borderRadius: 4,
     fontFamily: "Nunito",
 
@@ -69,7 +69,7 @@ const inputStyles = StyleSheet.create({
     paddingLeft: 36,
     paddingRight: 36,
     borderWidth: 1,
-    height: 40,
+    height: 44,
     borderRadius: 4,
     fontFamily: "Nunito",
 

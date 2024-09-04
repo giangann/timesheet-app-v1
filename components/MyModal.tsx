@@ -74,14 +74,14 @@ const styles = StyleSheet.create({
   buttonContained: {
     justifyContent: "center",
     alignItems: "center",
-    height: 40,
+    height: 44,
     backgroundColor: "#0B3A82",
     borderRadius: 4,
   },
   buttonOutlined: {
     justifyContent: "center",
     alignItems: "center",
-    height: 40,
+    height: 44,
     borderColor: "#0B3A82",
     borderWidth: 1,
     borderRadius: 4,

@@ -57,7 +57,7 @@ export default function CreateHoliday() {
     if (responseJson.statusCode === 200) {
       setSalaryCoefficientTypes(responseJson.data.salaryCoefficientTypes);
     } else {
-      MyToast.error(responseJson.error)
+      MyToast.error(responseJson.error);
     }
   };
 
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#0B3A82",
-    height: 40,
+    height: 44,
     borderRadius: 4,
   },
 });
