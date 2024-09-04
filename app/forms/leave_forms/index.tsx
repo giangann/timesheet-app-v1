@@ -78,7 +78,7 @@ export default function LeaveForms() {
             title={`${leaveForm.id} - ${FORM_STATUS_NAME[leaveForm.status]} - ${leaveForm.userApproveName}`}
             onPress={() => {
               router.push({
-                pathname: "/(tabs)/forms/leave_forms/[id]",
+                pathname: "/forms/leave_forms/[id]",
                 params: { id: leaveForm.id },
               });
             }}

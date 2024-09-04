@@ -110,6 +110,37 @@ export function getDayOfWeekNameInVietnamese(date: string): string {
 }
 
 /**
+ * Trả về tên viết tắt của ngày trong tuần theo định dạng tiếng Việt.
+ *
+ * @param date - Chuỗi ngày theo định dạng YYYY-MM-DD.
+ * @returns Tên ngày viết tắt trong tuần (ví dụ: "T2").
+ *
+ * @example
+ * ```typescript
+ * const dayShortName = getDayOfWeekShortNameInVietnamese("2024-07-30");
+ * console.log(dayShortName); // Output: "T3"
+ * ```
+ *
+ * @throws Sẽ ném lỗi nếu chuỗi ngày không theo định dạng YYYY-MM-DD.
+ */
+export function getDayOfWeekShortNameInVietnamese(date: string): string {
+  // Validate the date string format using a regular expression.
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(date)) {
+    throw new Error("Định dạng ngày không hợp lệ. Định dạng mong đợi là YYYY-MM-DD.");
+  }
+
+  // Create a new Date object from the date string.
+  const dateObj = new Date(date);
+
+  // Array of day short names in Vietnamese.
+  const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+
+  // Return the short name of the day of the week in Vietnamese.
+  return dayNames[dateObj.getDay()];
+}
+
+/**
  * Trả về tên tháng trong năm theo định dạng tiếng Việt.
  *
  * @param date - Chuỗi ngày theo định dạng YYYY-MM-DD.

@@ -1,0 +1,166 @@
+import { NunitoText } from "@/components/text/NunitoText";
+import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { UNIT_DIMENSION } from "@/constants/Misc";
+import { useSession } from "@/contexts/ctx";
+import { getDayOfWeekShortNameInVietnamese } from "@/helper/date";
+import { MyToast } from "@/ui/MyToast";
+import { useFocusEffect, useRouter } from "expo-router";
+import moment from "moment";
+import { useCallback, useState } from "react";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+const AddNewIconImage = require("@/assets/images/add-new-icon.png");
+const FilterIconImage = require("@/assets/images/filter-icon.png");
+
+type TDutyCalendar = {
+  dutyFormId: number;
+  date: string; // YYYY-MM-DD
+  dutyType: string;
+  dayOfWeek: string;
+};
+export default function DutyCalendarList() {
+  const [dutyCalendars, setDutyTypes] = useState<TDutyCalendar[]>([]);
+  const { session } = useSession();
+
+  const router = useRouter();
+
+  const fetchDutyTypes = async () => {
+    const token = `Bearer ${session}` ?? "xxx";
+
+    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const endpoint = "/duty-forms/calendars";
+    const queryString = "?startDate=2024-05-07&endDate=2024-09-08";
+    const url = `${baseUrl}${endpoint}${queryString}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      credentials: "include",
+    });
+    const responseJson = await response.json();
+
+    if (responseJson.statusCode === 200) {
+      setDutyTypes(responseJson.data.dutyCalendar);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchDutyTypes();
+    }, [])
+  );
+
+  return (
+    <View style={styles.container}>
+      <ToolBar />
+      <ScrollView contentContainerStyle={styles.listBox}>
+        <List dutyCalendars={dutyCalendars} />
+      </ScrollView>
+    </View>
+  );
+}
+const ToolBar = () => {
+  const router = useRouter();
+  return (
+    <View style={styles.toolbar}>
+      <Pressable onPress={() => {}}>
+        <Image source={FilterIconImage} />
+      </Pressable>
+      <Pressable onPress={() => router.push("/settings/duty_calendars/add-duty-calendar")}>
+        <Image source={AddNewIconImage} />
+      </Pressable>
+    </View>
+  );
+};
+
+type ListProps = {
+  dutyCalendars: TDutyCalendar[];
+};
+const List: React.FC<ListProps> = ({ dutyCalendars }) => {
+  return (
+    <>
+      {dutyCalendars.map((dutyCalendar) => (
+        <Item key={dutyCalendar.dutyFormId} {...dutyCalendar} />
+      ))}
+    </>
+  );
+};
+
+type ItemProps = TDutyCalendar;
+const Item: React.FC<ItemProps> = ({ dutyFormId, date, dutyType, dayOfWeek }) => {
+  return (
+    <View style={styles.itemBox}>
+      <View style={styles.indexBox}>
+        <NunitoText type="body2" lightColor="white">
+          {getDayOfWeekShortNameInVietnamese(date)}
+        </NunitoText>
+      </View>
+      <View>
+        <NunitoText type="body2"> {dutyType}</NunitoText>
+        <NunitoText type="subtitle2"> {moment(date).format("DD/MM/YYYY")}</NunitoText>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    paddingBottom: 0,
+    backgroundColor: "white",
+    minHeight: "100%",
+    height: "100%",
+    /**
+     * if not set height 100%, container will overflow screen,
+     * so scrollView will fill container => scrollView also overflow screen
+     * => can't see all element inside scrollView
+     */
+  },
+  toolbar: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 4,
+    marginBottom: 20 * UNIT_DIMENSION,
+  },
+  listBox: {
+    paddingBottom: 16,
+    gap: 20 * UNIT_DIMENSION,
+  },
+  itemBox: {
+    backgroundColor: `#0B3A82${OPACITY_TO_HEX["15"]}`,
+    paddingHorizontal: 16 * UNIT_DIMENSION,
+    paddingVertical: 12 * UNIT_DIMENSION,
+    borderRadius: 8 * UNIT_DIMENSION,
+
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
+  itemBoxLeft: {
+    flexBasis: "60%",
+    flexDirection: "row",
+  },
+  indexBoxWrapper: {
+    justifyContent: "flex-start",
+  },
+  indexBox: {
+    backgroundColor: `#0B3A82`,
+    padding: 10 * UNIT_DIMENSION,
+    borderRadius: 8 * UNIT_DIMENSION,
+    marginRight: 12 * UNIT_DIMENSION,
+  },
+  nameBox: {
+    flexBasis: "60%",
+  },
+  chipBox: {
+    gap: 4,
+  },
+  chip: {
+    borderRadius: 16 * UNIT_DIMENSION,
+    backgroundColor: `#0B3A82`,
+    paddingLeft: 12 * UNIT_DIMENSION,
+    paddingRight: 12 * UNIT_DIMENSION,
+    paddingVertical: 6 * UNIT_DIMENSION,
+  },
+});

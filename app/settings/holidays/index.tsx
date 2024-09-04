@@ -16,7 +16,7 @@ type THoliday = {
   createdAt: string;
   updatedAt: string;
   name: string;
-  date: string;
+  date: string; // YYYY-MM-DD
   salaryCoefficientTypeId: number;
   activeOutsideWorkingTime: boolean;
 };
