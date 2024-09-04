@@ -3,8 +3,6 @@ import { Stack } from "expo-router";
 export default function FormLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ title: "Đơn từ" }} />
-
       <Stack.Screen name="leave_forms/index" options={{ title: "Đơn xin nghỉ" }} />
       <Stack.Screen name="leave_forms/create-leave-form" options={{ title: "Tạo đơn xin nghỉ" }} />
       <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn xin nghỉ" }} />

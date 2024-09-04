@@ -37,7 +37,7 @@ export default function AppLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: false,
+        headerShown: true,
       }}
     >
       <Tabs.Screen
@@ -48,14 +48,14 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="forms"
+        name="form"
         options={{
           title: "Form",
           tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "code-slash" : "code-slash-outline"} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="setting"
         options={{
           title: "Setting",
           tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "settings" : "settings-outline"} color={color} />,

@@ -3,7 +3,6 @@ import { Stack } from "expo-router";
 export default function SettingLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ title: "Setting" }} />
       <Stack.Screen name="teams/index" options={{ title: "Phòng ban" }} />
       <Stack.Screen name="teams/add-team" options={{ title: "Thêm phòng ban" }} />
       <Stack.Screen name="holidays/index" options={{ title: "Ngày nghỉ" }} />
