@@ -1,8 +1,22 @@
+import { NunitoText } from "@/components/text/NunitoText";
 import { Stack } from "expo-router";
 
 export default function SettingLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#0B3A82",
+        },
+        headerTintColor: "white",
+        headerTitleAlign: "center",
+        headerTitle: (props) => (
+          <NunitoText type="heading3" style={{ color: props.tintColor }}>
+            {props.children}
+          </NunitoText>
+        ),
+      }}
+    >
       <Stack.Screen name="teams/index" options={{ title: "Phòng ban" }} />
       <Stack.Screen name="teams/add-team" options={{ title: "Thêm phòng ban" }} />
       <Stack.Screen name="holidays/index" options={{ title: "Ngày nghỉ" }} />
@@ -15,7 +29,6 @@ export default function SettingLayout() {
       <Stack.Screen name="duty_types/add-duty-type" options={{ title: "Thêm loại trực" }} />
       <Stack.Screen name="duty_calendars/index" options={{ title: "Lịch trực theo tuần" }} />
       <Stack.Screen name="duty_calendars/add-duty-calendar" options={{ title: "Tạo mới lịch trực" }} />
-
     </Stack>
   );
 }
