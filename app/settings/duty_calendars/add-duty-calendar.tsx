@@ -48,10 +48,7 @@ export default function AddDutyCalendar() {
   const [dutyTypes, setDutyTypes] = useState<TDutyType[]>([]);
 
   // calculate options
-  const holidayOptions = holidays.map((holiday) => ({
-    value: holiday.date,
-    label: `${moment(holiday.date).format("DD/MM/YYYY")} - ${holiday.name}`,
-  }));
+  const holidayOptions = holidaysToOptions(holidays);
   const salaryCoefficientTypeOptions = salaryCoefficientTypes.map((type) => ({
     value: type.id,
     label: type.name,
@@ -59,7 +56,7 @@ export default function AddDutyCalendar() {
   const dutyTypeOptions = dutyTypes.map((dutyType) => ({ value: dutyType.id, label: dutyType.name }));
 
   // form and define handler
-  const { control, handleSubmit } = useForm<CreateItem>({ defaultValues: {} });
+  const { control, handleSubmit, watch } = useForm<CreateItem>({ defaultValues: {} });
   const { session } = useSession();
   const router = useRouter();
 
@@ -252,3 +249,53 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+type TOption = {
+  value: string;
+  label: string;
+};
+
+function filterHolidaysInRange(holidays: THoliday[]): THoliday[] {
+  // Calculate next week's Monday and Sunday
+  const nextWeekMonday = moment().startOf("isoWeek").add(7, "days").format("YYYY-MM-DD");
+  const nextWeekSunday = moment().startOf("isoWeek").add(13, "days").format("YYYY-MM-DD");
+
+  const dateRange = { start: nextWeekMonday, end: nextWeekSunday };
+  const holidaysInRange = holidays.filter((hol) => hol.date >= dateRange.start && hol.date <= dateRange.end);
+  return holidaysInRange;
+}
+
+function holidaysToOptions(holidays: THoliday[]): TOption[] {
+  // Calculate next week's Saturday and Sunday
+  const nextWeekSaturday = moment().startOf("isoWeek").add(12, "days").format("YYYY-MM-DD");
+  const nextWeekSunday = moment().startOf("isoWeek").add(13, "days").format("YYYY-MM-DD");
+
+  // Filter holidays that fall within the next week's Monday to Sunday
+  const holidaysInRange = filterHolidaysInRange(holidays);
+
+  // Map holidays to options with formatted label
+  const holidayOptions = holidaysInRange.map((holiday) => ({
+    value: holiday.date,
+    label: `${moment(holiday.date).format("DD/MM/YYYY")} - ${holiday.name}`,
+  }));
+
+  // Check if Saturday is in the holiday list, if not, add it
+  const hasSaturday = holidaysInRange.some((holiday) => holiday.date === nextWeekSaturday);
+  if (!hasSaturday) {
+    holidayOptions.push({
+      value: nextWeekSaturday,
+      label: `${moment(nextWeekSaturday).format("DD/MM/YYYY")} - Thứ 7`,
+    });
+  }
+
+  // Check if Sunday is in the holiday list, if not, add it
+  const hasSunday = holidaysInRange.some((holiday) => holiday.date === nextWeekSunday);
+  if (!hasSunday) {
+    holidayOptions.push({
+      value: nextWeekSunday,
+      label: `${moment(nextWeekSunday).format("DD/MM/YYYY")} - Chủ Nhật`,
+    });
+  }
+
+  return holidayOptions;
+}
