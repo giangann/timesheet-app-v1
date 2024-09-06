@@ -1,3 +1,4 @@
+import FormPickDateRange from "@/components/FormPickDateRange";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
@@ -27,8 +28,8 @@ export default function DutyCalendarList() {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = "/duty-forms/calendars";
-    const queryString = "?startDate=2024-05-07&endDate=2024-09-08";
+    const endpoint = "/duty-calendars/get-calendar";
+    const queryString = "?startDate=2024-05-07&endDate=2024-12-30";
     const url = `${baseUrl}${endpoint}${queryString}`;
 
     const response = await fetch(url, {
@@ -37,7 +38,6 @@ export default function DutyCalendarList() {
       credentials: "include",
     });
     const responseJson = await response.json();
-
     if (responseJson.statusCode === 200) {
       setDutyTypes(responseJson.data.dutyCalendar);
     } else {
@@ -64,12 +64,20 @@ const ToolBar = () => {
   const router = useRouter();
   return (
     <View style={styles.toolbar}>
-      <Pressable onPress={() => {}}>
-        <Image source={FilterIconImage} />
-      </Pressable>
-      <Pressable onPress={() => router.push("/settings/duty_calendars/add-duty-calendar")}>
-        <Image source={AddNewIconImage} />
-      </Pressable>
+      {/* Left: PickDateRange */}
+      <View>
+        <FormPickDateRange />
+      </View>
+
+      {/* Right: Filter and Create */}
+      <View style={styles.toolbarRight}>
+        <Pressable onPress={() => {}}>
+          <Image source={FilterIconImage} />
+        </Pressable>
+        <Pressable onPress={() => router.push("/settings/duty_calendars/add-duty-calendar")}>
+          <Image source={AddNewIconImage} />
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -119,9 +127,12 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 4,
+    justifyContent: "space-between",
     marginBottom: 20 * UNIT_DIMENSION,
+  },
+  toolbarRight: {
+    gap: 4,
+    flexDirection: "row",
   },
   listBox: {
     paddingBottom: 16,

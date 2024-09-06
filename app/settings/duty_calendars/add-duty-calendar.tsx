@@ -64,12 +64,36 @@ export default function AddDutyCalendar() {
   const router = useRouter();
 
   const onCreate = async (data: CreateItem) => {
-    const bodyData: CreateItem = {
-      ...data,
-      startTime: moment(data.startTime).format("HH:mm"),
-      endTime: moment(data.startTime).format("HH:mm"),
-    };
-    console.log(bodyData);
+    try {
+      const bodyData: CreateItem = {
+        ...data,
+        startTime: moment(data.startTime).format("HH:mm:ss"),
+        endTime: moment(data.startTime).format("HH:mm:ss"),
+      };
+
+      const token = `Bearer ${session}` ?? "xxx";
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = "/duty-calendars";
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: JSON.stringify(bodyData),
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      router.back();
+    }
   };
 
   const fetchHolidays = async () => {
