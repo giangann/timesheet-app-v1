@@ -1,14 +1,13 @@
-import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { useSession } from "@/contexts/ctx";
-import { useEffect, useState } from "react";
-import { Image, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
-import { router } from "expo-router";
-import { BaseInput } from "@/components/BaseInput";
-import { useForm } from "react-hook-form";
 import { TCredentials } from "@/api/auth";
 import { FormInput } from "@/components/FormInput";
+import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import { NunitoText } from "@/components/text/NunitoText";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Stack, useNavigation } from "expo-router";
+
 import * as Progress from "react-native-progress";
 
 const PwIconLeft = require("@/assets/images/lock-password.png");
@@ -44,9 +43,12 @@ const Login = () => {
     }
   };
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    console.log("Login screen rendered");
-  }, []);
+    console.log("Login Screen Rendered !");
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
   return (
     <View style={{ padding: 16 }}>
       <View style={{ height: 48 }} />
