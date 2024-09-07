@@ -1,10 +1,9 @@
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
+import Entypo from "@expo/vector-icons/Entypo";
 import { useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { NunitoText } from "./text/NunitoText";
-const ArrowDownSelectIconImage = require("@/assets/images/arrow-down-select.png");
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TOption = {
   value: any;
@@ -66,8 +65,7 @@ export function FormMultiSelect<T extends FieldValues>({ useControllerProps, opt
             {/* Left side: icon + value */}
             <View style={styles.selectBox}>
               {/* left icon */}
-              <Image source={LeaveTypeIconLeft} style={{ ...imageStyles.icon }} />
-
+              <Entypo name="list" size={18} color={Colors.light.inputIconNone} />
               {/* value */}
               <>
                 {isShowPlacholder && (
@@ -88,9 +86,8 @@ export function FormMultiSelect<T extends FieldValues>({ useControllerProps, opt
                 )}
               </>
             </View>
-
             {/* Right side: arrow icon*/}
-            <Image source={ArrowDownSelectIconImage} style={{ ...imageStyles.icon }} />
+            <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />
           </View>
         </Pressable>
 

@@ -1,17 +1,18 @@
-import { Image, ImageStyle, StyleSheet, Text, TextStyle, View, ViewStyle, Pressable } from "react-native";
-import { FieldValues, UseControllerProps, useController } from "react-hook-form";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
+import Fontisto from "@expo/vector-icons/Fontisto";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useState } from "react";
 import moment from "moment";
+import { useState } from "react";
+import { FieldValues, UseControllerProps, useController } from "react-hook-form";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { NunitoText } from "./text/NunitoText";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
 
 type FormPickDateProps<T extends FieldValues> = {
   useControllerProps: UseControllerProps<T>;
   placeholder?: string;
   label?: string;
   required?: boolean;
-  leftIconImage: any;
+  leftIcon?: React.ReactNode;
   dateFormat?: string;
   locale?: string;
 };
@@ -20,7 +21,7 @@ export function FormPickDate<T extends FieldValues>({
   useControllerProps,
   label,
   required,
-  leftIconImage,
+  leftIcon = <Fontisto name="date" size={18} color={Colors.light.inputIconNone} />,
   placeholder = "Select Date",
   dateFormat = "DD/MM/YYYY",
   locale = "en",
@@ -58,8 +59,7 @@ export function FormPickDate<T extends FieldValues>({
       <Pressable onPress={onToggleShowDatePicker} accessible accessibilityLabel="Open date picker">
         <View style={styles.showDateBox}>
           {/* left icon */}
-          <Image source={leftIconImage} style={imageStyles.icon} />
-
+          {leftIcon}
           {/* display date */}
           <NunitoText type="body3" style={value ? null : styles.placeholderText}>
             {formattedDate}

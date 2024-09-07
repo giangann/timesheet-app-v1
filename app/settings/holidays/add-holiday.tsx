@@ -1,15 +1,17 @@
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
-import { FormSelect } from "@/components/FormSelect";
+import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
+import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TSalaryCoefficientType = {
   id: number;
@@ -95,30 +97,19 @@ export default function CreateHoliday() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormPickDate
-          useControllerProps={{ control: control, name: "date" }}
-          label="Ngày"
-          required
-          placeholder="Nhập tên ngày nghỉ..."
-          leftIconImage={LeaveTypeIconLeft}
-          // rightIconImage={LeaveTypeIconLeft}
-        />
+        <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Nhập tên ngày nghỉ..." />
 
-        <FormInput
-          formInputProps={{ control: control, name: "name" }}
-          label="Tên ngày nghỉ"
-          required
-          placeholder="Nhập tên ngày nghỉ..."
-        />
+        <FormInput formInputProps={{ control: control, name: "name" }} label="Tên ngày nghỉ" required placeholder="Nhập tên ngày nghỉ..." />
 
-        <FormSelect
+        <FormSelectV2
           useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
           options={salaryCoefficientTypeOptions}
           label="Loại ngoài giờ"
           required
           placeholder="Chọn loại ngoài giờ"
+          leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
         />
-        <FormSelect
+        <FormSelectV2
           useControllerProps={{ control: control, name: "activeOutsideWorkingTime" }}
           options={[
             { value: false, label: "Không cho phép" },
@@ -126,7 +117,8 @@ export default function CreateHoliday() {
           ]}
           label="Cho phép ngoài giờ"
           required
-          placeholder="Lựa chọn cho phép / không cho phép ngoài giờ"
+          placeholder="Chọn cho phép / không cho phép"
+          leftIcon={<Fontisto name="checkbox-active" size={18} color={Colors.light.inputIconNone} />}
         />
         {/* Add more FormInput components as needed */}
       </ScrollView>

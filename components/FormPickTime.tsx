@@ -1,4 +1,4 @@
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import moment from "moment";
@@ -21,7 +21,7 @@ export function FormPickTime<T extends FieldValues>({
   useControllerProps,
   label,
   required,
-  leftIcon = <MaterialCommunityIcons name="timer-cog-outline" size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />,
+  leftIcon = <MaterialCommunityIcons name="timer-cog-outline" size={18} color={Colors.light.inputIconNone} />,
   placeholder = "Select Date",
   timeFormat = "HH:mm",
   locale = "en",

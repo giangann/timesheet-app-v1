@@ -1,4 +1,4 @@
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
 import { memo, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
@@ -7,7 +7,7 @@ import { NunitoText } from "./text/NunitoText";
 
 type TOption = {
   label: string;
-  value: string | number;
+  value: string | number | boolean;
 };
 
 type Props<T extends FieldValues> = {
@@ -31,7 +31,7 @@ function RawFormSelectV2<T extends FieldValues>({
   required,
   error,
   disabled,
-  leftIcon = <Entypo name="list" size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />,
+  leftIcon = <Entypo name="list" size={18} color={Colors.light.inputIconNone} />,
   rightIcon,
   value,
   options,
@@ -93,7 +93,7 @@ function RawFormSelectV2<T extends FieldValues>({
             </View>
 
             {/* right icon */}
-            {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />}
+            {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />}
           </View>
         </Pressable>
         {openModal && (
@@ -105,8 +105,8 @@ function RawFormSelectV2<T extends FieldValues>({
             )}
 
             {!isEmptyOpt &&
-              options.map((opt) => (
-                <Pressable key={opt.value} onPress={() => onSelectOpt(opt)}>
+              options.map((opt, index) => (
+                <Pressable key={index} onPress={() => onSelectOpt(opt)}>
                   <View style={opt.value === fieldValue ? styles.optionBoxSelected : styles.optionBox}>
                     <NunitoText type="body3">{opt.label}</NunitoText>
                   </View>

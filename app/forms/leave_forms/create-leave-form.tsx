@@ -1,11 +1,14 @@
 import { FormInput } from "@/components/FormInput";
 import { FormPickDateTime } from "@/components/FormPickDateTime";
-import { FormSelect } from "@/components/FormSelect";
+import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
+import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -151,31 +154,33 @@ export default function CreateLeaveForm() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <FormPickDateTime
           useControllerProps={{ control: control, name: "startDate" }}
-          leftIconImage={LeaveTypeIconLeft}
           label="Thời gian bắt đầu"
           required
           placeholder="Chọn ngày và giờ"
+          leftIcon={<MaterialCommunityIcons name="calendar-start" size={18} color={Colors.light.inputIconNone} />}
         />
         <FormPickDateTime
           useControllerProps={{ control: control, name: "endDate" }}
-          leftIconImage={LeaveTypeIconLeft}
           label="Thời gian kết thúc"
           required
           placeholder="Chọn ngày và giờ"
+          leftIcon={<MaterialCommunityIcons name="calendar-end" size={18} color={Colors.light.inputIconNone} />}
         />
-        <FormSelect
+        <FormSelectV2
           useControllerProps={{ control: control, name: "leaveFormTypeId" }}
           options={leaveTypeOpts}
           label="Loại nghỉ"
           required
           placeholder="Chọn loại nghỉ"
+          leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
         />
-        <FormSelect
+        <FormSelectV2
           useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
           options={userApproveOpts}
           label="Lãnh đạo phê duyệt"
           required
           placeholder="Chọn lãnh đạo phê duyệt"
+          leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
         />
 
         <FormUploadImage label="Ảnh đính kèm" required useControllerProps={{ control: control, name: "attachFile" }} />

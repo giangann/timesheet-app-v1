@@ -1,7 +1,8 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { getDayOfWeekNameInVietnamese } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
@@ -223,7 +224,7 @@ export default function AddDutyCalendar() {
           label="Ngày trực"
           required
           placeholder="Chọn ngày trong danh sách"
-          leftIcon={<FontAwesome name="list-alt" size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />}
+          leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
         />
         <FormSelectV2
           useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
@@ -245,12 +246,14 @@ export default function AddDutyCalendar() {
           label="Giờ bắt đầu trực"
           placeholder="Chọn giờ"
           required
+          leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
         />
         <FormPickTime
           useControllerProps={{ control: control, name: "endTime" }}
           label="Giờ kết thúc trực"
           placeholder="Chọn giờ"
           required
+          leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
         />
         {/* Add more FormInput components as needed */}
       </ScrollView>
