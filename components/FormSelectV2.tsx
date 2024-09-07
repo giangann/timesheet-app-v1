@@ -45,19 +45,16 @@ function RawFormSelectV2<T extends FieldValues>({
   const { value: fieldValue, onChange } = field;
 
   const labelDisplay = useMemo(() => options?.filter((opt) => opt.value === fieldValue)?.[0]?.label, [fieldValue]);
-
-  if (useControllerProps.name === "salaryCoefficientTypeId") {
-    console.log(useControllerProps.name, "re-render");
-    console.log("salaryCoefficientTypeId", fieldValue);
-  }
-
   const isEmptyOpt = !options || options?.length === 0;
 
   const onSelectOpt = (option: TOption) => {
+    // call onSelect callback props
     onSelect?.(option);
 
+    // update field value
     onChange(option.value);
 
+    // close modal
     setOpenModal(false);
   };
 

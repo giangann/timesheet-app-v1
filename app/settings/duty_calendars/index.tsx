@@ -3,7 +3,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { getDayOfWeekShortNameInVietnamese } from "@/helper/date";
+import { getDayOfWeekShortNameInVietnamese, sortByDate } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
@@ -39,7 +39,8 @@ export default function DutyCalendarList() {
     });
     const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
-      setDutyTypes(responseJson.data.dutyCalendar);
+      const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
+      setDutyTypes(dutyCalendarsSorted);
     } else {
       MyToast.error(responseJson.error);
     }
