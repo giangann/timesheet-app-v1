@@ -1,35 +1,39 @@
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { memo } from "react";
 import { UseControllerProps, useController, type FieldValues } from "react-hook-form";
-import { Image, ImageStyle, StyleSheet, Text, TextInput, TextStyle, TouchableHighlight, View, ViewStyle, type TextInputProps } from "react-native";
+import { ImageStyle, Pressable, StyleSheet, Text, TextInput, TextStyle, View, ViewStyle, type TextInputProps } from "react-native";
 import { NunitoText } from "./text/NunitoText";
-const XClearIconImage = require("@/assets/images/x-clear.png");
 
 export type FormInputProps<T extends FieldValues> = {
   formInputProps: UseControllerProps<T>;
 };
 
-export type BaseInputProps<T extends FieldValues> = TextInputProps &
+export type RawFormInputProps<T extends FieldValues> = TextInputProps &
   FormInputProps<T> & {
     required?: boolean;
     label?: string;
-    leftIconImage: any;
-    rightIconImage: any;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
     rightIconEl?: React.ReactNode;
   };
 
 function RawFormInput<T extends FieldValues>({
   label,
   required,
-  leftIconImage,
-  rightIconImage,
+  leftIcon = <MaterialCommunityIcons name="tooltip-text-outline" size={18} color={Colors.light.inputIconNone} />,
+  rightIcon = <MaterialIcons name="clear" size={18} color={Colors.light.inputIconNone} />,
   rightIconEl,
   formInputProps,
   ...rest
-}: BaseInputProps<T>) {
+}: RawFormInputProps<T>) {
   const { field, fieldState } = useController(formInputProps);
   const { value, onChange } = field;
   const { error } = fieldState;
+
+  const isShowRightClearIcon = !rightIconEl && value !== "" && value !== undefined;
+
   return (
     <View>
       {/* label */}
@@ -55,26 +59,22 @@ function RawFormInput<T extends FieldValues>({
 
         {/* left icon */}
         <View style={{ position: "absolute", top: 0, left: 0, width: 42, height: "100%" }}>
-          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-            <Image source={leftIconImage} style={{ ...imageStyles.icon }} />
-          </View>
+          <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>{leftIcon}</View>
         </View>
 
         {/* right icon */}
         <View style={{ position: "absolute", top: 0, right: 0, width: 42, height: "100%" }}>
           <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
             {rightIconEl && rightIconEl}
-            {!rightIconEl && (
-              <TouchableHighlight
+            {isShowRightClearIcon && (
+              <Pressable
                 onPress={() => {
                   /**clear value input */
                   onChange("");
                 }}
               >
-                <View style={{ width: 18, height: 18 }}>
-                  <Image source={XClearIconImage} style={{ ...imageStyles.icon, opacity: value === "" ? 0.5 : 1 }} />
-                </View>
-              </TouchableHighlight>
+                <View style={{ padding: 8 }}>{rightIcon}</View>
+              </Pressable>
             )}
           </View>
         </View>
@@ -112,11 +112,5 @@ const inputStyles = StyleSheet.create({
   error: {
     ...baseInputStyle,
     borderColor: `red`,
-  },
-});
-
-const imageStyles = StyleSheet.create({
-  icon: {
-    opacity: 0.5,
   },
 });

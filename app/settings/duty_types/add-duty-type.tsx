@@ -7,7 +7,6 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type CreateItem = {
   dutyTypeName: string;
@@ -86,8 +85,6 @@ export default function AddDutyType() {
           label="Tên loại trực"
           required
           placeholder="Nhập tên loại trực..."
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
         />
         <FormMultiSelect
           useControllerProps={{ control: control, name: "teamIds" }}

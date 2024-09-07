@@ -180,13 +180,7 @@ export default function CreateLeaveForm() {
 
         <FormUploadImage label="Ảnh đính kèm" required useControllerProps={{ control: control, name: "attachFile" }} />
 
-        <FormInput
-          formInputProps={{ control: control, name: "note" }}
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
-          label="Ghi chút"
-          placeholder="Nhập ghi chú..."
-        />
+        <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
       </ScrollView>
       <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer}>
         <View style={styles.button}>

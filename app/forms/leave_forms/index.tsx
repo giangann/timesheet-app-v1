@@ -77,6 +77,9 @@ export default function LeaveForms() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={[styles.listBox, { marginTop: 32 }]}>
+        <Pressable onPress={() => router.push("/forms/leave_forms/create-leave-form")}>
+          <NunitoText>Apply</NunitoText>
+        </Pressable>
         <List leaveForms={leaveForms} />
       </ScrollView>
     </View>
@@ -90,7 +93,7 @@ const List: React.FC<ListProps> = ({ leaveForms }) => {
   return (
     <View style={styles.listBox}>
       {leaveForms.map((form) => (
-        <Item leaveForm={form} />
+        <Item key={form.id} leaveForm={form} />
       ))}
     </View>
   );

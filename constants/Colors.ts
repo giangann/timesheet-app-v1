@@ -5,26 +5,6 @@
 
 const tintColorLight = "#0a7ea4";
 const tintColorDark = "#fff";
-
-export const Colors = {
-  light: {
-    text: "#11181C",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
-  },
-};
-
 export const OPACITY_TO_HEX = {
   0: "00",
   1: "03",
@@ -127,6 +107,27 @@ export const OPACITY_TO_HEX = {
   98: "FA",
   99: "FC",
   100: "FF",
+};
+
+export const Colors = {
+  light: {
+    text: "#11181C",
+    background: "#fff",
+    tint: tintColorLight,
+    icon: "#687076",
+    tabIconDefault: "#687076",
+    tabIconSelected: tintColorLight,
+    inputIconNone: `#000000${OPACITY_TO_HEX["50"]}`,
+    inputIconFocus: `#000000`,
+  },
+  dark: {
+    text: "#ECEDEE",
+    background: "#151718",
+    tint: tintColorDark,
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
+    tabIconSelected: tintColorDark,
+  },
 };
 
 export const CONFIG = {

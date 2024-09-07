@@ -109,8 +109,6 @@ export default function CreateHoliday() {
           label="Tên ngày nghỉ"
           required
           placeholder="Nhập tên ngày nghỉ..."
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
         />
 
         <FormSelect

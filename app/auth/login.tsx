@@ -1,19 +1,17 @@
 import { TCredentials } from "@/api/auth";
 import { FormInput } from "@/components/FormInput";
+import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import { router } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import { Stack, useNavigation } from "expo-router";
-
+import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 
-const PwIconLeft = require("@/assets/images/lock-password.png");
-const PwIconRight = require("@/assets/images/password-show.png");
-const IdCardIconLeft = require("@/assets/images/identify-card.png");
-const IdCardIconRight = require("@/assets/images/x-clear.png");
 const LoginBanner = require("@/assets/images/banner-login.png");
 
 const Login = () => {
@@ -68,27 +66,20 @@ const Login = () => {
       <FormInput
         formInputProps={{ control: control, name: "identifyCard" }}
         placeholder="Nhập số CCCD..."
-        leftIconImage={IdCardIconLeft}
-        rightIconImage={IdCardIconRight}
+        leftIcon={<AntDesign name="idcard" size={18} color={Colors.light.inputIconNone} />}
       />
       {/* Input_2 - Password */}
       <FormInput
         formInputProps={{ control: control, name: "password" }}
         secureTextEntry={!showPw}
         placeholder="Nhập mật khẩu..."
-        leftIconImage={PwIconLeft}
-        rightIconImage={PwIconRight}
+        leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
         rightIconEl={
-          <TouchableOpacity onPress={onToggleShowPw} activeOpacity={0.7}>
+          <Pressable onPress={onToggleShowPw}>
             <View style={{ padding: 8 }}>
-              <View style={{ width: 18, height: 18 }}>
-                <Image
-                  source={require("@/assets/images/password-show.png")}
-                  style={{ opacity: 0.5, width: "100%", height: "100%", resizeMode: "contain" }}
-                />
-              </View>
+              <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         }
       />
 

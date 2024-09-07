@@ -58,8 +58,6 @@ export default function AddOutOfWorkingTimeType() {
           label="Tên loại ngoài giờ"
           required
           placeholder="Nhập tên loại ngoài giờ..."
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
         />
         {/* Add more FormInput components as needed */}
         <FormInput
@@ -67,8 +65,6 @@ export default function AddOutOfWorkingTimeType() {
           label="Hệ số"
           required
           placeholder="Nhập hệ số..."
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
         />
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>

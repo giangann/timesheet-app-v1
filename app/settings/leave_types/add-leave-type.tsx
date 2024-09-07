@@ -49,8 +49,6 @@ export default function AddLeaveType() {
           label="Tên loại nghỉ"
           required
           placeholder="Nhập tên loại nghỉ..."
-          leftIconImage={LeaveTypeIconLeft}
-          rightIconImage={LeaveTypeIconLeft}
         />
         {/* Add more FormInput components as needed */}
       </ScrollView>

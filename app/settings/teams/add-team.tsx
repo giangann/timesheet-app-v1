@@ -49,8 +49,6 @@ export default function AddTeam() {
           label="Tên phòng ban"
           required
           placeholder="Nhập tên phòng ban..."
-          leftIconImage={TeamIconLeft}
-          rightIconImage={TeamIconLeft}
         />
         {/* Add more FormInput components as needed */}
       </ScrollView>
