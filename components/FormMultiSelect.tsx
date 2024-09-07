@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   },
   showChooseValueBox: {
     padding: 10,
+    paddingLeft: 12,
     borderWidth: 1,
-    // height: 44,
 
     borderRadius: 4,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   showChooseValueBoxFocus: {
     padding: 10,
-    // height: 44,
+    paddingLeft: 12,
 
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   selectBox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 12,
     flexShrink: 1,
     flexWrap: "wrap",
   },

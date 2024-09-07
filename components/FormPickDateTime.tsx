@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
   },
   showDateBox: {
     padding: 10,
+    paddingLeft: 12,
     borderWidth: 1,
     height: 44,
     borderRadius: 4,
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    gap: 8,
+    gap: 12,
   },
   errorText: {
     color: "red",

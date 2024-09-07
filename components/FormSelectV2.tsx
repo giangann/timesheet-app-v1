@@ -122,9 +122,10 @@ export const FormSelectV2 = memo(RawFormSelectV2) as typeof RawFormSelectV2;
 
 const showChooseValueBoxBaseStyles: ViewStyle | TextStyle | ImageStyle = {
   padding: 10,
-  borderWidth: 1,
+  paddingLeft: 12,
   height: 44,
 
+  borderWidth: 1,
   borderRadius: 4,
 
   flexDirection: "row",
@@ -144,12 +145,10 @@ const styles = StyleSheet.create({
   showChooseValueBox: {
     ...showChooseValueBoxBaseStyles,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
-    gap: 8,
   },
   showChooseValueBoxDisabled: {
     ...showChooseValueBoxBaseStyles,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
-    gap: 8,
     backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
   },
   showChooseValueBoxFocus: {
@@ -158,12 +157,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderColor: `#000000`,
-    gap: 8,
   },
   valueBoxLeft: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    gap: 8,
+    gap: 12,
     flexShrink: 1,
     overflow: "hidden",
     alignItems: "center",
