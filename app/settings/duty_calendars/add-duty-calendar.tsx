@@ -2,6 +2,7 @@ import { FormInput } from "@/components/FormInput";
 import { FormMultiSelect } from "@/components/FormMultiSelect";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelect } from "@/components/FormSelect";
+import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
@@ -56,7 +57,7 @@ export default function AddDutyCalendar() {
   const dutyTypeOptions = dutyTypes.map((dutyType) => ({ value: dutyType.id, label: dutyType.name }));
 
   // form and define handler
-  const { control, handleSubmit, watch } = useForm<CreateItem>({ defaultValues: {} });
+  const { control, handleSubmit, watch , setValue} = useForm<CreateItem>({ defaultValues: {} });
   const { session } = useSession();
   const router = useRouter();
 
@@ -67,25 +68,26 @@ export default function AddDutyCalendar() {
         startTime: moment(data.startTime).format("HH:mm:ss"),
         endTime: moment(data.startTime).format("HH:mm:ss"),
       };
+      console.log("bodyData", bodyData);
 
-      const token = `Bearer ${session}` ?? "xxx";
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = "/duty-calendars";
-      const url = `${baseUrl}${endpoint}`;
+      // const token = `Bearer ${session}` ?? "xxx";
+      // const baseUrl = "http://13.228.145.165:8080/api/v1";
+      // const endpoint = "/duty-calendars";
+      // const url = `${baseUrl}${endpoint}`;
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        body: JSON.stringify(bodyData),
-        credentials: "include",
-      });
-      const responseJson = await response.json();
+      // const response = await fetch(url, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: token },
+      //   body: JSON.stringify(bodyData),
+      //   credentials: "include",
+      // });
+      // const responseJson = await response.json();
 
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Thành công");
-      } else {
-        MyToast.error(responseJson.error);
-      }
+      // if (responseJson.statusCode === 200) {
+      //   MyToast.success("Thành công");
+      // } else {
+      //   MyToast.error(responseJson.error);
+      // }
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
@@ -177,19 +179,24 @@ export default function AddDutyCalendar() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormSelect
-          useControllerProps={{ control: control, name: "date" }}
+        <FormSelectV2
+          useControllerProps={{ control: control, name: "date", defaultValue: 1 }}
           options={holidayOptions}
           label="Ngày trực"
           required
           placeholder="Chọn ngày trong danh sách"
+          onSelect={(option)=>{
+            setValue('salaryCoefficientTypeId',1)
+            console.log('SalaryCoefTypeCurrentValue: ', watch('salaryCoefficientTypeId'))
+          }}
         />
-        <FormSelect
+        <FormSelectV2
           useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
           options={salaryCoefficientTypeOptions}
           label="Loại ngoài giờ"
           required
           placeholder="Chọn loại ngoài giờ"
+          disabled
         />
         <FormSelect
           useControllerProps={{ control: control, name: "dutyTypeId" }}
