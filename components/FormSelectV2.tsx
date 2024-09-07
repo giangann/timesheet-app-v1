@@ -72,7 +72,11 @@ function RawFormSelectV2<T extends FieldValues>({
             {label}
           </NunitoText>
         )}
-        {required && <NunitoText style={{ color: "red" }}>*</NunitoText>}
+        {required && (
+          <NunitoText type="body1" style={{ color: "red" }}>
+            *
+          </NunitoText>
+        )}
       </View>
 
       <View>
