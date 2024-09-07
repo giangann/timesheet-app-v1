@@ -1,18 +1,16 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { FormPickTime } from "@/components/FormPickTime";
-import { FormSelect } from "@/components/FormSelect";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
+import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { getDayOfWeekNameInVietnamese } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type CreateItem = {
   dutyTypeId: number;
@@ -108,24 +106,24 @@ export default function AddDutyCalendar() {
       };
       console.log("bodyData", bodyData);
 
-      // const token = `Bearer ${session}` ?? "xxx";
-      // const baseUrl = "http://13.228.145.165:8080/api/v1";
-      // const endpoint = "/duty-calendars";
-      // const url = `${baseUrl}${endpoint}`;
+      const token = `Bearer ${session}` ?? "xxx";
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = "/duty-calendars";
+      const url = `${baseUrl}${endpoint}`;
 
-      // const response = await fetch(url, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json", Authorization: token },
-      //   body: JSON.stringify(bodyData),
-      //   credentials: "include",
-      // });
-      // const responseJson = await response.json();
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: JSON.stringify(bodyData),
+        credentials: "include",
+      });
+      const responseJson = await response.json();
 
-      // if (responseJson.statusCode === 200) {
-      //   MyToast.success("Thành công");
-      // } else {
-      //   MyToast.error(responseJson.error);
-      // }
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.error);
+      }
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
@@ -245,14 +243,14 @@ export default function AddDutyCalendar() {
         <FormPickTime
           useControllerProps={{ control: control, name: "startTime" }}
           label="Giờ bắt đầu trực"
+          placeholder="Chọn giờ"
           required
-          leftIconImage={LeaveTypeIconLeft}
         />
         <FormPickTime
           useControllerProps={{ control: control, name: "endTime" }}
           label="Giờ kết thúc trực"
+          placeholder="Chọn giờ"
           required
-          leftIconImage={LeaveTypeIconLeft}
         />
         {/* Add more FormInput components as needed */}
       </ScrollView>

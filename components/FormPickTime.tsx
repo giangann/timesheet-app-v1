@@ -1,17 +1,18 @@
-import { Image, ImageStyle, StyleSheet, Text, TextStyle, View, ViewStyle, Pressable } from "react-native";
-import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useState } from "react";
-import moment from "moment";
-import { NunitoText } from "./text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import moment from "moment";
+import { useState } from "react";
+import { FieldValues, UseControllerProps, useController } from "react-hook-form";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { NunitoText } from "./text/NunitoText";
 
 type FormPickTimeProps<T extends FieldValues> = {
   useControllerProps: UseControllerProps<T>;
   placeholder?: string;
   label?: string;
   required?: boolean;
-  leftIconImage: any;
+  leftIcon?: React.ReactNode;
   timeFormat?: string;
   locale?: string;
 };
@@ -20,7 +21,7 @@ export function FormPickTime<T extends FieldValues>({
   useControllerProps,
   label,
   required,
-  leftIconImage,
+  leftIcon = <MaterialCommunityIcons name="timer-cog-outline" size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />,
   placeholder = "Select Date",
   timeFormat = "HH:mm",
   locale = "en",
@@ -58,7 +59,7 @@ export function FormPickTime<T extends FieldValues>({
       <Pressable onPress={onToggleShowDatePicker} accessible accessibilityLabel="Open date picker">
         <View style={styles.showDateBox}>
           {/* left icon */}
-          <Image source={leftIconImage} style={imageStyles.icon} />
+          {leftIcon}
 
           {/* display date */}
           <NunitoText type="body3" style={value ? null : styles.placeholderText}>
