@@ -1,8 +1,9 @@
-import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { View, StyleSheet, Pressable, ViewStyle, TextStyle, ImageStyle } from "react-native";
-import { NunitoText } from "./text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { useState } from "react";
+import Entypo from "@expo/vector-icons/Entypo";
+import { memo, useMemo, useState } from "react";
+import { FieldValues, UseControllerProps, useController } from "react-hook-form";
+import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { NunitoText } from "./text/NunitoText";
 
 type TOption = {
   label: string;
@@ -15,28 +16,40 @@ type Props<T extends FieldValues> = {
   required?: boolean;
   error?: string;
   disabled?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  value?: TOption["value"];
   options?: TOption[];
   onSelect?: (option: TOption) => void;
 } & {
   useControllerProps: UseControllerProps<T>;
 };
 
-export function FormSelectV2<T extends FieldValues>({
+function RawFormSelectV2<T extends FieldValues>({
   label,
   placeholder,
   required,
   error,
   disabled,
+  leftIcon = <Entypo name="list" size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />,
+  rightIcon,
+  value,
   options,
   onSelect,
   useControllerProps,
 }: Props<T>) {
   const [openModal, setOpenModal] = useState(false);
-  const [labelOfSelectedValue, setLabelOfSelectedValue] = useState<TOption["label"] | null>(null); // ts lookup type
   const onToggleOpenModal = () => setOpenModal(!openModal);
 
   const { field } = useController(useControllerProps);
   const { value: fieldValue, onChange } = field;
+
+  const labelDisplay = useMemo(() => options?.filter((opt) => opt.value === fieldValue)?.[0]?.label, [fieldValue]);
+
+  if (useControllerProps.name === "salaryCoefficientTypeId") {
+    console.log(useControllerProps.name, "re-render");
+    console.log("salaryCoefficientTypeId", fieldValue);
+  }
 
   const isEmptyOpt = !options || options?.length === 0;
 
@@ -45,51 +58,70 @@ export function FormSelectV2<T extends FieldValues>({
 
     onChange(option.value);
 
-    setLabelOfSelectedValue(option.label);
-
     setOpenModal(false);
   };
 
   let showChooseValueBoxStyle: any;
   if (disabled) showChooseValueBoxStyle = styles.showChooseValueBoxDisabled;
-  if (!disabled && !openModal) showChooseValueBoxStyle = styles.showChooseValueBox
-  if (!disabled && openModal) showChooseValueBoxStyle = styles.showChooseValueBoxFocus
+  if (!disabled && !openModal) showChooseValueBoxStyle = styles.showChooseValueBox;
+  if (!disabled && openModal) showChooseValueBoxStyle = styles.showChooseValueBoxFocus;
 
   return (
     <View style={styles.container}>
-      <NunitoText type="body2">Base Select</NunitoText>
-      <Pressable onPress={onToggleOpenModal} disabled={disabled}>
-        <View style={showChooseValueBoxStyle}>
-          {!labelOfSelectedValue && (
-            <NunitoText type="body3" style={{ opacity: 0.5 }}>
-              {placeholder}
-            </NunitoText>
-          )}
-          {labelOfSelectedValue && <NunitoText type="body3">{labelOfSelectedValue}</NunitoText>}
-        </View>
-      </Pressable>
+      {/* label */}
+      <View style={styles.labelWrapper}>
+        {label && (
+          <NunitoText type="body2" style={{ marginRight: 6 }}>
+            {label}
+          </NunitoText>
+        )}
+        {required && <NunitoText style={{ color: "red" }}>*</NunitoText>}
+      </View>
 
-      {openModal && (
-        <View style={styles.modal}>
-          {isEmptyOpt && (
-            <View style={styles.emptyBox}>
-              <NunitoText type="body3">No options</NunitoText>
+      <View>
+        {/* select button*/}
+        <Pressable onPress={onToggleOpenModal} disabled={disabled}>
+          <View style={showChooseValueBoxStyle}>
+            <View style={styles.valueBoxLeft}>
+              {/* left icon */}
+              {leftIcon}
+
+              {/* label display */}
+              {!labelDisplay && (
+                <NunitoText type="body3" style={{ opacity: 0.5 }}>
+                  {placeholder}
+                </NunitoText>
+              )}
+              {labelDisplay && <NunitoText type="body3">{labelDisplay}</NunitoText>}
             </View>
-          )}
 
-          {!isEmptyOpt &&
-            options.map((opt) => (
-              <Pressable key={opt.value} onPress={() => onSelectOpt(opt)}>
-                <View style={opt.value === fieldValue ? styles.optionBoxSelected : styles.optionBox}>
-                  <NunitoText type="body3">{opt.label}</NunitoText>
-                </View>
-              </Pressable>
-            ))}
-        </View>
-      )}
+            {/* right icon */}
+            {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={`#000000${OPACITY_TO_HEX["50"]}`} />}
+          </View>
+        </Pressable>
+        {openModal && (
+          <View style={styles.modal}>
+            {isEmptyOpt && (
+              <View style={styles.emptyBox}>
+                <NunitoText type="body3">No options</NunitoText>
+              </View>
+            )}
+
+            {!isEmptyOpt &&
+              options.map((opt) => (
+                <Pressable key={opt.value} onPress={() => onSelectOpt(opt)}>
+                  <View style={opt.value === fieldValue ? styles.optionBoxSelected : styles.optionBox}>
+                    <NunitoText type="body3">{opt.label}</NunitoText>
+                  </View>
+                </Pressable>
+              ))}
+          </View>
+        )}
+      </View>
     </View>
   );
 }
+export const FormSelectV2 = memo(RawFormSelectV2) as typeof RawFormSelectV2;
 
 const showChooseValueBoxBaseStyles: ViewStyle | TextStyle | ImageStyle = {
   padding: 10,
@@ -104,7 +136,14 @@ const showChooseValueBoxBaseStyles: ViewStyle | TextStyle | ImageStyle = {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    gap: 6,
+  },
+  labelWrapper: {
+    flexDirection: "row",
+    alignContent: "flex-start",
+    alignItems: "center",
+  },
   showChooseValueBox: {
     ...showChooseValueBoxBaseStyles,
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
@@ -124,6 +163,15 @@ const styles = StyleSheet.create({
     borderColor: `#000000`,
     gap: 8,
   },
+  valueBoxLeft: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    gap: 8,
+    flexShrink: 1,
+    overflow: "hidden",
+    alignItems: "center",
+  },
+
   modal: {
     padding: 10,
     backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
@@ -135,10 +183,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
 
-    gap: 12,
+    gap: 0,
   },
   emptyBox: {},
-  optionBox: {},
+  optionBox: {
+    paddingLeft: 10,
+    paddingVertical: 10,
+    borderRadius: 4,
+  },
   optionBoxSelected: {
     paddingLeft: 10,
     paddingVertical: 10,
