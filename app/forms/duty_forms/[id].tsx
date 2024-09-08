@@ -1,53 +1,44 @@
-import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { View, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-type TLeaveFormDetail = {
-  id: number;
-  userIdentifyCard: string;
-  userName: string;
-  startDate: string;
-  endDate: string;
+type TDutyFormDetail = {
+  dutyCalendar: {
+    id: number;
+    startTime: string;
+    endTime: string;
+    date: string;
+    salaryCoefficientTypeId: number;
+    dutyTypeId: number;
+  };
+  attachFile: {
+    id: number;
+    name: string;
+    type: string;
+    path: string;
+    url: string;
+  };
+  userApproveIdentifyCard: string;
   note: string;
-  leaveFormType: string;
-  attachFilePath: string;
-  status: number;
-  userRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string;
-  };
 };
 
 export default function DetailForm() {
-  const [form, setForm] = useState<TLeaveFormDetail | null>(null);
-  const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
-  const [openCfRejectModal, setOpenCfRejectModal] = useState(false);
+  const [form, setForm] = useState<TDutyFormDetail | null>(null);
 
-  const { session } = useSession();
+  const { session, userInfo } = useSession();
   const local = useLocalSearchParams();
   const formId = local.id;
-
-  const fetchLeaveFormDetail = async (formId: string) => {
+  const fetchDutyFormDetail = async (formId: string) => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = `/leave-forms/${formId}`;
+    const endpoint = `/duty-forms/${formId}`;
     const url = `${baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
@@ -56,9 +47,8 @@ export default function DetailForm() {
       credentials: "include",
     });
     const responseJson = await response.json();
-
     if (responseJson.statusCode === 200) {
-      setForm(responseJson.data.leaveFormDetail);
+      setForm(responseJson.data.dutyForm);
     } else {
       MyToast.error(responseJson.error);
     }
@@ -66,7 +56,7 @@ export default function DetailForm() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchLeaveFormDetail(formId as string);
+      fetchDutyFormDetail(formId as string);
     }, [formId])
   );
 
@@ -81,18 +71,17 @@ export default function DetailForm() {
       {form && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
-            <Item title="Nhân viên" content={form.userName} />
-            <Item title="Chức vụ" content={form.userRole.name} />
-            <Item title="Phòng" content={form.userTeam.name} />
-            <Item title="Liên hệ (phòng)" content={form.userTeam.hotline} />
+            <Item title="Nhân viên" content={userInfo?.name} />
+            <Item title="Chức vụ" content={userInfo?.roleName} />
+            <Item title="Ngày trực" content={`${moment(form.dutyCalendar.date).format("DD/MM/YYYY")}`} />
             <Item
-              title="Ngày xin nghỉ"
-              content={`${moment(form.startDate).format("DD/MM/YYYY <HH:mm>")} --> ${moment(form.endDate).format("DD/MM/YYYY <HH:mm>")}`}
+              title="Giờ trực"
+              content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`}
             />
-            <Item title="Loại nghỉ" content={form.leaveFormType} />
+            <Item title="Loại trục" content={"Loại trực placeholder"} />
             <Item title="Ghi chú" content={form.note} />
             {/* Attach Image */}
-            <AttachImageFile path={form.attachFilePath} />
+            <AttachImageFile path={form.attachFile.url} />
           </ScrollView>
         </View>
       )}
@@ -100,7 +89,7 @@ export default function DetailForm() {
   );
 }
 
-const Item = ({ title, content }: { title: string; content: string }) => {
+const Item = ({ title, content }: { title: string; content: string | undefined }) => {
   return (
     <View style={styles.item}>
       <NunitoText type="body3" style={{ opacity: 0.5 }}>

@@ -24,6 +24,7 @@ export default function FormLayout() {
       <Stack.Screen name="overtime_forms/index" options={{ title: "Đơn tăng ca" }} />
 
       <Stack.Screen name="duty_forms/index" options={{ title: "Đơn trực" }} />
+      <Stack.Screen name="duty_forms/[id]" options={{ title: "Chi tiết đơn trực" }} />
     </Stack>
   );
 }

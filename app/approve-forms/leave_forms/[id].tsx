@@ -69,7 +69,7 @@ export default function DetailForm() {
         }
         MyToast.success("Thành công");
       } else {
-        MyToast.error(responseJson.message);
+        MyToast.error(responseJson.error);
       }
     } catch (error: any) {
       MyToast.error(error.message);
@@ -105,7 +105,7 @@ export default function DetailForm() {
         }
         MyToast.success("Thành công");
       } else {
-        MyToast.error(responseJson.message);
+        MyToast.error(responseJson.error);
       }
     } catch (error: any) {
       MyToast.error(error.message);
@@ -133,7 +133,7 @@ export default function DetailForm() {
     if (responseJson.statusCode === 200) {
       setForm(responseJson.data.leaveFormDetail);
     } else {
-      MyToast.error(responseJson.message);
+      MyToast.error(responseJson.error);
     }
   };
 
