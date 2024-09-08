@@ -7,14 +7,11 @@ import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type CreateItemForm = {
   startDate: string | Date;
