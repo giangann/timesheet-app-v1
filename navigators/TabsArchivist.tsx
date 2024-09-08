@@ -1,8 +1,12 @@
+import { ROLE_CODE } from "@/constants/Misc";
+import { useSession } from "@/contexts/ctx";
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 export const TabsArchivist = () => {
+  const { userInfo } = useSession();
+
   return (
     <Tabs
       screenOptions={{
@@ -85,6 +89,8 @@ export const TabsArchivist = () => {
           ),
           title: "Cài đặt",
         }}
+        redirect={userInfo?.roleCode !== ROLE_CODE.ARCHIVIST}
+
       />
     </Tabs>
   );

@@ -1,8 +1,11 @@
+import { ROLE_CODE } from "@/constants/Misc";
+import { useSession } from "@/contexts/ctx";
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 export const TabsDirector = () => {
+  const { userInfo } = useSession();
   return (
     <Tabs
       screenOptions={{
@@ -85,6 +88,7 @@ export const TabsDirector = () => {
           ),
           title: "Phê duyệt đơn từ",
         }}
+        redirect={userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR}
       />
     </Tabs>
   );
