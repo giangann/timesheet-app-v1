@@ -37,7 +37,7 @@ type TLeaveForm = {
   };
 };
 
-export default function LeaveForms() {
+export default function ApproveLeaveForms() {
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
   const { session } = useSession();
 
