@@ -1,14 +1,13 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, FORM_STATUS_NAME, UNIT_DIMENSION } from "@/constants/Misc";
+import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { BadgeStatus } from "@/ui/BadgeStatus";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Button, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
@@ -43,7 +42,6 @@ type TLeaveForm = {
 
 export default function LeaveForms() {
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
-  const router = useRouter();
   const { session } = useSession();
 
   const fetchLeaveForms = async () => {
@@ -51,7 +49,7 @@ export default function LeaveForms() {
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
     const endpoint = "/leave-forms/filter/user-approve";
-    const queryString = `?page=0&size=10&sort=endDate,desc`;
+    const queryString = `?page=0&size=20&sort=endDate,desc`;
     const url = `${baseUrl}${endpoint}${queryString}`;
 
     const response = await fetch(url, {
@@ -76,12 +74,10 @@ export default function LeaveForms() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={[styles.listBox, { marginTop: 32 }]}>
-        <Pressable onPress={() => router.push("/forms/leave_forms/create-leave-form")}>
-          <NunitoText>Apply</NunitoText>
-        </Pressable>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <List leaveForms={leaveForms} />
       </ScrollView>
+      <ApplyNewForm/>
     </View>
   );
 }
@@ -173,6 +169,18 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
   );
 };
 
+const ApplyNewForm = () => {
+  const router = useRouter();
+  return (
+    <TouchableOpacity onPress={() => router.push("/forms/leave_forms/create-leave-form")} activeOpacity={0.8} style={styles.buttonContainer}>
+      <View style={styles.button}>
+        <NunitoText type="body3" style={{ color: "white" }}>
+          Tạo đơn mới
+        </NunitoText>
+      </View>
+    </TouchableOpacity>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -191,6 +199,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     gap: 4,
     marginBottom: 20,
+  },
+  scrollContent: {
+    gap: 20,
+    paddingBottom: 100, // Space at the bottom to prevent overlap with the button
   },
   listBox: {
     paddingBottom: 16,
@@ -237,5 +249,20 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     borderBottomEndRadius: 6,
     borderBottomRightRadius: 8,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: "white", // Optional: To give the button a distinct background
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0B3A82",
+    height: 44,
+    borderRadius: 4,
   },
 });
