@@ -1,4 +1,4 @@
-import { loginByCredentials, verifyToken, TCredentials, TUserInfo } from "@/api/auth";
+import { TCredentials, TUserInfo, loginByCredentials, verifyToken } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
 import { createContext, useContext, type PropsWithChildren } from "react";
 
@@ -32,7 +32,7 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
-  const userInfo = null;
+  const [[_, userInfo], setUserInfo] = useStorageState("user");
 
   const signIn = async (credentials: TCredentials) => {
     const responseJson = await loginByCredentials(credentials);
@@ -47,12 +47,20 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   const signOut = () => {
     setSession(null);
+    setUserInfo(null);
   };
 
   const verifySessionToken = async (token: string) => {
     const responseJson = await verifyToken(token);
 
-    if (responseJson.statusCode === 200) return true;
+    if (responseJson.statusCode === 200) {
+      const userInfo = responseJson.data.user;
+
+      // Ensure the userInfo is saved as a string in storage
+      setUserInfo(JSON.stringify(userInfo));
+
+      return true;
+    }
     return false;
   };
 
@@ -63,7 +71,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         signOut,
         verifySessionToken,
         session,
-        userInfo,
+        userInfo: typeof userInfo === "string" && userInfo ? JSON.parse(userInfo) : userInfo,
         isLoading,
       }}
     >
