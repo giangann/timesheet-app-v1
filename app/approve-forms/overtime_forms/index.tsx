@@ -2,10 +2,10 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { StyleSheet, View } from "react-native";
-export default function LeaveForms() {
+export default function ApproveOvertimeForm() {
   return (
     <View style={styles.container}>
-      <NunitoText>Duty forms</NunitoText>
+      <NunitoText>Approve Overtime Form</NunitoText>
     </View>
   );
 }
