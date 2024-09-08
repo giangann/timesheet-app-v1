@@ -35,14 +35,10 @@ export default function AppLayout() {
   if (!session) {
     return <Redirect href="/auth/login" />;
   }
-  if (!userInfo) {
-    return <Redirect href="/auth/login" />;
-  }
 
   let tabs: React.ReactNode;
-  const { roleCode } = userInfo;
 
-  switch (roleCode) {
+  switch (userInfo?.roleCode) {
     case ROLE_CODE.ARCHIVIST:
       tabs = <TabsArchivist />;
       break;
