@@ -19,7 +19,7 @@ type TDutyCalendar = {
   dayOfWeek: string;
 };
 export default function DutyCalendarList() {
-  const [dutyCalendars, setDutyTypes] = useState<TDutyCalendar[]>([]);
+  const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
   const { session } = useSession();
 
   const router = useRouter();
@@ -40,7 +40,7 @@ export default function DutyCalendarList() {
     const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
       const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
-      setDutyTypes(dutyCalendarsSorted);
+      setDutyCalendars(dutyCalendarsSorted);
     } else {
       MyToast.error(responseJson.error);
     }

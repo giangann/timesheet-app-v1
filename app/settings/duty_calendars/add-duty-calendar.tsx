@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
 });
 
 type TOption = {
-  value: number | string;
+  value: string | number | boolean;
   label: string;
 };
 
