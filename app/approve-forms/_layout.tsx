@@ -18,11 +18,11 @@ export default function ApproveFormLayout() {
       }}
     >
       <Stack.Screen name="leave_forms/index" options={{ title: "Phê duyệt đơn xin nghỉ" }} />
+      <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn" }} />
 
       <Stack.Screen name="overtime_forms/index" options={{ title: "Phê duyệt đơn tăng ca" }} />
 
       <Stack.Screen name="duty_forms/index" options={{ title: "Phê duyệt đơn trực" }} />
-
     </Stack>
   );
 }
