@@ -44,6 +44,7 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">Extra: Logout</ThemedText>
         <Button onPress={signOut} title="Logout" />
       </ThemedView>
+      <ThemedView style={{ height: 100 }} />
     </ParallaxScrollView>
   );
 }
