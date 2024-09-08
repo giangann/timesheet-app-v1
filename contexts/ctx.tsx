@@ -1,4 +1,4 @@
-import { loginByCredentials, verifyToken, TCredentials } from "@/api/auth";
+import { loginByCredentials, verifyToken, TCredentials, TUserInfo } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
 import { createContext, useContext, type PropsWithChildren } from "react";
 
@@ -7,12 +7,14 @@ const AuthContext = createContext<{
   signOut: () => void;
   verifySessionToken: (token: string) => Promise<boolean>;
   session?: string | null;
+  userInfo: TUserInfo | null;
   isLoading: boolean;
 }>({
   signIn: () => Promise.resolve(), // Corrected this line
   signOut: () => null,
   verifySessionToken: () => Promise.resolve(false),
   session: null,
+  userInfo: null,
   isLoading: false,
 });
 
@@ -30,6 +32,7 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
+  const userInfo = null;
 
   const signIn = async (credentials: TCredentials) => {
     const responseJson = await loginByCredentials(credentials);
@@ -60,6 +63,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         signOut,
         verifySessionToken,
         session,
+        userInfo,
         isLoading,
       }}
     >

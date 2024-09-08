@@ -1,3 +1,5 @@
+import { ROLE_CODE } from "@/constants/Misc";
+
 export type TCredentials = {
   identifyCard: string;
   password: string;
@@ -9,6 +11,6 @@ export type TUserInfo = {
   identifyCard: string;
   name: string;
   phone: string;
-  roleCode: string;
+  roleCode: ROLE_CODE;
   roleName: string;
 };
