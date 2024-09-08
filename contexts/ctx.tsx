@@ -41,7 +41,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       console.log("login success");
       setSession(responseJson.data.token);
     } else {
-      throw new Error(responseJson.message);
+      throw new Error(responseJson.error);
     }
   };
 

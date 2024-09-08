@@ -1,9 +1,6 @@
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { TabsArchivist } from "@/navigators/TabsArchivist";
-import { TabsCommonUser } from "@/navigators/TabsCommonUser";
-import { TabsDirector } from "@/navigators/TabsDIrector";
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
 import { Redirect, Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -36,24 +33,113 @@ export default function AppLayout() {
     return <Redirect href="/auth/login" />;
   }
 
-  let tabs: React.ReactNode;
-
-  switch (userInfo?.roleCode) {
-    case ROLE_CODE.ARCHIVIST:
-      tabs = <TabsArchivist />;
-      break;
-    case ROLE_CODE.TEAM_DIRECTOR:
-      tabs = <TabsDirector />;
-      break;
-    default:
-      tabs = <TabsCommonUser />;
-      break;
-  }
-
   // This layout can be deferred because it's not the root layout.
   return (
     <>
-      {tabs}
+      <Tabs
+        screenOptions={{
+          tabBarStyle: {
+            backgroundColor: "#0B3A82",
+            position: "absolute",
+            bottom: 20,
+            justifyContent: "center",
+            alignSelf: "center",
+            height: 63,
+            marginHorizontal: 80,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            paddingBottom: 8,
+            borderRadius: 40,
+            borderWidth: 1,
+            borderTopWidth: 1,
+            borderColor: "#0B3A82",
+            borderTopColor: "#333",
+          },
+          tabBarShowLabel: false,
+          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: "#0B3A82",
+
+          headerTitleAlign: "center",
+          headerTintColor: "white",
+          headerStyle: {
+            backgroundColor: "#0B3A82",
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                <SimpleLineIcons name="home" size={18} color={color} />
+              </View>
+            ),
+            title: "Trang chủ",
+          }}
+        />
+        <Tabs.Screen
+          name="form"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                <AntDesign name="form" size={18} color={color} />
+                {/* <SimpleLineIcons name="paper-clip" size={18} color={color} /> */}
+              </View>
+            ),
+            title: "Đơn của tôi",
+          }}
+        />
+        <Tabs.Screen
+          name="setting"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
+                <SimpleLineIcons name="settings" size={18} color={color} />
+              </View>
+            ),
+            title: "Cài đặt",
+            href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
+          }}
+        />
+        <Tabs.Screen
+          name="approveForm"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
+                <SimpleLineIcons name="social-twitter" size={18} color={color} />
+              </View>
+            ),
+            title: "Phê duyệt đơn",
+            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/approveForm",
+          }}
+        />
+      </Tabs>
       <StatusBar style="inverted" />
     </>
   );
