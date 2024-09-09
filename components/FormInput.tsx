@@ -37,7 +37,7 @@ function RawFormInput<T extends FieldValues>({
   return (
     <View>
       {/* label */}
-      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center", marginBottom: 6 }}>
+      <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center" }}>
         {label && (
           <NunitoText type="body2" style={{ marginRight: 6 }}>
             {label}

@@ -9,8 +9,10 @@ import Feather from "@expo/vector-icons/Feather";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
+import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { NunitoText } from "@/components/text/NunitoText";
 
 const LoginBanner = require("@/assets/images/banner-login.png");
 
@@ -44,67 +46,85 @@ const Login = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log("Login Screen Rendered !");
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
+
   return (
-    <View style={{ padding: 16 }}>
-      <View style={{ height: 48 }} />
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }} keyboardVerticalOffset={800}>
+        <View style={styles.container}>
+          <View style={styles.logoWrapper}>
+            <Image source={LoginBanner} style={{ opacity: 0.5 }} />
+          </View>
 
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image source={LoginBanner} style={{ opacity: 0.5 }} />
-      </View>
+          <View style={styles.formWrapper}>
+            <NunitoText style={{ textAlign: "center" }}>Đăng nhập</NunitoText>
 
-      <View style={{ height: 32 }} />
-
-      <Text style={{ fontFamily: "Nunito", fontWeight: 800, fontSize: 16, alignSelf: "center" }}>Đăng nhập</Text>
-
-      {/*  */}
-      <View style={{ height: 16 }} />
-
-      {/* Input_1 - Identify Card  */}
-      <FormInput
-        formInputProps={{ control: control, name: "identifyCard" }}
-        placeholder="Nhập số CCCD..."
-        leftIcon={<AntDesign name="idcard" size={18} color={Colors.light.inputIconNone} />}
-      />
-      {/* Input_2 - Password */}
-      <FormInput
-        formInputProps={{ control: control, name: "password" }}
-        secureTextEntry={!showPw}
-        placeholder="Nhập mật khẩu..."
-        leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
-        rightIconEl={
-          <Pressable onPress={onToggleShowPw}>
-            <View style={{ padding: 8 }}>
-              <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
+            <View style={styles.fieldWrapper}>
+              {/* Input_1 - Identify Card  */}
+              <FormInput
+                formInputProps={{ control: control, name: "identifyCard" }}
+                placeholder="Nhập số CCCD..."
+                leftIcon={<AntDesign name="idcard" size={18} color={Colors.light.inputIconNone} />}
+              />
+              {/* Input_2 - Password */}
+              <FormInput
+                formInputProps={{ control: control, name: "password" }}
+                secureTextEntry={!showPw}
+                placeholder="Nhập mật khẩu..."
+                leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
+                rightIconEl={
+                  <Pressable onPress={onToggleShowPw}>
+                    <View style={{ padding: 8 }}>
+                      <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
+                    </View>
+                  </Pressable>
+                }
+              />
             </View>
-          </Pressable>
-        }
-      />
 
-      {/*  */}
-      <View style={{ height: 16 }} />
-      {/* Button - Login */}
-      <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onLogin)} disabled={isSubmitting}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#0B3A82",
-            height: 44,
-            width: "100%",
-            borderRadius: 4,
-            gap: 8,
-          }}
-        >
-          {isSubmitting && <Progress.Circle indeterminate size={14} />}
-          <Text style={{ fontFamily: "Nunito", color: "white", fontWeight: 600, fontSize: 14 }}>Đăng nhập</Text>
+            {/* Button - Login */}
+            <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onLogin)} disabled={isSubmitting}>
+              <View style={styles.btnInner}>
+                {isSubmitting && <Progress.Circle indeterminate size={14} />}
+                <NunitoText type="body3" lightColor="white">
+                  Đăng nhập
+                </NunitoText>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-      </TouchableOpacity>
-    </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    gap: 24,
+    // flex: 1,
+  },
+  logoWrapper: {
+    alignItems: "center",
+    marginTop: 32,
+  },
+  formWrapper: {
+    gap: 12,
+  },
+  fieldWrapper: {
+    gap: 8,
+  },
+  btnInner: {
+    height: 44,
+    width: "100%",
+    borderRadius: 4,
+    gap: 8,
+
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0B3A82",
+  },
+});

@@ -1,8 +1,8 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { SessionProvider } from "@/contexts/ctx";
 import { useColorScheme } from "@/hooks/useColorScheme.web";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { RootSiblingParent } from "react-native-root-siblings";
 
@@ -26,12 +26,12 @@ export default function Root() {
     <RootSiblingParent>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <SessionProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="forms" options={{ headerShown: false }} />
-            <Stack.Screen name="settings" options={{ headerShown: false }} />
-            <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
-          </Stack>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="forms" options={{ headerShown: false }} />
+              <Stack.Screen name="settings" options={{ headerShown: false }} />
+              <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
+            </Stack>
         </SessionProvider>
       </ThemeProvider>
     </RootSiblingParent>
