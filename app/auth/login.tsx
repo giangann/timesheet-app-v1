@@ -1,5 +1,6 @@
 import { TCredentials } from "@/api/auth";
 import { FormInput } from "@/components/FormInput";
+import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
@@ -9,10 +10,20 @@ import Feather from "@expo/vector-icons/Feather";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Keyboard, Pressable, SafeAreaView, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import * as Progress from "react-native-progress";
-import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { NunitoText } from "@/components/text/NunitoText";
 
 const LoginBanner = require("@/assets/images/banner-login.png");
 
@@ -126,13 +137,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnInner: {
-    height: 44,
+    backgroundColor: "#0B3A82",
     width: "100%",
+    height: 44,
     borderRadius: 4,
-    gap: 8,
 
+    gap: 8,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0B3A82",
   },
 });
