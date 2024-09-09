@@ -22,7 +22,8 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.giangann229.timesheetappv1"
     },
     "web": {
       "bundler": "metro",
