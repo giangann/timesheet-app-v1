@@ -5,9 +5,6 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Button, ScrollView, StyleSheet, View } from "react-native";
-const AddNewIconImage = require("@/assets/images/add-new-icon.png");
-const FilterIconImage = require("@/assets/images/filter-icon.png");
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TLeaveForm = {
   id: number;
@@ -70,7 +67,7 @@ export default function LeaveForms() {
 
   return (
     <View style={styles.container}>
-      <Button title="Tạo đơn xin nghỉ" onPress={() => router.push("/forms/leave_forms/create-leave-form")} />
+      <Button title="Tạo đơn tăng ca" onPress={() => router.push("/forms/overtime_forms/create-overtime-form")} />
       <ScrollView contentContainerStyle={[styles.listBox, { marginTop: 32 }]}>
         {leaveForms.map((leaveForm) => (
           <Button

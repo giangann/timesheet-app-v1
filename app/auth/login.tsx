@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   fieldWrapper: {
-    gap: 8,
+    gap: 0,
   },
   btnInner: {
     backgroundColor: "#0B3A82",

@@ -97,7 +97,7 @@ export default function CreateHoliday() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Nhập tên ngày nghỉ..." />
+        <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
 
         <FormInput formInputProps={{ control: control, name: "name" }} label="Tên ngày nghỉ" required placeholder="Nhập tên ngày nghỉ..." />
 
