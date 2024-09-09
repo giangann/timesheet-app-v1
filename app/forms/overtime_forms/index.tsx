@@ -40,8 +40,8 @@ export default function LeaveForms() {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = "/leave-forms/filter";
-    const queryString = `?page=0&size=10&sort=endDate,desc`;
+    const endpoint = "/overtime-forms/filter";
+    const queryString = `?page=0&size=10&sort=date,desc`;
     const url = `${baseUrl}${endpoint}${queryString}`;
 
     const response = await fetch(url, {
