@@ -49,7 +49,7 @@ const Login = () => {
       MyToast.success("Đăng nhập thành công");
       router.replace("/");
     } catch (error: any) {
-      if (error instanceof Error) MyToast.error(error.message + "androidandroidandroidandroidandroidandroidandroidandroid");
+      if (error instanceof Error) MyToast.error(error.message);
       else MyToast.error(JSON.stringify(error));
     }
   };
