@@ -35,7 +35,7 @@ function RawFormInput<T extends FieldValues>({
   const isShowRightClearIcon = !rightIconEl && value !== "" && value !== undefined;
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* label */}
       <View style={{ flexDirection: "row", alignContent: "flex-start", alignItems: "center" }}>
         {label && (
@@ -112,5 +112,11 @@ const inputStyles = StyleSheet.create({
   error: {
     ...baseInputStyle,
     borderColor: `red`,
+  },
+});
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 6,
   },
 });
