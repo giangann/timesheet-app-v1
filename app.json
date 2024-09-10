@@ -46,7 +46,8 @@
           "project": "timesheet-app-v1",
           "organization": "free-tg"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
