@@ -2,7 +2,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useRouter } from "expo-router";
-import { Pressable, View, StyleSheet, ScrollView, Image } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 const SettingTeamIconImage = require("@/assets/images/setting-team.png");
 const SettingOvertimeTypeIconImage = require("@/assets/images/setting-overtimetype.png");
 const SettingLeaveTypeIconImage = require("@/assets/images/setting-leavetype.png");
@@ -16,6 +16,17 @@ export default function Settings() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listBox}>
+        {/* Fake error button */}
+        <Pressable
+          onPress={() => {
+            throw new Error("Fake error 1");
+          }}
+          style={{ backgroundColor: "red", padding: 10 }}
+        >
+          <NunitoText>Press to produce error !</NunitoText>
+        </Pressable>
+        {/* Fake error button */}
+
         <Pressable onPress={() => router.push("/settings/teams")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
