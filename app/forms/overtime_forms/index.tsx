@@ -84,7 +84,7 @@ export default function OvertimeForms() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={[styles.listBox, { marginTop: 32 }]}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <List overtimeForms={overtimeForms} />
       </ScrollView>
       <ApplyNewForm />
@@ -139,10 +139,10 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
             <View>
               <View>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {overtimeForm.startTime}
+                  {moment(overtimeForm.date).format("DD/MM/YYYY")}
                 </NunitoText>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {overtimeForm.endTime}
+                  {`${overtimeForm.startTime} - ${overtimeForm.endTime}`}
                 </NunitoText>
               </View>
             </View>
@@ -159,13 +159,16 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
           </NunitoText>
 
           <NunitoText type="body4">
-            <NunitoText type="body2">Người phê duyệt: </NunitoText>
-            {overtimeForm.userApproveName}
-          </NunitoText>
-          <NunitoText type="body4">
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {overtimeForm.note}
           </NunitoText>
+
+          {overtimeForm.approveDate && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
+              {moment(overtimeForm.approveDate).format("DD/MM/YYYY HH:mm")}
+            </NunitoText>
+          )}
         </View>
       )}
 
