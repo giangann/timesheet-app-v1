@@ -2,8 +2,9 @@ import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
@@ -12,12 +13,18 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 type TDutyFormDetail = {
   dutyCalendar: {
-    id: number;
     startTime: string;
     endTime: string;
     date: string;
-    salaryCoefficientTypeId: number;
-    dutyTypeId: number;
+    salaryCoefficientType: {
+      id: number;
+      name: string;
+      coefficient: number;
+    };
+    dutyType: {
+      id: number;
+      name: string;
+    };
   };
   attachFile: {
     id: number;
@@ -28,7 +35,30 @@ type TDutyFormDetail = {
   };
   userApproveIdentifyCard: string;
   note: string;
+
+  userApproveName: string;
+  reason: string | null;
   status: FORM_STATUS;
+  approveDate: string | null;
+
+  userApproveTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+  users: {
+    name: string;
+    identifyCard: string;
+    roleId: number;
+    roleName: string;
+    roleCode: ROLE_CODE;
+  }[];
 };
 
 export default function DetailForm() {
@@ -44,13 +74,13 @@ export default function DetailForm() {
     try {
       const bodyData = {
         status: FORM_STATUS.REJECTED,
-        leaveFormId: parseInt(formId),
+        dutyFormId: parseInt(formId),
         reason: "ok",
       };
       const token = `Bearer ${session}` ?? "xxx";
 
       const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/leave-forms/approve`;
+      const endpoint = `/duty-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
       const response = await fetch(url, {
@@ -80,13 +110,13 @@ export default function DetailForm() {
     try {
       const bodyData = {
         status: FORM_STATUS.ACCEPTED,
-        leaveFormId: parseInt(formId),
+        dutyFormId: parseInt(formId),
         reason: "ok",
       };
       const token = `Bearer ${session}` ?? "xxx";
 
       const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/leave-forms/approve`;
+      const endpoint = `/duty-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
       const response = await fetch(url, {
@@ -150,11 +180,39 @@ export default function DetailForm() {
       {form && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
-            <Item title="Nhân viên" content={userInfo?.name} />
-            <Item title="Chức vụ" content={userInfo?.roleName} />
-            <Item title="Ngày trực" content={`${moment(form.dutyCalendar.date).format("DD/MM/YYYY")}`} />
-            <Item title="Giờ trực" content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`} />
-            <Item title="Loại trục" content={"Loại trực placeholder"} />
+            <BoxStatus status={form.status} approveDate={form.approveDate} />
+
+            {/* CASE 1: */}
+            {form.users.length === 1 && (
+              <>
+                <Item title="Nhân viên" content={`${form.users[0].name} (${form.users[0].roleName})`} />
+                <Item title="Phòng" content={form.userApproveTeam.name} />
+                <Item title="Liên hệ (phòng)" content={form.userApproveTeam.hotline} />
+              </>
+            )}
+
+            {/* CASE 2: */}
+            {form.users.length > 1 && (
+              <Item
+                title="Các thành viên trong đơn:"
+                content={form.users.map((user, index) => `(${index + 1}) ${user.name} (${user.roleName})`).join(", ")}
+              />
+            )}
+
+            <View style={styles.dutyDateTimeContainer}>
+              <View style={styles.dutyDateTimeItem}>
+                <Item title="Ngày trực" content={`${moment(form.dutyCalendar.date).format("DD/MM/YYYY")}`} />
+              </View>
+              <View style={styles.dutyDateTimeItem}>
+                <Item title="Giờ trực" content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`} />
+              </View>
+            </View>
+            <Item title="Loại trực" content={form.dutyCalendar.dutyType.name} />
+            <Item
+              title="Loại ngoài giờ"
+              content={`${form.dutyCalendar.salaryCoefficientType.name} (x${form.dutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}
+            />
+
             <Item title="Ghi chú" content={form.note} />
             {/* Attach Image */}
             <AttachImageFile path={form.attachFile.url} />
@@ -212,7 +270,7 @@ export default function DetailForm() {
   );
 }
 
-const Item = ({ title, content }: { title: string; content: string | undefined }) => {
+const Item = ({ title, content }: { title: string; content: string | undefined | null }) => {
   return (
     <View style={styles.item}>
       <NunitoText type="body3" style={{ opacity: 0.5 }}>
@@ -258,6 +316,14 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 16,
     backgroundColor: "white", // Optional: To give the button a distinct background
+  },
+  dutyDateTimeContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  dutyDateTimeItem: {
+    flexGrow: 1,
+    flexBasis: 1,
   },
   buttonContainer: {
     flexDirection: "row",

@@ -8,7 +8,7 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
