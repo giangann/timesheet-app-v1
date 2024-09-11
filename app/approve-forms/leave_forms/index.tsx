@@ -1,7 +1,8 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -23,17 +24,25 @@ type TLeaveForm = {
   leaveFormTypeName: string;
   status: FORM_STATUS;
   filePath: string;
-  isDeleted: false;
+  isDeleted: boolean;
   userRole: {
     id: number;
-    code: string;
+    code: ROLE_CODE;
     name: string;
   };
   userTeam: {
     id: number;
     name: string;
     code: string | null;
-    hotline: string;
+    hotline: string | null;
+  };
+  userApproveIdentifyCard: string;
+  approveDate: string;
+  reason: string;
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
   };
 };
 
@@ -113,7 +122,7 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
           <View style={styles.userInfo}>
-            <Image source={UserAvatar} style={styles.userAvatar} />
+            <AvatarByRole role={leaveForm.userRole.code} />
             <View style={{ gap: 4 }}>
               <NunitoText type="body3">{leaveForm.userName}</NunitoText>
               <NunitoText type="body4" style={{ opacity: 0.75 }}>
@@ -145,13 +154,15 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
             {leaveForm.leaveFormTypeName}
           </NunitoText>
           <NunitoText type="body4">
-            <NunitoText type="body2">Người phê duyệt: </NunitoText>
-            {leaveForm.userApproveName}
-          </NunitoText>
-          <NunitoText type="body4">
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {leaveForm.note}
           </NunitoText>
+          {leaveForm.approveDate && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
+              {moment(leaveForm.approveDate).format("DD/MM/YYYY HH:mm")}
+            </NunitoText>
+          )}
         </View>
       )}
 
