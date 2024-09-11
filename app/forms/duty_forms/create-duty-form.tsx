@@ -1,5 +1,4 @@
 import { FormInput } from "@/components/FormInput";
-import { FormPickDateTime } from "@/components/FormPickDateTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -34,9 +33,34 @@ type TUserApprove = {
   identifyCard: number;
   name: string;
 };
+
+type TDutyCalendarDetail = {
+  id: number;
+  startTime: string;
+  endTime: string;
+  date: string;
+  dutyType: {
+    id: number;
+    name: string;
+  };
+  salaryCoefficientType: {
+    id: number;
+    name: string;
+    coefficient: number;
+  };
+};
+
+type TExtraForm = {
+  salaryCoefficientId: number;
+  dutyTypeId: number;
+  startTime: number;
+  endTime: number;
+};
+
 export default function CreateDutyForm() {
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
   const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
+  const [selectedDutyCalendar, setSelectedDutyCalendar] = useState<TDutyCalendarDetail | null>(null);
 
   const { session, userInfo } = useSession();
   const router = useRouter();
@@ -44,6 +68,7 @@ export default function CreateDutyForm() {
   const { control, handleSubmit } = useForm<CreateItemForm>({
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
+  const { control: control2 } = useForm<TExtraForm>();
 
   const dutyCalendarInRanges = filterDutyCalendarsInRange(dutyCalendars);
   const dutyCalendarOpts = dutyCalendarInRanges.map((calendar) => ({
@@ -51,6 +76,26 @@ export default function CreateDutyForm() {
     label: `${moment(calendar.date).format("DD/MM/YYYY")} - (${getDayOfWeekNameInVietnamese(calendar.date)})`,
   }));
   const userApproveOpts = userApproves.map((user) => ({ value: user.identifyCard, label: user.name }));
+
+  const getDutyCalendarDetail = useCallback(async (calendarId: number) => {
+    const token = `Bearer ${session}` ?? "xxx";
+    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const endpoint = `/duty-calendars/${calendarId}`;
+    const url = `${baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      credentials: "include",
+    });
+    const responseJson = await response.json();
+
+    if (responseJson.statusCode === 200) {
+      setSelectedDutyCalendar(responseJson.data.dutyCalendar);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  }, []);
 
   const onCreate = async (value: CreateItemForm) => {
     try {
@@ -161,10 +206,47 @@ export default function CreateDutyForm() {
         <FormSelectV2
           useControllerProps={{ control: control, name: "dutyCalendarId" }}
           options={dutyCalendarOpts}
+          onSelect={(opt) => {
+            getDutyCalendarDetail(opt.value as number);
+          }}
           label="Chọn ngày trực"
           required
           placeholder="Chọn ngày trong danh sách"
           leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+        />
+
+        <View style={styles.timeContainer}>
+          <View style={styles.timeItem}>
+            <FormSelectV2
+              label="Giờ bắt đầu"
+              placeholder={selectedDutyCalendar?.startTime ?? "_ _ : _ _"}
+              useControllerProps={{ control: control2, name: "dutyTypeId" }}
+              disabled
+            />
+          </View>
+          <View style={styles.timeItem}>
+            <FormSelectV2
+              label="Giờ kết thúc"
+              placeholder={selectedDutyCalendar?.endTime ?? "_ _ : _ _"}
+              useControllerProps={{ control: control2, name: "dutyTypeId" }}
+              disabled
+            />
+          </View>
+        </View>
+
+        <FormSelectV2
+          label="Loại trực"
+          placeholder={selectedDutyCalendar?.dutyType.name ?? "_ _ _ _ _"}
+          useControllerProps={{ control: control2, name: "dutyTypeId" }}
+          disabled
+        />
+        <FormSelectV2
+          label="Loại ngoài giờ"
+          placeholder={`${selectedDutyCalendar?.salaryCoefficientType.name ?? "_ _ _ _ _"} (x${
+            selectedDutyCalendar?.salaryCoefficientType.coefficient.toFixed(2) ?? "_ _ _"
+          })`}
+          useControllerProps={{ control: control2, name: "salaryCoefficientId" }}
+          disabled
         />
 
         <FormSelectV2
@@ -201,6 +283,14 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
+  },
+  timeContainer: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  timeItem: {
+    flexBasis: 1,
+    flexGrow: 1,
   },
   buttonContainer: {
     position: "absolute",
