@@ -1,6 +1,6 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, FORM_STATUS_NAME, ROLE_CODE } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
@@ -8,7 +8,7 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Button, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");

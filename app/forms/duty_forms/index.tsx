@@ -1,7 +1,8 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -11,6 +12,14 @@ import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from
 const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
+
+type TFormUserApply = {
+  name: string;
+  identifyCard: string;
+  roleId: number;
+  roleName: string;
+  roleCode: string;
+};
 
 type TDutyForm = {
   id: number;
@@ -25,7 +34,21 @@ type TDutyForm = {
   approveDate: string | null;
   attachFilePath: string;
   isDeleted: boolean;
-  users: any;
+  dutyTypeName: string;
+  salaryCoefficientTypeName: string;
+  salaryCoefficient: number;
+  users: TFormUserApply[];
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
 };
 
 export default function DutyForms() {
@@ -106,11 +129,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
           <View style={styles.userInfo}>
-            <Image source={UserAvatar} style={styles.userAvatar} />
+            <AvatarByRole role={dutyForm.userApproveRole.code} />
             <View style={{ gap: 4 }}>
-              <NunitoText type="body3">{userInfo?.name}</NunitoText>
+              <NunitoText type="body3">{dutyForm.userApproveName}</NunitoText>
               <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                {userInfo?.roleName}
+                {dutyForm.userApproveRole.name}
               </NunitoText>
             </View>
           </View>
@@ -119,10 +142,10 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
             <View>
               <View>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(dutyForm.date).format("DD/MM/YYYY")} {dutyForm.startTime}
+                  {moment(dutyForm.date).format("DD/MM/YYYY")}
                 </NunitoText>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(dutyForm.date).format("DD/MM/YYYY")} {dutyForm.endTime}
+                  {`${dutyForm.startTime} - ${dutyForm.endTime}`}
                 </NunitoText>
               </View>
             </View>
@@ -135,16 +158,22 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.extraInfo}>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại trực: </NunitoText>
-            {"Loại trực placeholder"}
+            {dutyForm.dutyTypeName}
           </NunitoText>
           <NunitoText type="body4">
-            <NunitoText type="body2">Người phê duyệt: </NunitoText>
-            {dutyForm.userApproveName}
+            <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
+            {`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)})`}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {dutyForm.note}
           </NunitoText>
+          {dutyForm.approveDate && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
+              {moment(dutyForm.approveDate).format("DD/MM/YYYY HH:mm")}
+            </NunitoText>
+          )}
         </View>
       )}
 

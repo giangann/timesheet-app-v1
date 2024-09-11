@@ -1,7 +1,9 @@
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
@@ -10,12 +12,18 @@ import { ScrollView, StyleSheet, View } from "react-native";
 
 type TDutyFormDetail = {
   dutyCalendar: {
-    id: number;
     startTime: string;
     endTime: string;
     date: string;
-    salaryCoefficientTypeId: number;
-    dutyTypeId: number;
+    salaryCoefficientType: {
+      id: number;
+      name: string;
+      coefficient: number;
+    };
+    dutyType: {
+      id: number;
+      name: string;
+    };
   };
   attachFile: {
     id: number;
@@ -26,6 +34,11 @@ type TDutyFormDetail = {
   };
   userApproveIdentifyCard: string;
   note: string;
+
+  userApproveName: string;
+  reason: string | null;
+  status: FORM_STATUS;
+  approveDate: string | null;
 };
 
 export default function DetailForm() {
@@ -71,15 +84,18 @@ export default function DetailForm() {
       {form && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
-            <Item title="Nhân viên" content={userInfo?.name} />
-            <Item title="Chức vụ" content={userInfo?.roleName} />
+            <BoxStatus status={form.status} approveDate={form.approveDate} />
             <Item title="Ngày trực" content={`${moment(form.dutyCalendar.date).format("DD/MM/YYYY")}`} />
+            <Item title="Giờ trực" content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`} />
+            <Item title="Loại trực" content={form.dutyCalendar.dutyType.name} />
             <Item
-              title="Giờ trực"
-              content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`}
+              title="Loại ngoài giờ"
+              content={`${form.dutyCalendar.salaryCoefficientType.name} (x${form.dutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}
             />
-            <Item title="Loại trục" content={"Loại trực placeholder"} />
+
             <Item title="Ghi chú" content={form.note} />
+            <Item title="Người phê duyệt" content={`${form.userApproveName} ([string])`} />
+
             {/* Attach Image */}
             <AttachImageFile path={form.attachFile.url} />
           </ScrollView>
