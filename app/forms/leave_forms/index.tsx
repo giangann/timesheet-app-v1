@@ -41,6 +41,9 @@ type TLeaveForm = {
     name: string;
     code: ROLE_CODE;
   };
+
+  approveDate: string | null;
+  reason: string | null;
 };
 
 export default function LeaveForms() {
@@ -151,14 +154,18 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
             <NunitoText type="body2">Loại nghỉ: </NunitoText>
             {leaveForm.leaveFormTypeName}
           </NunitoText>
-          <NunitoText type="body4">
-            <NunitoText type="body2">Người phê duyệt: </NunitoText>
-            {leaveForm.userApproveName}
-          </NunitoText>
+
           <NunitoText type="body4">
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {leaveForm.note}
           </NunitoText>
+
+          {leaveForm.approveDate && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
+              {moment(leaveForm.approveDate).format("DD/MM/YYYY HH:mm")}
+            </NunitoText>
+          )}
         </View>
       )}
 

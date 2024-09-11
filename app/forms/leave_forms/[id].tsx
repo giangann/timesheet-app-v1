@@ -2,6 +2,7 @@ import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
+import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
@@ -29,6 +30,15 @@ type TLeaveFormDetail = {
     code: string | null;
     hotline: string;
   };
+  reason: string | null;
+  userApproveRole: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  userApproveIdentifyCard: string;
+  userApproveName: string;
+  approveDate: string | null;
 };
 
 export default function DetailForm() {
@@ -76,16 +86,15 @@ export default function DetailForm() {
       {form && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
-            <Item title="Nhân viên" content={form.userName} />
-            <Item title="Chức vụ" content={form.userRole.name} />
-            <Item title="Phòng" content={form.userTeam.name} />
-            <Item title="Liên hệ (phòng)" content={form.userTeam.hotline} />
+            <BoxStatus status={form.status} approveDate={form.approveDate} />
             <Item
               title="Ngày xin nghỉ"
               content={`${moment(form.startDate).format("DD/MM/YYYY <HH:mm>")} --> ${moment(form.endDate).format("DD/MM/YYYY <HH:mm>")}`}
             />
             <Item title="Loại nghỉ" content={form.leaveFormType} />
             <Item title="Ghi chú" content={form.note} />
+            <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.name})`} />
+
             {/* Attach Image */}
             <AttachImageFile path={form.attachFilePath} />
           </ScrollView>
