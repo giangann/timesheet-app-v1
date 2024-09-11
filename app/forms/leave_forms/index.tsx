@@ -78,7 +78,6 @@ export default function LeaveForms() {
 
   return (
     <View style={styles.container}>
-      <AvatarByRole role={"ADMIN" as ROLE_CODE} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <List leaveForms={leaveForms} />
       </ScrollView>
@@ -122,7 +121,6 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
           <View style={styles.userInfo}>
-            {/* <Image source={UserAvatar} style={styles.userAvatar} /> */}
             <AvatarByRole role={leaveForm.userApproveRole.code} />
             <View style={{ gap: 4 }}>
               <NunitoText type="body3">{leaveForm.userApproveName}</NunitoText>
