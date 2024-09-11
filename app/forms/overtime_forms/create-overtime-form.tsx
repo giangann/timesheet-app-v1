@@ -1,6 +1,5 @@
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
-import { FormPickDateTime } from "@/components/FormPickDateTime";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
@@ -21,8 +20,8 @@ type CreateItemForm = {
   date: Date | null;
   startTime: Date | null;
   endTime: Date | null;
-  salaryCoefFormTypeId: number | null;
-  userApproveIdentifyCard: number | null;
+  salaryCoefficientTypeId: number | null;
+  userApproveIdentifyCard: string | null;
   attachFile: File | null;
   note: string | null;
 };
@@ -31,8 +30,8 @@ type CreateItem = {
   date: string;
   startTime: string;
   endTime: string;
-  salaryCoefFormTypeId: number;
-  userApproveIdentifyCard: number;
+  salaryCoefficientTypeId: number;
+  userApproveIdentifyCard: string;
   attachFile: File;
   note: string;
 };
@@ -43,7 +42,7 @@ type TSalaryCoefficientType = {
   coefficient: number;
 };
 type TUserApprove = {
-  identifyCard: number;
+  identifyCard: string;
   name: string;
 };
 export default function CreateOvertimeForm() {
@@ -68,17 +67,17 @@ export default function CreateOvertimeForm() {
         date: value.date ? moment(value.date).format("YYYY-MM-DD") : "", // Handle null or Date
         startTime: value.startTime ? moment(value.startTime).format("HH:mm:ss") : "", // Handle null or Date
         endTime: value.endTime ? moment(value.endTime).format("HH:mm:ss") : "", // Handle null or Date
-        salaryCoefFormTypeId: value.salaryCoefFormTypeId ?? 0, // Handle null or number
-        userApproveIdentifyCard: value.userApproveIdentifyCard ?? 0, // Handle null or number
+        salaryCoefficientTypeId: value.salaryCoefficientTypeId ?? 0, // Handle null or number
+        userApproveIdentifyCard: value.userApproveIdentifyCard ?? "", // Handle null or number
         attachFile: value.attachFile ?? new File([], ""), // Handle null or File
         note: value.note ?? "", // Handle null or string
       };
-      console.log("bodyData", bodyData);
       const formData = new FormData();
       Object.entries(bodyData).forEach(([k, v]) => {
-        if (typeof v === "number") formData.append(k, v.toString());
-        else if (v instanceof Date) formData.append(k, moment(v).format("YYYY-MM-DD"));
+        if (v instanceof Date) formData.append(k, moment(v).format("YYYY-MM-DD"));
         else if (v instanceof File) formData.append(k, v as File);
+        else if (typeof v === "number") formData.append(k, v.toString());
+        else formData.append(k, v);
       });
 
       const token = `Bearer ${session}` ?? "xxx";
@@ -97,14 +96,12 @@ export default function CreateOvertimeForm() {
       });
 
       const responseJson = await response.json();
-      console.log(responseJson);
 
       if (responseJson.statusCode === 200) {
         MyToast.success("Thành công");
         router.back();
       } else {
         MyToast.error(responseJson.error);
-        console.log(responseJson);
       }
     } catch (error: any) {
       MyToast.error(error.message);
@@ -192,7 +189,7 @@ export default function CreateOvertimeForm() {
           </View>
         </View>
         <FormSelectV2
-          useControllerProps={{ control: control, name: "salaryCoefFormTypeId" }}
+          useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
           options={salaryCoefTypeOpts}
           label="Loại ngoài giờ"
           required
