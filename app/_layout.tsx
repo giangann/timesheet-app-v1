@@ -39,6 +39,8 @@ function Root() {
             <Stack.Screen name="forms" options={{ headerShown: false }} />
             <Stack.Screen name="settings" options={{ headerShown: false }} />
             <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
+            <Stack.Screen name="time-keepings" options={{ headerShown: false }} />
+
           </Stack>
         </SessionProvider>
       </ThemeProvider>

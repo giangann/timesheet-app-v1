@@ -1,3 +1,4 @@
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -45,7 +46,7 @@ export default function AppLayout() {
             justifyContent: "center",
             alignSelf: "center",
             height: 63,
-            marginHorizontal: 80,
+            marginHorizontal: 60,
             paddingHorizontal: 10,
             paddingVertical: 8,
             paddingBottom: 8,
@@ -66,6 +67,7 @@ export default function AppLayout() {
           },
         }}
       >
+        {/* COMMON */}
         <Tabs.Screen
           name="index"
           options={{
@@ -101,6 +103,28 @@ export default function AppLayout() {
             title: "Đơn của tôi",
           }}
         />
+
+        {/* ARCHIVIST ONLY */}
+        <Tabs.Screen
+          name="timeKeeping"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
+                <FontAwesome5 name="business-time" size={18} color={color} />
+              </View>
+            ),
+            title: "Chấm công",
+            href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/timeKeeping",
+          }}
+        />
+
         <Tabs.Screen
           name="setting"
           options={{
@@ -120,6 +144,8 @@ export default function AppLayout() {
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
           }}
         />
+
+        {/* DIRECTOR ONLY */}
         <Tabs.Screen
           name="approveForm"
           options={{
@@ -140,6 +166,7 @@ export default function AppLayout() {
           }}
         />
       </Tabs>
+
       <StatusBar style="inverted" />
     </>
   );
