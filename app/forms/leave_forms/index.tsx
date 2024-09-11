@@ -63,7 +63,6 @@ export default function LeaveForms() {
     });
     const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
-      console.log(responseJson.data.leaveForms);
       setLeaveForms(responseJson.data.leaveForms);
     } else {
       MyToast.error(responseJson.error);
