@@ -41,7 +41,11 @@ type TOvertimeFormDetail = {
   startTime: string;
   endTime: string;
   typeOfWorking: string | null;
-  salaryCoefficientTypeId: number | null;
+  salaryCoefficientType: {
+    id: number;
+    name: string;
+    coefficient: number;
+  };
 };
 
 export default function DetailForm() {
@@ -91,7 +95,7 @@ export default function DetailForm() {
           <ScrollView contentContainerStyle={styles.listBox}>
             <BoxStatus status={form.status} approveDate={form.approveDate} />
             <Item title="Thời gian" content={`${moment(form.date).format("DD/MM/YYYY")} (${form.startTime} --> ${form.endTime})`} />
-            <Item title="Loại ngoài giờ" content={`[string] (x[number.00])`} />
+            <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientType.name} (x${form.salaryCoefficientType.coefficient.toFixed(2)})`} />
             <Item title="Ghi chú" content={form.note} />
             <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.name})`} />
 
