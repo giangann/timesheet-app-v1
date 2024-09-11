@@ -66,7 +66,7 @@ export default function DetailForm() {
   const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
   const [openCfRejectModal, setOpenCfRejectModal] = useState(false);
 
-  const { session, userInfo } = useSession();
+  const { session } = useSession();
   const local = useLocalSearchParams();
   const formId = local.id;
 

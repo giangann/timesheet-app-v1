@@ -1,7 +1,7 @@
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
@@ -39,12 +39,30 @@ type TDutyFormDetail = {
   reason: string | null;
   status: FORM_STATUS;
   approveDate: string | null;
-};
 
+  userApproveTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+  users: {
+    name: string;
+    identifyCard: string;
+    roleId: number;
+    roleName: string;
+    roleCode: ROLE_CODE;
+  }[];
+};
 export default function DetailForm() {
   const [form, setForm] = useState<TDutyFormDetail | null>(null);
 
-  const { session, userInfo } = useSession();
+  const { session } = useSession();
   const local = useLocalSearchParams();
   const formId = local.id;
   const fetchDutyFormDetail = async (formId: string) => {
@@ -94,7 +112,7 @@ export default function DetailForm() {
             />
 
             <Item title="Ghi chú" content={form.note} />
-            <Item title="Người phê duyệt" content={`${form.userApproveName} ([string])`} />
+            <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.code})`} />
 
             {/* Attach Image */}
             <AttachImageFile path={form.attachFile.url} />
