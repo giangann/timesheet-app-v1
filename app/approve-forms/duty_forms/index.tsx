@@ -1,7 +1,8 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -25,6 +26,29 @@ type TDutyForm = {
   approveDate: string | null;
   attachFilePath: string;
   isDeleted: boolean;
+  dutyTypeName: string;
+  salaryCoefficientTypeName: string;
+  salaryCoefficient: number;
+  users: [
+    {
+      name: string;
+      identifyCard: string;
+      roleId: number;
+      roleName: string;
+      roleCode: ROLE_CODE;
+    }
+  ];
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
 };
 
 export default function ApproveDutyForms() {
@@ -103,13 +127,17 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
           <View style={styles.userInfo}>
-            <Image source={UserAvatar} style={styles.userAvatar} />
-            <View style={{ gap: 4 }}>
-              <NunitoText type="body3">{"dutyForm.user.name"}</NunitoText>
-              <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                {"dutyForm.user.roleName"}
-              </NunitoText>
-            </View>
+            {dutyForm.users.length > 0 && (
+              <>
+                <AvatarByRole role={dutyForm.users[0].roleCode} />
+                <View style={{ gap: 4 }}>
+                  <NunitoText type="body3">{dutyForm.users[0].name}</NunitoText>
+                  <NunitoText type="body4" style={{ opacity: 0.75 }}>
+                    {dutyForm.users[0].roleName}
+                  </NunitoText>
+                </View>
+              </>
+            )}
           </View>
           <View style={styles.formInfo}>
             <ChipStatus status={dutyForm.status} />
@@ -142,6 +170,17 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {dutyForm.note}
           </NunitoText>
+
+          {dutyForm.users.length > 1 && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Danh sách thành viên trong đơn: </NunitoText>
+              {dutyForm.users.map((user, index) => (
+                <NunitoText key={user.identifyCard} type="body4">
+                  {`(${index + 1}) ${user.name} (${user.roleName})`}
+                </NunitoText>
+              ))}
+            </NunitoText>
+          )}
         </View>
       )}
 
