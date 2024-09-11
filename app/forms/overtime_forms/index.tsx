@@ -113,7 +113,7 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
 
   const onGoToFormDetail = () => {
     router.navigate({
-      pathname: "/forms/leave_forms/[id]",
+      pathname: "/forms/overtime_forms/[id]",
       params: { id: overtimeForm.id },
     });
   };
