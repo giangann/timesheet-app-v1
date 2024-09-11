@@ -2,8 +2,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useRouter } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import * as Sentry from "@sentry/react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 const SettingTeamIconImage = require("@/assets/images/setting-team.png");
 const SettingOvertimeTypeIconImage = require("@/assets/images/setting-overtimetype.png");
@@ -18,28 +17,6 @@ export default function Settings() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listBox}>
-        {/* Fake error button */}
-        <TouchableOpacity
-          onPress={() => {
-            throw new Error("Fake error 1");
-          }}
-          style={{ backgroundColor: "red", padding: 10 }}
-        >
-          <NunitoText>Press to produce error !</NunitoText>
-        </TouchableOpacity>
-        {/* Fake error button */}
-
-        {/* Fake error button have sentry capture */}
-        <TouchableOpacity
-          onPress={() => {
-            Sentry.captureException(new Error("Fake error 2"));
-          }}
-          style={{ backgroundColor: "green", padding: 10 }}
-        >
-          <NunitoText>Fake error button have sentry capture !</NunitoText>
-        </TouchableOpacity>
-        {/* Fake error button have sentry capture */}
-
         <Pressable onPress={() => router.push("/settings/teams")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>

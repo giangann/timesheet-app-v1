@@ -76,7 +76,6 @@ const Login = () => {
 
               <View style={styles.formWrapper}>
                 <NunitoText style={{ textAlign: "center" }}>Đăng nhập</NunitoText>
-                <NunitoText style={{ textAlign: "center" }}>Confirm build 11/02 19:42</NunitoText>
 
                 <View style={styles.fieldWrapper}>
                   {/* Input_1 - Identify Card */}
