@@ -160,11 +160,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.extraInfo}>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại trực: </NunitoText>
-            {"dutyForm.dutyTypeName"}
+            {dutyForm.dutyTypeName}
           </NunitoText>
           <NunitoText type="body4">
-            <NunitoText type="body2">Người phê duyệt: </NunitoText>
-            {dutyForm.userApproveName}
+            <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
+            {`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)})`}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Ghi chú: </NunitoText>
@@ -179,6 +179,13 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
                   {`(${index + 1}) ${user.name} (${user.roleName})`}
                 </NunitoText>
               ))}
+            </NunitoText>
+          )}
+
+          {dutyForm.approveDate && (
+            <NunitoText type="body4">
+              <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
+              {moment(dutyForm.approveDate).format("DD/MM/YYYY HH:mm")}
             </NunitoText>
           )}
         </View>
