@@ -144,10 +144,10 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
             <View>
               <View>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(dutyForm.date).format("DD/MM/YYYY")} {dutyForm.startTime}
+                  {moment(dutyForm.date).format("DD/MM/YYYY")}
                 </NunitoText>
                 <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(dutyForm.date).format("DD/MM/YYYY")} {dutyForm.endTime}
+                  {`${dutyForm.startTime} - ${dutyForm.endTime}`}
                 </NunitoText>
               </View>
             </View>
