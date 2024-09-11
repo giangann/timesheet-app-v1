@@ -11,14 +11,11 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-type TLeaveFormDetail = {
+type TOvertimeFormDetail = {
   id: number;
   userIdentifyCard: string;
   userName: string;
-  startDate: string;
-  endDate: string;
   note: string;
-  leaveFormType: string;
   attachFilePath: string;
   status: number;
   userRole: {
@@ -41,10 +38,20 @@ type TLeaveFormDetail = {
   userApproveIdentifyCard: string;
   userApproveName: string;
   approveDate: string | null;
+
+  date: string;
+  startTime: string;
+  endTime: string;
+  typeOfWorking: string | null;
+  salaryCoefficientType: {
+    id: number;
+    name: string;
+    coefficient: number;
+  };
 };
 
 export default function DetailForm() {
-  const [form, setForm] = useState<TLeaveFormDetail | null>(null);
+  const [form, setForm] = useState<TOvertimeFormDetail | null>(null);
   const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
   const [openCfRejectModal, setOpenCfRejectModal] = useState(false);
 
@@ -56,13 +63,13 @@ export default function DetailForm() {
     try {
       const bodyData = {
         status: FORM_STATUS.REJECTED,
-        leaveFormId: parseInt(formId),
+        overtimeFormId: parseInt(formId),
         reason: "ok",
       };
       const token = `Bearer ${session}` ?? "xxx";
 
       const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/leave-forms/approve`;
+      const endpoint = `/overtime-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
       const response = await fetch(url, {
@@ -92,13 +99,13 @@ export default function DetailForm() {
     try {
       const bodyData = {
         status: FORM_STATUS.ACCEPTED,
-        leaveFormId: parseInt(formId),
+        overtimeFormId: parseInt(formId),
         reason: "ok",
       };
       const token = `Bearer ${session}` ?? "xxx";
 
       const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/leave-forms/approve`;
+      const endpoint = `/overtime-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
       const response = await fetch(url, {
@@ -125,11 +132,11 @@ export default function DetailForm() {
     onApproveAccept(formId as string);
   }, [formId, form]);
 
-  const fetchLeaveFormDetail = async (formId: string) => {
+  const fetchOvertimeFormDetail = async (formId: string) => {
     const token = `Bearer ${session}` ?? "xxx";
 
     const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = `/leave-forms/${formId}`;
+    const endpoint = `/overtime-forms/${formId}`;
     const url = `${baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
@@ -140,7 +147,7 @@ export default function DetailForm() {
     const responseJson = await response.json();
 
     if (responseJson.statusCode === 200) {
-      setForm(responseJson.data.leaveFormDetail);
+      setForm(responseJson.data.overtimeFormDetail);
     } else {
       MyToast.error(responseJson.error);
     }
@@ -148,7 +155,7 @@ export default function DetailForm() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchLeaveFormDetail(formId as string);
+      fetchOvertimeFormDetail(formId as string);
     }, [formId])
   );
 
@@ -168,11 +175,8 @@ export default function DetailForm() {
             <Item title="Chức vụ" content={form.userRole.name} />
             <Item title="Phòng" content={form.userTeam.name} />
             <Item title="Liên hệ (phòng)" content={form.userTeam.hotline} />
-            <Item
-              title="Ngày xin nghỉ"
-              content={`${moment(form.startDate).format("DD/MM/YYYY <HH:mm>")} --> ${moment(form.endDate).format("DD/MM/YYYY <HH:mm>")}`}
-            />
-            <Item title="Loại nghỉ" content={form.leaveFormType} />
+            <Item title="Thời gian" content={`${moment(form.date).format("DD/MM/YYYY")} (${form.startTime} --> ${form.endTime})`} />
+            <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientType.name} (x${form.salaryCoefficientType.coefficient.toFixed(2)})`} />
             <Item title="Ghi chú" content={form.note} />
             {/* Attach Image */}
             <AttachImageFile path={form.attachFilePath} />
