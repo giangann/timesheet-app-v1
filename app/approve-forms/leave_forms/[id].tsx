@@ -4,6 +4,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
@@ -32,6 +33,15 @@ type TLeaveFormDetail = {
     code: string | null;
     hotline: string;
   };
+  reason: string | null;
+  userApproveRole: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  userApproveIdentifyCard: string;
+  userApproveName: string;
+  approveDate: string | null;
 };
 
 export default function DetailForm() {
@@ -154,6 +164,7 @@ export default function DetailForm() {
       {form && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
+            <BoxStatus status={form.status} approveDate={form.approveDate} />
             <Item title="Nhân viên" content={form.userName} />
             <Item title="Chức vụ" content={form.userRole.name} />
             <Item title="Phòng" content={form.userTeam.name} />
