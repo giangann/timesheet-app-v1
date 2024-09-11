@@ -8,7 +8,7 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
@@ -87,7 +87,6 @@ export default function ApproveOvertimeForms() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <List overtimeForms={overtimeForms} />
       </ScrollView>
-      <ApplyNewForm />
     </View>
   );
 }
@@ -182,18 +181,6 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
   );
 };
 
-const ApplyNewForm = () => {
-  const router = useRouter();
-  return (
-    <TouchableOpacity onPress={() => router.push("/forms/overtime_forms/create-overtime-form")} activeOpacity={0.8} style={styles.buttonContainer}>
-      <View style={styles.button}>
-        <NunitoText type="body3" style={{ color: "white" }}>
-          Tạo đơn mới
-        </NunitoText>
-      </View>
-    </TouchableOpacity>
-  );
-};
 const styles = StyleSheet.create({
   container: {
     padding: 16,
