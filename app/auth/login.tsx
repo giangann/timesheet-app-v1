@@ -50,7 +50,7 @@ const Login = () => {
       router.replace("/");
     } catch (error: any) {
       if (error instanceof Error) MyToast.error(error.message);
-      else MyToast.error(JSON.stringify(error));
+      else MyToast.error("Unknown Error");
     }
   };
 

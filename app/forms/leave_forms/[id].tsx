@@ -1,15 +1,12 @@
-import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { View, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 type TLeaveFormDetail = {
   id: number;
@@ -36,8 +33,6 @@ type TLeaveFormDetail = {
 
 export default function DetailForm() {
   const [form, setForm] = useState<TLeaveFormDetail | null>(null);
-  const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
-  const [openCfRejectModal, setOpenCfRejectModal] = useState(false);
 
   const { session } = useSession();
   const local = useLocalSearchParams();
