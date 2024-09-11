@@ -1,7 +1,8 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -35,6 +36,11 @@ type TLeaveForm = {
     code: string | null;
     hotline: string;
   };
+  userApproveRole: {
+    id: number;
+    name: string;
+    code: ROLE_CODE;
+  };
 };
 
 export default function LeaveForms() {
@@ -57,6 +63,7 @@ export default function LeaveForms() {
     });
     const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
+      console.log(responseJson.data.leaveForms);
       setLeaveForms(responseJson.data.leaveForms);
     } else {
       MyToast.error(responseJson.error);
@@ -71,10 +78,11 @@ export default function LeaveForms() {
 
   return (
     <View style={styles.container}>
+      <AvatarByRole role={"ADMIN" as ROLE_CODE} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <List leaveForms={leaveForms} />
       </ScrollView>
-      <ApplyNewForm/>
+      <ApplyNewForm />
     </View>
   );
 }
@@ -114,11 +122,12 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
           <View style={styles.userInfo}>
-            <Image source={UserAvatar} style={styles.userAvatar} />
+            {/* <Image source={UserAvatar} style={styles.userAvatar} /> */}
+            <AvatarByRole role={leaveForm.userApproveRole.code} />
             <View style={{ gap: 4 }}>
-              <NunitoText type="body3">{leaveForm.userName}</NunitoText>
+              <NunitoText type="body3">{leaveForm.userApproveName}</NunitoText>
               <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                {leaveForm.userRole.name}
+                {leaveForm.userApproveRole.name}
               </NunitoText>
             </View>
           </View>
