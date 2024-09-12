@@ -1,11 +1,15 @@
+import * as Progress from "react-native-progress";
+import { fetchTodayTimeKeeping, fetchWorkingTypes } from "@/api/time-keeping";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
+import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyCheckRadio } from "@/ui/MyCheckRadio";
+import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 
 type TWorkingType = {
@@ -28,60 +32,53 @@ type TTimeKeepingMemberEdit = {
   workingTypeId: number;
 };
 
-const workingTypesDefault: TWorkingType[] = [
-  {
-    id: 1,
-    name: "Cả công",
-  },
-  {
-    id: 2,
-    name: "Nửa công",
-  },
-];
-
-const memberDefault1 = {
-  name: "Đặng Minh Chính",
-  identifyCard: "000000001111",
-  roleId: 4,
-  roleName: "Lãnh đạo phòng",
-  roleCode: ROLE_CODE.TEAM_DIRECTOR,
-  workingTypeId: null,
-  workingTypeName: null,
-};
-const memberDefault2 = {
-  name: "Đặng Xuân Tiến",
-  identifyCard: "0123456789",
-  roleId: 4,
-  roleName: "Văn thư",
-  roleCode: ROLE_CODE.ARCHIVIST,
-  workingTypeId: 1,
-  workingTypeName: "Cả công",
-};
-
-const memberDefault3 = {
-  name: "Nguyễn Văn Khái",
-  identifyCard: "000011111111",
-  roleId: 4,
-  roleName: "Chuyên viên",
-  roleCode: ROLE_CODE.SPECIALIST,
-  workingTypeId: 1,
-  workingTypeName: null,
-};
-
-const members = [memberDefault1, memberDefault2, memberDefault3];
-
 export default function TodayTimeKeeping() {
-  const workingTypes = workingTypesDefault;
+  const [workingTypes, setWorkingTypes] = useState<TWorkingType[]>([]);
   const [memberList, setMemberList] = useState<TTimeKeepingMember[]>([]);
   const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingMemberEdit[]>([]);
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
-  const disabledUpdate = editTimeKeepingMembers.length <= 0;
+  const [isSaving, setIsSaving] = useState(false);
+  const disabledUpdate = editTimeKeepingMembers.length <= 0 || isSaving;
   const [isSelectAll, setIsSelectAll] = useState(false);
+  const { session } = useSession();
 
-  const onSaveTimeKeeping = async ()=>{
-    console.log(editTimeKeepingMembers)
-  }
+  const onSaveTimeKeeping = async () => {
+    try {
+      setIsSaving(true);
+      const bodyData = {
+        date: moment(Date.now()).format("YYYY-MM-DD"),
+        users: [...editTimeKeepingMembers],
+      };
+      console.log(bodyData);
+
+      const token = `Bearer ${session}` ?? "xxx";
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = "/timekeeping";
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: JSON.stringify(bodyData),
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setEditTimeKeepingMembers([]);
+      setIsSaving(false);
+
+      fetchTodayTk();
+    }
+  };
 
   const onToggleEdit = () => {
     setIsEdit(!isEdit);
@@ -163,7 +160,35 @@ export default function TodayTimeKeeping() {
     }
   };
 
-  useFocusEffect(React.useCallback(() => setMemberList(members), []));
+  const fetchWKTypes = async () => {
+    const responseJson = await fetchWorkingTypes(session);
+    if (responseJson.statusCode === 200) {
+      setWorkingTypes(responseJson.data.workingTypes);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchWKTypes();
+    }, [])
+  );
+
+  const fetchTodayTk = async () => {
+    const responseJson = await fetchTodayTimeKeeping(session);
+    if (responseJson.statusCode === 200) {
+      setMemberList(responseJson.data.timeKeeping.users);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTodayTk();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -235,6 +260,7 @@ export default function TodayTimeKeeping() {
       {!isEdit && (
         <TouchableOpacity onPress={onSaveTimeKeeping} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
           <View style={disabledUpdate ? [styles.button, styles.buttonDisabled] : styles.button}>
+            {isSaving && <Progress.Circle indeterminate size={14} />}
             <NunitoText type="body3" style={disabledUpdate ? [styles.buttonText, styles.buttonTextDisabled] : styles.buttonText}>
               Cập nhật
             </NunitoText>
@@ -379,6 +405,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+
+    gap: 8,
+    flexDirection: "row",
   },
   buttonDisabled: {
     backgroundColor: `#000000${OPACITY_TO_HEX["15"]}`,
