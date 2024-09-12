@@ -72,11 +72,25 @@ export default function TodayTimeKeeping() {
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [disabledUpdate, setDisabledUpdate] = useState(true);
+  const [isSelectAll, setIsSelectAll] = useState(false);
 
   const onToggleEdit = () => {
     setIsEdit(!isEdit);
     setSelectedIdCards([]);
+    setIsSelectAll(false);
   };
+
+  const onChooseSelectAll = () => {
+    const newSelectedIdCards = memberList.map((member) => member.identifyCard);
+    setSelectedIdCards([...newSelectedIdCards]);
+
+    setIsSelectAll(true);
+  };
+
+  const onChooseUnselectAll = () =>{
+    setSelectedIdCards([])
+    setIsSelectAll(false)
+  }
 
   const updateSelectedIdCards = (method: "add" | "remove", selectedIdCard: string) => {
     if (method === "add") {
@@ -117,11 +131,21 @@ export default function TodayTimeKeeping() {
             {selectedIdCards.length > 0 && <NunitoText>{selectedIdCards.length} đã chọn</NunitoText>}
           </View>
           <View style={styles.optionBarItemIsEdit}>
-            <Pressable onPress={onToggleEdit} style={styles.editPressable}>
-              <NunitoText type="body3" lightColor="#0B3A82">
-                Chọn tất cả
-              </NunitoText>
-            </Pressable>
+            {!isSelectAll && (
+              <Pressable onPress={onChooseSelectAll} style={styles.editPressable}>
+                <NunitoText type="body3" lightColor="#0B3A82">
+                  Chọn tất cả
+                </NunitoText>
+              </Pressable>
+            )}
+
+            {isSelectAll && (
+              <Pressable onPress={onChooseUnselectAll} style={styles.editPressable}>
+                <NunitoText type="body3" lightColor="#0B3A82">
+                  Bỏ chọn tất cả
+                </NunitoText>
+              </Pressable>
+            )}
           </View>
         </View>
       )}
@@ -129,7 +153,7 @@ export default function TodayTimeKeeping() {
       {/* member list */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {memberList.map((member, index) => (
-          <MemberItem updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} key={index} />
+          <MemberItem key={index} updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} isSelectAll={isSelectAll} />
         ))}
       </ScrollView>
 
@@ -167,8 +191,9 @@ type MemberItemProps = {
   isEdit: boolean;
   member: TTimeKeepingMember;
   updateSelectedIdCards: (method: "add" | "remove", selectedIdCard: string) => void;
+  isSelectAll: boolean;
 };
-const MemberItem: React.FC<MemberItemProps> = ({ isEdit, member, updateSelectedIdCards }) => {
+const MemberItem: React.FC<MemberItemProps> = ({ isEdit, member, updateSelectedIdCards, isSelectAll }) => {
   const [selected, setSelected] = useState(false);
 
   const onToggleSelected = () => setSelected(!selected);
@@ -181,6 +206,14 @@ const MemberItem: React.FC<MemberItemProps> = ({ isEdit, member, updateSelectedI
   useEffect(() => {
     setSelected(false);
   }, [isEdit]);
+
+  useEffect(() => {
+    if (isSelectAll) {
+      setSelected(true);
+    } else {
+      setSelected(false);
+    }
+  }, [isSelectAll]);
   return (
     <Pressable onPress={onSelect} disabled={!isEdit}>
       <View style={styles.memberItemContainer}>
