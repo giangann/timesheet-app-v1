@@ -1,8 +1,10 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { ROLE_CODE } from "@/constants/Misc";
+import Octicons from '@expo/vector-icons/Octicons';import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Redirect, Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
@@ -46,7 +48,7 @@ export default function AppLayout() {
             justifyContent: "center",
             alignSelf: "center",
             height: 63,
-            marginHorizontal: 40,
+            marginHorizontal: marginByRole(userInfo?.roleCode),
             paddingHorizontal: 10,
             paddingVertical: 8,
             paddingBottom: 8,
@@ -79,7 +81,7 @@ export default function AppLayout() {
                   backgroundColor: focused ? "white" : "#0B3A82",
                 }}
               >
-                <SimpleLineIcons name="home" size={18} color={color} />
+                <MaterialIcons name="home" size={18} color={color} />
               </View>
             ),
             title: "Trang chủ",
@@ -96,7 +98,7 @@ export default function AppLayout() {
                   backgroundColor: focused ? "white" : "#0B3A82",
                 }}
               >
-                <AntDesign name="form" size={18} color={color} />
+                <Ionicons name="newspaper-sharp" size={18} color={color} />
               </View>
             ),
             title: "Đơn của tôi",
@@ -113,7 +115,7 @@ export default function AppLayout() {
                   backgroundColor: focused ? "white" : "#0B3A82",
                 }}
               >
-                <SimpleLineIcons name="paper-clip" size={18} color={color} />
+                <Ionicons name="calendar" size={18} color={color} />
               </View>
             ),
             title: "Bảng chấm công",
@@ -132,8 +134,7 @@ export default function AppLayout() {
                   backgroundColor: focused ? "white" : "#0B3A82",
                 }}
               >
-                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
-                <FontAwesome5 name="business-time" size={18} color={color} />
+                <Ionicons name="today" size={18} color={color} />
               </View>
             ),
             title: "Chấm công",
@@ -153,7 +154,7 @@ export default function AppLayout() {
                 }}
               >
                 {/* <FontAwesome name="user-o" size={18} color={color} /> */}
-                <SimpleLineIcons name="settings" size={18} color={color} />
+                <Ionicons name="settings" size={18} color={color} />
               </View>
             ),
             title: "Cài đặt",
@@ -173,8 +174,7 @@ export default function AppLayout() {
                   backgroundColor: focused ? "white" : "#0B3A82",
                 }}
               >
-                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
-                <SimpleLineIcons name="social-twitter" size={18} color={color} />
+                <Octicons name="checklist" size={18} color={color} />
               </View>
             ),
             title: "Phê duyệt đơn",
