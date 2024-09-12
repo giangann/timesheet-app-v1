@@ -1,14 +1,301 @@
 import { NunitoText } from "@/components/text/NunitoText";
-import { View, StyleSheet } from "react-native";
+import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
+import { AvatarByRole } from "@/ui/AvatarByRole";
+import { BadgeStatus } from "@/ui/BadgeStatus";
+import { MyCheckRadio } from "@/ui/MyCheckRadio";
+import { useFocusEffect } from "expo-router";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Pressable, ViewStyle, ScrollView, TouchableOpacity } from "react-native";
+
+type TWorkingType = {
+  id: number;
+  name: string;
+};
+
+type TTimeKeepingMember = {
+  name: string;
+  identifyCard: string;
+  roleId: number;
+  roleName: string;
+  roleCode: ROLE_CODE;
+  workingTypeId: number | null;
+  workingTypeName: string | null;
+};
+
+const workingTypesDefault: TWorkingType[] = [
+  {
+    id: 1,
+    name: "Cả công",
+  },
+  {
+    id: 2,
+    name: "Nửa công",
+  },
+];
+
+const memberDefault1 = {
+  name: "Đặng Minh Chính",
+  identifyCard: "000000001111",
+  roleId: 4,
+  roleName: "Lãnh đạo phòng",
+  roleCode: ROLE_CODE.TEAM_DIRECTOR,
+  workingTypeId: null,
+  workingTypeName: null,
+};
+const memberDefault2 = {
+  name: "Đặng Xuân Tiến",
+  identifyCard: "0123456789",
+  roleId: 4,
+  roleName: "Văn thư",
+  roleCode: ROLE_CODE.ARCHIVIST,
+  workingTypeId: 1,
+  workingTypeName: "Cả công",
+};
+
+const memberDefault3 = {
+  name: "Nguyễn Văn Khái",
+  identifyCard: "000011111111",
+  roleId: 4,
+  roleName: "Chuyên viên",
+  roleCode: ROLE_CODE.SPECIALIST,
+  workingTypeId: 1,
+  workingTypeName: null,
+};
+
+const members = [memberDefault1, memberDefault2, memberDefault3];
 
 export default function TodayTimeKeeping() {
+  const workingTypes = workingTypesDefault;
+  const [memberList, setMemberList] = useState<TTimeKeepingMember[]>([]);
+  const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [disabledUpdate, setDisabledUpdate] = useState(true);
+
+  const onToggleEdit = () => {
+    setIsEdit(!isEdit);
+    setSelectedIdCards([]);
+  };
+
+  const updateSelectedIdCards = (method: "add" | "remove", selectedIdCard: string) => {
+    if (method === "add") {
+      setSelectedIdCards([...selectedIdCards, selectedIdCard]);
+    }
+    if (method === "remove") {
+      const newSelectedIdCards = selectedIdCards.filter((idCard) => idCard !== selectedIdCard);
+      setSelectedIdCards([...newSelectedIdCards]);
+    }
+  };
+
+  useFocusEffect(React.useCallback(() => setMemberList(members), []));
+
   return (
     <View style={styles.container}>
-      <NunitoText>TODAY TIME-KEEPING</NunitoText>
+      {/* option bar */}
+      {!isEdit && (
+        <View style={styles.optionBarDefault}>
+          <NunitoText type="body3">{moment(Date.now()).format("DD/MM/YYYY")}</NunitoText>
+          <Pressable onPress={onToggleEdit} style={styles.editPressable}>
+            <NunitoText type="body3" lightColor="#0B3A82">
+              Sửa
+            </NunitoText>
+          </Pressable>
+        </View>
+      )}
+      {isEdit && (
+        <View style={styles.optionBarDefault}>
+          <View style={styles.optionBarItemIsEdit}>
+            <Pressable onPress={onToggleEdit} style={styles.editPressable}>
+              <NunitoText type="body3" lightColor="#0B3A82">
+                Thoát
+              </NunitoText>
+            </Pressable>
+          </View>
+          <View style={[styles.optionBarItemIsEdit, { flexGrow: 1.5 }]}>
+            {selectedIdCards.length === 0 && <NunitoText>Chọn thành viên</NunitoText>}
+            {selectedIdCards.length > 0 && <NunitoText>{selectedIdCards.length} đã chọn</NunitoText>}
+          </View>
+          <View style={styles.optionBarItemIsEdit}>
+            <Pressable onPress={onToggleEdit} style={styles.editPressable}>
+              <NunitoText type="body3" lightColor="#0B3A82">
+                Chọn tất cả
+              </NunitoText>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* member list */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {memberList.map((member, index) => (
+          <MemberItem updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} key={index} />
+        ))}
+      </ScrollView>
+
+      {/* action bar */}
+      {isEdit && (
+        <View style={styles.actionBar}>
+          <Pressable onPress={onToggleEdit}>
+            <NunitoText type="body3" lightColor="#0B3A82">
+              Cả công
+            </NunitoText>
+          </Pressable>
+
+          <Pressable onPress={onToggleEdit}>
+            <NunitoText type="body3" lightColor="#0B3A82">
+              Nửa công
+            </NunitoText>
+          </Pressable>
+        </View>
+      )}
+
+      {!isEdit && (
+        <TouchableOpacity onPress={() => {}} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
+          <View style={disabledUpdate ? [styles.button, styles.buttonDisabled] : styles.button}>
+            <NunitoText type="body3" style={disabledUpdate ? [styles.buttonText, styles.buttonTextDisabled] : styles.buttonText}>
+              Cập nhật
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
 
+type MemberItemProps = {
+  isEdit: boolean;
+  member: TTimeKeepingMember;
+  updateSelectedIdCards: (method: "add" | "remove", selectedIdCard: string) => void;
+};
+const MemberItem: React.FC<MemberItemProps> = ({ isEdit, member, updateSelectedIdCards }) => {
+  const [selected, setSelected] = useState(false);
+
+  const onToggleSelected = () => setSelected(!selected);
+
+  const onSelect = () => {
+    updateSelectedIdCards(selected ? "remove" : "add", member.identifyCard);
+    onToggleSelected();
+  };
+
+  useEffect(() => {
+    setSelected(false);
+  }, [isEdit]);
+  return (
+    <Pressable onPress={onSelect} disabled={!isEdit}>
+      <View style={styles.memberItemContainer}>
+        <View style={styles.memberInfoWrapper}>
+          {isEdit && <MyCheckRadio checked={selected} />}
+          <View style={styles.memberInfo}>
+            {/* avatar */}
+            <AvatarByRole role={member.roleCode} />
+
+            {/* name, role */}
+            <View>
+              <NunitoText type="body3">{member.name}</NunitoText>
+              <NunitoText type="body4" style={{ opacity: 0.75 }}>
+                {member.roleName}
+              </NunitoText>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.timekeepingStatus}>
+          <NunitoText type="body4" style={{ opacity: 0.675 }}>
+            {member.workingTypeName ?? "Chưa chấm"}
+          </NunitoText>
+        </View>
+      </View>
+    </Pressable>
+  );
+};
+
+const optionBarStyle: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+
+  paddingBottom: 16,
+};
+
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    padding: 16,
+    paddingBottom: 0,
+    height: "100%",
+  },
+  optionBarDefault: {
+    ...optionBarStyle,
+  },
+  optionBarIsEdit: {
+    ...optionBarStyle,
+  },
+  optionBarItemIsEdit: {
+    flexBasis: 1,
+    flexGrow: 1,
+  },
+  editPressable: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+  },
+  scrollContent: {
+    gap: 16,
+    paddingBottom: 100,
+  },
+  memberItemContainer: {
+    backgroundColor: `#0B3A82${OPACITY_TO_HEX["15"]}`,
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  memberInfoWrapper: {
+    flexDirection: "row",
+    gap: 12,
+
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  memberInfo: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    gap: 16,
+  },
+  timekeepingStatus: {},
+  actionBar: {
+    paddingVertical: 16,
+
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 48,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: "white", // Optional: To give the button a distinct background
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0B3A82",
+    height: 44,
+    borderRadius: 4,
+  },
+  buttonDisabled: {
+    backgroundColor: `#000000${OPACITY_TO_HEX["15"]}`,
+  },
+  buttonText: {
+    color: "white",
+  },
+  buttonTextDisabled: {
+    color: `#000000${OPACITY_TO_HEX["30"]}`,
+  },
 });
