@@ -2,12 +2,11 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { AvatarByRole } from "@/ui/AvatarByRole";
-import { BadgeStatus } from "@/ui/BadgeStatus";
 import { MyCheckRadio } from "@/ui/MyCheckRadio";
 import { useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Pressable, ViewStyle, ScrollView, TouchableOpacity } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 
 type TWorkingType = {
   id: number;
@@ -22,6 +21,11 @@ type TTimeKeepingMember = {
   roleCode: ROLE_CODE;
   workingTypeId: number | null;
   workingTypeName: string | null;
+};
+
+type TTimeKeepingMemberEdit = {
+  userIdentifyCard: string;
+  workingTypeId: number;
 };
 
 const workingTypesDefault: TWorkingType[] = [
@@ -69,6 +73,7 @@ const members = [memberDefault1, memberDefault2, memberDefault3];
 export default function TodayTimeKeeping() {
   const workingTypes = workingTypesDefault;
   const [memberList, setMemberList] = useState<TTimeKeepingMember[]>([]);
+  const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingMemberEdit[]>([]);
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [disabledUpdate, setDisabledUpdate] = useState(true);
@@ -87,10 +92,60 @@ export default function TodayTimeKeeping() {
     setIsSelectAll(true);
   };
 
-  const onChooseUnselectAll = () =>{
-    setSelectedIdCards([])
-    setIsSelectAll(false)
-  }
+  const onChooseUnselectAll = () => {
+    setSelectedIdCards([]);
+    setIsSelectAll(false);
+  };
+
+  const onEditTimeKeepingMember = (selectedWorkingTypeId: number) => {
+    // create Map to save current editedTimeKeepingMembers
+    const editedTKMap = new Map<string, TTimeKeepingMemberEdit>();
+    editTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
+
+    // reflect selectedIdCards and workingTypeId to editTimeKeepingMembers
+    const newTimeKeepingMembers: TTimeKeepingMemberEdit[] = selectedIdCards.map((idCard) => ({
+      userIdentifyCard: idCard,
+      workingTypeId: selectedWorkingTypeId,
+    }));
+    newTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
+
+    // get array from map and update current array
+    const newEditedTimeKeepingMembers: TTimeKeepingMemberEdit[] = Object.entries(editedTKMap).map(([k, v]) => v);
+    setEditTimeKeepingMembers([...newEditedTimeKeepingMembers]);
+  };
+
+  const onUpdateMemberList = (selectedWorkingTypeId: number) => {
+    const selectedWorkingType: TWorkingType = workingTypes.filter((wkType) => wkType.id === selectedWorkingTypeId)?.[0] ?? {
+      id: -1,
+      name: "Unknown WkType",
+    };
+    //
+    const memberListMap = new Map<string, TTimeKeepingMember>();
+    memberList.forEach((mem) => memberListMap.set(mem.identifyCard, mem));
+
+    //
+    for (const idCard of selectedIdCards) {
+      const mem = memberListMap.get(idCard);
+      if (!mem) continue;
+
+      const memUpdated: TTimeKeepingMember = {
+        ...mem,
+        workingTypeId: selectedWorkingType.id,
+        workingTypeName: selectedWorkingType.name,
+      };
+      memberListMap.set(idCard, memUpdated);
+    }
+
+    //
+    const updatedMemList = Object.entries(memberListMap).map(([k, v]) => v);
+    setMemberList([...updatedMemList]);
+  };
+
+  const onMarkWkType = (chooseWkTypeId: number) => {
+    onEditTimeKeepingMember(chooseWkTypeId);
+    onUpdateMemberList(chooseWkTypeId);
+    onToggleEdit()
+  };
 
   const updateSelectedIdCards = (method: "add" | "remove", selectedIdCard: string) => {
     if (method === "add") {
@@ -160,17 +215,13 @@ export default function TodayTimeKeeping() {
       {/* action bar */}
       {isEdit && (
         <View style={styles.actionBar}>
-          <Pressable onPress={onToggleEdit}>
-            <NunitoText type="body3" lightColor="#0B3A82">
-              Cả công
-            </NunitoText>
-          </Pressable>
-
-          <Pressable onPress={onToggleEdit}>
-            <NunitoText type="body3" lightColor="#0B3A82">
-              Nửa công
-            </NunitoText>
-          </Pressable>
+          {workingTypes.map((wkType) => (
+            <Pressable key={wkType.id} onPress={() => onMarkWkType(wkType.id)}>
+              <NunitoText type="body3" lightColor="#0B3A82">
+                {wkType.name}
+              </NunitoText>
+            </Pressable>
+          ))}
         </View>
       )}
 
