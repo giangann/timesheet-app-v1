@@ -76,8 +76,12 @@ export default function TodayTimeKeeping() {
   const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingMemberEdit[]>([]);
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [disabledUpdate, setDisabledUpdate] = useState(true);
+  const disabledUpdate = editTimeKeepingMembers.length <= 0;
   const [isSelectAll, setIsSelectAll] = useState(false);
+
+  const onSaveTimeKeeping = async ()=>{
+    console.log(editTimeKeepingMembers)
+  }
 
   const onToggleEdit = () => {
     setIsEdit(!isEdit);
@@ -109,21 +113,23 @@ export default function TodayTimeKeeping() {
     }));
     newTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
 
-    // get array from map and update current array
-    const newEditedTimeKeepingMembers: TTimeKeepingMemberEdit[] = Object.entries(editedTKMap).map(([k, v]) => v);
+    // Convert the map back to an array and update the state
+    const newEditedTimeKeepingMembers: TTimeKeepingMemberEdit[] = Array.from(editedTKMap.values());
     setEditTimeKeepingMembers([...newEditedTimeKeepingMembers]);
   };
 
   const onUpdateMemberList = (selectedWorkingTypeId: number) => {
-    const selectedWorkingType: TWorkingType = workingTypes.filter((wkType) => wkType.id === selectedWorkingTypeId)?.[0] ?? {
+    // Find the selected working type or default to a fallback
+    const selectedWorkingType: TWorkingType = workingTypes.find((wkType) => wkType.id === selectedWorkingTypeId) ?? {
       id: -1,
       name: "Unknown WkType",
     };
-    //
+
+    // Create a map to store members by identifyCard
     const memberListMap = new Map<string, TTimeKeepingMember>();
     memberList.forEach((mem) => memberListMap.set(mem.identifyCard, mem));
 
-    //
+    // Update the members in the map with the new workingType
     for (const idCard of selectedIdCards) {
       const mem = memberListMap.get(idCard);
       if (!mem) continue;
@@ -136,15 +142,15 @@ export default function TodayTimeKeeping() {
       memberListMap.set(idCard, memUpdated);
     }
 
-    //
-    const updatedMemList = Object.entries(memberListMap).map(([k, v]) => v);
+    // Convert the map back to an array and update the state
+    const updatedMemList = Array.from(memberListMap.values());
     setMemberList([...updatedMemList]);
   };
 
   const onMarkWkType = (chooseWkTypeId: number) => {
     onEditTimeKeepingMember(chooseWkTypeId);
     onUpdateMemberList(chooseWkTypeId);
-    onToggleEdit()
+    onToggleEdit();
   };
 
   const updateSelectedIdCards = (method: "add" | "remove", selectedIdCard: string) => {
@@ -165,6 +171,7 @@ export default function TodayTimeKeeping() {
       {!isEdit && (
         <View style={styles.optionBarDefault}>
           <NunitoText type="body3">{moment(Date.now()).format("DD/MM/YYYY")}</NunitoText>
+          {editTimeKeepingMembers.length > 0 && <NunitoText>{`${editTimeKeepingMembers.length} đã sửa`}</NunitoText>}
           <Pressable onPress={onToggleEdit} style={styles.editPressable}>
             <NunitoText type="body3" lightColor="#0B3A82">
               Sửa
@@ -226,7 +233,7 @@ export default function TodayTimeKeeping() {
       )}
 
       {!isEdit && (
-        <TouchableOpacity onPress={() => {}} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
+        <TouchableOpacity onPress={onSaveTimeKeeping} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
           <View style={disabledUpdate ? [styles.button, styles.buttonDisabled] : styles.button}>
             <NunitoText type="body3" style={disabledUpdate ? [styles.buttonText, styles.buttonTextDisabled] : styles.buttonText}>
               Cập nhật
