@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { RootSiblingParent } from "react-native-root-siblings";
+import "../configs/rnCalendarLocalConfig"
 import * as Sentry from "@sentry/react-native";
 
 Sentry.init({
