@@ -46,7 +46,7 @@ export default function AppLayout() {
             justifyContent: "center",
             alignSelf: "center",
             height: 63,
-            marginHorizontal: 60,
+            marginHorizontal: 40,
             paddingHorizontal: 10,
             paddingVertical: 8,
             paddingBottom: 8,
@@ -97,10 +97,26 @@ export default function AppLayout() {
                 }}
               >
                 <AntDesign name="form" size={18} color={color} />
-                {/* <SimpleLineIcons name="paper-clip" size={18} color={color} /> */}
               </View>
             ),
             title: "Đơn của tôi",
+          }}
+        />
+        <Tabs.Screen
+          name="timesheet"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? "white" : "#0B3A82",
+                }}
+              >
+                <SimpleLineIcons name="paper-clip" size={18} color={color} />
+              </View>
+            ),
+            title: "Bảng chấm công",
           }}
         />
 
