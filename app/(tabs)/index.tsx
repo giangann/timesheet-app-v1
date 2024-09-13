@@ -1,16 +1,15 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Foundation from "@expo/vector-icons/Foundation";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Foundation from "@expo/vector-icons/Foundation";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { ROLE_CODE } from "@/constants/Misc";
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
 const Illustration1 = require("@/assets/images/illu-my-form.png");
 const Illustration2 = require("@/assets/images/illu-timesheet.png");
@@ -22,6 +21,14 @@ const Illustration6 = require("@/assets/images/illu-user-info.png");
 export default function HomeScreen() {
   const { signOut, userInfo } = useSession();
   const router = useRouter();
+
+  const goToMyProfileScreen = () => router.navigate("/profile/my-profile");
+  const goToMyFormsScreen = () => router.navigate("/(tabs)/form");
+  const goToMyTimesheetScreen = () => router.navigate("/(tabs)/timesheet");
+  const goToSettingScreen = () => router.navigate("/(tabs)/setting");
+  const goToTimeKeepingScreen = () => router.navigate("/(tabs)/timeKeeping");
+  const goToApproveFormsScreen = () => router.navigate("/(tabs)/approveForm");
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -29,7 +36,9 @@ export default function HomeScreen() {
         <View style={styles.homeHeader}>
           <View style={styles.headerContent}>
             <View style={styles.headerContentLeft}>
-              <AvatarByRole role={userInfo?.roleCode} customStyles={{ borderColor: "white" }} />
+              <Pressable onPress={goToMyProfileScreen}>
+                <AvatarByRole role={userInfo?.roleCode} customStyles={{ borderColor: "white" }} />
+              </Pressable>
               <View style={styles.welcome}>
                 <NunitoText type="body3" lightColor="white">
                   Xin chào !
@@ -72,7 +81,7 @@ export default function HomeScreen() {
           {/* QUICK ACTION __ ROW 1: Common (MyForm, MyTimeSheet) */}
           <View style={styles.quickActionContainer}>
             <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
-              <Pressable onPress={() => router.navigate("/(tabs)/form")}>
+              <Pressable onPress={goToMyFormsScreen}>
                 <View style={styles.quickActionItemBoxInner}>
                   <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
                   <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
@@ -90,11 +99,7 @@ export default function HomeScreen() {
             </View>
 
             <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
-              <Pressable
-                onPress={() => {
-                  router.navigate("/(tabs)/timesheet");
-                }}
-              >
+              <Pressable onPress={goToMyTimesheetScreen}>
                 <View style={styles.quickActionItemBoxInner}>
                   <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
                   <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
@@ -118,7 +123,7 @@ export default function HomeScreen() {
               <View style={{ height: 16 }} />
               <View style={styles.quickActionContainer}>
                 <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
-                  <Pressable onPress={() => router.navigate("/(tabs)/setting")}>
+                  <Pressable onPress={goToSettingScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Cài đặt</NunitoText>
                       <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
@@ -130,7 +135,7 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
-                  <Pressable onPress={() => router.navigate("/(tabs)/timeKeeping")}>
+                  <Pressable onPress={goToTimeKeepingScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
                       <NunitoText type="body3">Hôm nay bạn chưa chấm công cho các thành viên. Chấm thôi !</NunitoText>
@@ -150,7 +155,7 @@ export default function HomeScreen() {
               <View style={{ height: 16 }} />
               <View style={styles.quickActionContainer}>
                 <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
-                  <Pressable onPress={() => router.navigate("/(tabs)/approveForm")}>
+                  <Pressable onPress={goToApproveFormsScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Đơn từ</NunitoText>
                       <NunitoText type="body3">Đơn cần xử lý</NunitoText>
@@ -231,7 +236,7 @@ export default function HomeScreen() {
                   <Image source={Illustration6} />
                 </View>
                 <View style={styles._absoluteTopRightLayer}>
-                  <Pressable onPress={() => router.navigate("/")}>
+                  <Pressable onPress={goToMyProfileScreen}>
                     <View style={styles.userInfoGotoProfileScreen}>
                       <NunitoText type="body2">Chi tiết</NunitoText>
                       <Ionicons name="arrow-forward" size={16} />

@@ -5,8 +5,9 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { RootSiblingParent } from "react-native-root-siblings";
-import "../configs/rnCalendarLocalConfig"
+import "../configs/rnCalendarLocalConfig";
 import * as Sentry from "@sentry/react-native";
+import { NunitoText } from "@/components/text/NunitoText";
 
 Sentry.init({
   dsn: "https://449a5848754654eceaa1424ad7da4636@o4507923809173504.ingest.us.sentry.io/4507928784732160",
@@ -42,6 +43,23 @@ function Root() {
             <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
             <Stack.Screen name="time-keepings" options={{ headerShown: false }} />
             <Stack.Screen name="timesheet" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="profile/my-profile"
+              options={{
+                title: "Hồ sơ cá nhân",
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: "#0B3A82",
+                },
+                headerTintColor: "white",
+                headerTitleAlign: "center",
+                headerTitle: (props) => (
+                  <NunitoText type="heading3" style={{ color: props.tintColor }}>
+                    {props.children}
+                  </NunitoText>
+                ),
+              }}
+            />
           </Stack>
         </SessionProvider>
       </ThemeProvider>
