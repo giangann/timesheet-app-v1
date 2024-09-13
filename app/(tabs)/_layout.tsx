@@ -1,4 +1,5 @@
-import Octicons from '@expo/vector-icons/Octicons';import { ROLE_CODE } from "@/constants/Misc";
+import Octicons from "@expo/vector-icons/Octicons";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -73,6 +74,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="index"
           options={{
+            headerShown: false,
             tabBarIcon: ({ color, size, focused }) => (
               <View
                 style={{
