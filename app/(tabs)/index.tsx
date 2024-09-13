@@ -1,14 +1,14 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Image, StyleSheet, Platform, Button, ScrollView, SafeAreaView, View } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useSession } from "@/contexts/ctx";
-import { AvatarByRole } from "@/ui/AvatarByRole";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Foundation from "@expo/vector-icons/Foundation";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useSession } from "@/contexts/ctx";
+import { AvatarByRole } from "@/ui/AvatarByRole";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Image, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
 const Illustration1 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration2 = require("@/assets/images/illu-team-member.png");
@@ -18,7 +18,7 @@ const Illustration4 = require("@/assets/images/illu-user-info.png");
 export default function HomeScreen() {
   const { signOut, userInfo } = useSession();
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         {/* HEADER */}
         <View style={styles.homeHeader}>
@@ -63,7 +63,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <ScrollView>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
           {/* QUICK ACTION */}
           {/* QUICK ACTION __ ROW 1 */}
           <View style={styles.quickActionContainer}>
@@ -99,7 +99,7 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
-          {/* __placeholder-gap__ */}
+
           <View style={{ height: 16 }} />
           {/* QUICK ACTION __ ROW 2 */}
           <View style={styles.quickActionContainer}>
@@ -112,39 +112,42 @@ export default function HomeScreen() {
                 </View>
               </View>
             </View>
-
-            <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }, { opacity: 0 }]}>
-              <View style={styles.quickActionItemBoxInner}>
-                <NunitoText type="subtitle1">Nhân sự</NunitoText>
-                <NunitoText type="body3">Quản lý nhân sự</NunitoText>
-                <View style={styles.chipCircle}>
-                  <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
-                  <NunitoText type="body2" lightColor="white">
-                    {"25"}
-                  </NunitoText>
-                </View>
-
-                <View style={styles.quickActionItemIllu}>
-                  <Image source={Illustration1} />
-                </View>
-              </View>
-            </View>
+            <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
           </View>
 
+          <View style={{ height: 32 }} />
           {/* USER INFORMATION BRIEF */}
-          <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
-            <View style={styles.quickActionItemBoxInner}>
-              <NunitoText type="subtitle1">Nhân sự</NunitoText>
-              <NunitoText type="body3">Quản lý nhân sự</NunitoText>
-              <View style={styles.chipCircle}>
-                <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
-                <NunitoText type="body2" lightColor="white">
-                  {"25"}
-                </NunitoText>
-              </View>
-
-              <View style={styles.quickActionItemIllu}>
-                <Image source={Illustration1} />
+          <View style={styles.userInfoContainer}>
+            <NunitoText>Thông tin của tôi</NunitoText>
+            <View style={styles.userInfoBox}>
+              <View style={styles.userInfoBoxInner}>
+                <View style={styles.userInfoField}>
+                  <View style={styles.userInfoFieldIconBox}>
+                    <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                  </View>
+                  <NunitoText type="body3">{userInfo?.name}</NunitoText>
+                </View>
+                <View style={styles.userInfoField}>
+                  <View style={styles.userInfoFieldIconBox}>
+                    <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                  </View>
+                  <NunitoText type="body3">{userInfo?.roleName}</NunitoText>
+                </View>
+                <View style={styles.userInfoField}>
+                  <View style={styles.userInfoFieldIconBox}>
+                    <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                  </View>
+                  <NunitoText type="body3">{userInfo?.phone}</NunitoText>
+                </View>
+                <View style={styles.userInfoField}>
+                  <View style={styles.userInfoFieldIconBox}>
+                    <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                  </View>
+                  <NunitoText type="body3">{userInfo?.email}</NunitoText>
+                </View>
+                <View style={styles.userInfoIllu}>
+                  <Image source={Illustration4} />
+                </View>
               </View>
             </View>
           </View>
@@ -155,7 +158,19 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  safeArea: {
+    flex: 1, // Add flex to fill the screen
+  },
+  container: {
+    flex: 1, // Ensure the container also takes up full available space
+  },
+  scrollView: {
+    flex: 1, // Make sure ScrollView also expands to fill space
+  },
+  scrollViewContent: {
+    paddingBottom: 100, // Adjust this value based on the height of your tab bar
+  },
+  // container: {},
   // header
   homeHeader: {
     backgroundColor: "#0B3A82",
@@ -266,5 +281,44 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 4,
+  },
+
+  // user information
+  userInfoContainer: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  userInfoBox: {
+    height: 180,
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: `#000000${OPACITY_TO_HEX["25"]}`,
+  },
+  userInfoBoxInner: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    gap: 4,
+  },
+  userInfoGotoProfileScreen: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  userInfoIllu: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+  },
+  userInfoField: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  userInfoFieldIconBox: {
+    width: 24,
   },
 });
