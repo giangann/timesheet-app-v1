@@ -12,11 +12,12 @@ import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "re
 import { useRouter } from "expo-router";
 import { ROLE_CODE } from "@/constants/Misc";
 
-const Illustration1 = require("@/assets/images/illu-form-need-approve.png");
-const Illustration2 = require("@/assets/images/illu-team-member.png");
+const Illustration1 = require("@/assets/images/illu-my-form.png");
+const Illustration2 = require("@/assets/images/illu-timesheet.png");
 const Illustration3 = require("@/assets/images/illu-setting.png");
-const Illustration4 = require("@/assets/images/illu-user-info.png");
-const Illustration5 = require("@/assets/images/illu-timekeeping.png");
+const Illustration4 = require("@/assets/images/illu-timekeeping.png");
+const Illustration5 = require("@/assets/images/illu-form-need-approve.png");
+const Illustration6 = require("@/assets/images/illu-user-info.png");
 
 export default function HomeScreen() {
   const { signOut, userInfo } = useSession();
@@ -134,7 +135,7 @@ export default function HomeScreen() {
                       <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
                       <NunitoText type="body3">Hôm nay bạn chưa chấm công cho các thành viên. Chấm thôi !</NunitoText>
                       <View style={styles.quickActionItemIllu}>
-                        <Image source={Illustration5} />
+                        <Image source={Illustration4} />
                       </View>
                     </View>
                   </Pressable>
@@ -160,7 +161,7 @@ export default function HomeScreen() {
                       </View>
 
                       <View style={styles.quickActionItemIllu}>
-                        <Image source={Illustration1} />
+                        <Image source={Illustration5} />
                       </View>
                     </View>
                   </Pressable>
@@ -227,7 +228,7 @@ export default function HomeScreen() {
                   <NunitoText type="body3">{userInfo?.email}</NunitoText>
                 </View>
                 <View style={styles.userInfoIllu}>
-                  <Image source={Illustration4} />
+                  <Image source={Illustration6} />
                 </View>
                 <View style={styles._absoluteTopRightLayer}>
                   <Pressable onPress={() => router.navigate("/")}>
