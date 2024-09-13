@@ -8,7 +8,8 @@ import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Image, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { useRouter } from "expo-router";
 
 const Illustration1 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration2 = require("@/assets/images/illu-team-member.png");
@@ -17,6 +18,7 @@ const Illustration4 = require("@/assets/images/illu-user-info.png");
 
 export default function HomeScreen() {
   const { signOut, userInfo } = useSession();
+  const router = useRouter();
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -68,35 +70,44 @@ export default function HomeScreen() {
           {/* QUICK ACTION __ ROW 1 */}
           <View style={styles.quickActionContainer}>
             <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
-              <View style={styles.quickActionItemBoxInner}>
-                <NunitoText type="subtitle1">Đơn từ</NunitoText>
-                <NunitoText type="body3">Đơn cần xử lý</NunitoText>
-                <View style={styles.chipCircle}>
-                  <NunitoText type="body2" lightColor="white">
-                    {"06"}
-                  </NunitoText>
-                </View>
+              <Pressable onPress={() => router.navigate("/(tabs)/approveForm")}>
+                <View style={styles.quickActionItemBoxInner}>
+                  <NunitoText type="subtitle1">Đơn từ</NunitoText>
+                  <NunitoText type="body3">Đơn cần xử lý</NunitoText>
+                  <View style={styles.chipCircle}>
+                    <NunitoText type="body2" lightColor="white">
+                      {"06"}
+                    </NunitoText>
+                  </View>
 
-                <View style={styles.quickActionItemIllu}>
-                  <Image source={Illustration1} />
+                  <View style={styles.quickActionItemIllu}>
+                    <Image source={Illustration1} />
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             </View>
-            <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
-              <View style={styles.quickActionItemBoxInner}>
-                <NunitoText type="subtitle1">Nhân sự</NunitoText>
-                <NunitoText type="body3">Quản lý nhân sự</NunitoText>
-                <View style={styles.chipCircle}>
-                  <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
-                  <NunitoText type="body2" lightColor="white">
-                    {"25"}
-                  </NunitoText>
-                </View>
 
-                <View style={styles.quickActionItemIllu}>
-                  <Image source={Illustration2} />
+            <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
+              <Pressable
+                onPress={() => {
+                  router.navigate("/");
+                }}
+              >
+                <View style={styles.quickActionItemBoxInner}>
+                  <NunitoText type="subtitle1">Nhân sự</NunitoText>
+                  <NunitoText type="body3">Quản lý nhân sự</NunitoText>
+                  <View style={styles.chipCircle}>
+                    <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
+                    <NunitoText type="body2" lightColor="white">
+                      {"25"}
+                    </NunitoText>
+                  </View>
+
+                  <View style={styles.quickActionItemIllu}>
+                    <Image source={Illustration2} />
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             </View>
           </View>
 
@@ -104,14 +115,18 @@ export default function HomeScreen() {
           {/* QUICK ACTION __ ROW 2 */}
           <View style={styles.quickActionContainer}>
             <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
-              <View style={styles.quickActionItemBoxInner}>
-                <NunitoText type="subtitle1">Cài đặt</NunitoText>
-                <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
-                <View style={styles.quickActionItemIllu}>
-                  <Image source={Illustration3} />
+              <Pressable onPress={() => router.navigate("/(tabs)/setting")}>
+                <View style={styles.quickActionItemBoxInner}>
+                  <NunitoText type="subtitle1">Cài đặt</NunitoText>
+                  <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
+                  <View style={styles.quickActionItemIllu}>
+                    <Image source={Illustration3} />
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             </View>
+
+            {/* _placehoder__item_ */}
             <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
           </View>
 
@@ -123,30 +138,38 @@ export default function HomeScreen() {
               <View style={styles.userInfoBoxInner}>
                 <View style={styles.userInfoField}>
                   <View style={styles.userInfoFieldIconBox}>
-                    <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                    <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                   </View>
                   <NunitoText type="body3">{userInfo?.name}</NunitoText>
                 </View>
                 <View style={styles.userInfoField}>
                   <View style={styles.userInfoFieldIconBox}>
-                    <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                    <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                   </View>
                   <NunitoText type="body3">{userInfo?.roleName}</NunitoText>
                 </View>
                 <View style={styles.userInfoField}>
                   <View style={styles.userInfoFieldIconBox}>
-                    <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                    <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                   </View>
                   <NunitoText type="body3">{userInfo?.phone}</NunitoText>
                 </View>
                 <View style={styles.userInfoField}>
                   <View style={styles.userInfoFieldIconBox}>
-                    <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX['75']}`} />
+                    <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                   </View>
                   <NunitoText type="body3">{userInfo?.email}</NunitoText>
                 </View>
                 <View style={styles.userInfoIllu}>
                   <Image source={Illustration4} />
+                </View>
+                <View style={styles._absoluteTopRightLayer}>
+                  <Pressable onPress={() => router.navigate("/")}>
+                    <View style={styles.userInfoGotoProfileScreen}>
+                      <NunitoText type="body2">Chi tiết</NunitoText>
+                      <Ionicons name="arrow-forward" size={16} />
+                    </View>
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -302,10 +325,17 @@ const styles = StyleSheet.create({
     height: "100%",
     gap: 4,
   },
-  userInfoGotoProfileScreen: {
+  //
+  _absoluteTopRightLayer: {
     position: "absolute",
     top: 0,
-    left: 0,
+    right: 0,
+  },
+  //
+  userInfoGotoProfileScreen: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   userInfoIllu: {
     position: "absolute",
