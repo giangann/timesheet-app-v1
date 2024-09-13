@@ -19,7 +19,7 @@ const Illustration5 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration6 = require("@/assets/images/illu-user-info.png");
 
 export default function HomeScreen() {
-  const { signOut, userInfo } = useSession();
+  const { userInfo } = useSession();
   const router = useRouter();
 
   const goToMyProfileScreen = () => router.navigate("/profile/my-profile");
@@ -28,7 +28,7 @@ export default function HomeScreen() {
   const goToSettingScreen = () => router.navigate("/(tabs)/setting");
   const goToTimeKeepingScreen = () => router.navigate("/(tabs)/timeKeeping");
   const goToApproveFormsScreen = () => router.navigate("/(tabs)/approveForm");
-
+  const goToNotiScreen = () => router.navigate("/notification/noti");
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -48,7 +48,9 @@ export default function HomeScreen() {
                 </NunitoText>
               </View>
             </View>
-            <Ionicons name="notifications" size={24} color="white" />
+            <Pressable onPress={goToNotiScreen}>
+              <Ionicons name="notifications" size={24} color="white" />
+            </Pressable>
           </View>
         </View>
 

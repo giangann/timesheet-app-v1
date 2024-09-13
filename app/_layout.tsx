@@ -60,6 +60,24 @@ function Root() {
                 ),
               }}
             />
+
+            <Stack.Screen
+              name="notification/noti"
+              options={{
+                title: "Thông báo",
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: "#0B3A82",
+                },
+                headerTintColor: "white",
+                headerTitleAlign: "center",
+                headerTitle: (props) => (
+                  <NunitoText type="heading3" style={{ color: props.tintColor }}>
+                    {props.children}
+                  </NunitoText>
+                ),
+              }}
+            />
           </Stack>
         </SessionProvider>
       </ThemeProvider>
