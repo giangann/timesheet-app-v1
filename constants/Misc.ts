@@ -52,3 +52,154 @@ export const user = {
   company_name: "Delco Farm",
   note: null,
 };
+
+/**
+ * 1. Api lấy dữ liệu cho màn Hồ sơ cá nhân
+ */
+type Profile = {
+  // team info
+  numberOfTeamMember: number; // số thành viên trong team
+  teamName: string;
+  teamHotline: string;
+  // salary info
+  salaryCoef: number; // hệ số lương
+  positionBonus: number; // phụ cấp chức vụ
+  otherBonus: number; // phu cap khac
+};
+
+/**
+ * 2. Api lấy dữ liệu cho màn Trang chủ
+ */
+type HomeData = {
+  numberOfFormNeedApprove: number; // số đơn lãnh đạo chưa phê duyệt
+  numberOfCurrentMonthTimeKeeping: number; // số ngày đã chám công trong tháng, chấp nhận 0.5 (vd: 19.5)
+  haveTimeKeepingForTeamToday: boolean; // Văn thư hôm nay đã chấm công cho team hay chưa
+  numberOfTeamMember: number; // số lượng thành viên của team.
+  numberOfUnreadFormNoti: number; // số thông báo kiểu form chưa đọc
+  haveTimeKeepingToday: boolean; // hôm nay người dùng đã được Văn thư chấm công hay chưa
+  workingDayStartTime: string; // giờ bắt đầu làm việc của Phòng ban trong ngày làm việc
+  workingDayEndTime: string; // giờ kết thúc làm việc của Phòng ban trong ngày làm việc
+};
+
+/**
+ * 3. Api bảng chấm công
+ * params:{
+ *    month: string, (YYYY-MM)
+ *    userIdentifyCard: string
+ * }
+ *
+ * response trả về data có độ dài từ ngày đầu của tháng đến ngày hiện tại
+ * VD: hôm nay: 13/09/2024 => data.timesheet.length = 13
+ */
+export type MonthTimesheet = {
+  date: string; // (YYYY-MM-DD)
+  workingTypeId: number | null; // 1 || 2 || null
+  leaveFormId: number | null; // one of those: 1706:1702:1703:1708:1707:1705:1704:1803:1804:1802:1952:1953:1954 or null
+  overtimeFormId: number | null; // one of those: 2:102 or null
+  dutyFormId: number | null; // one of those: 254:304:352:353 or null
+};
+export type MonthTimesheetList =MonthTimesheet[]
+// 1. Leave
+// 1706:1702:1703:1708:1707:1705:1704:1803:1804:1802:1952:1953:1954
+
+// 2. OT
+// 2:102
+
+// 3. Duty
+// 254:304:352:353
+
+export const timesheetMockResponse = {
+  timesheet: [
+    {
+      date: "2024-09-01",
+      workingTypeId: 1,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 254,
+    },
+    {
+      date: "2024-09-02",
+      workingTypeId: 2,
+      leaveFormId: 1706,
+      overtimeFormId: null,
+      dutyFormId: null,
+    },
+    {
+      date: "2024-09-03",
+      workingTypeId: null,
+      leaveFormId: null,
+      overtimeFormId: 2,
+      dutyFormId: null,
+    },
+    {
+      date: "2024-09-04",
+      workingTypeId: 1,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 304,
+    },
+    {
+      date: "2024-09-05",
+      workingTypeId: null,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 352,
+    },
+    {
+      date: "2024-09-06",
+      workingTypeId: null,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 353,
+    },
+    {
+      date: "2024-09-07",
+      workingTypeId: null,
+      leaveFormId: 1702,
+      overtimeFormId: null,
+      dutyFormId: null,
+    },
+    {
+      date: "2024-09-08",
+      workingTypeId: 1,
+      leaveFormId: 1703,
+      overtimeFormId: null,
+      dutyFormId: null,
+    },
+    {
+      date: "2024-09-09",
+      workingTypeId: 2,
+      leaveFormId: 1708,
+      overtimeFormId: 102,
+      dutyFormId: null,
+    },
+    {
+      date: "2024-09-10",
+      workingTypeId: null,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 353,
+    },
+    {
+      date: "2024-09-11",
+      workingTypeId: 1,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 254,
+    },
+    {
+      date: "2024-09-12",
+      workingTypeId: null,
+      leaveFormId: null,
+      overtimeFormId: null,
+      dutyFormId: 304,
+    },
+    {
+      date: "2024-09-13",
+      workingTypeId: 2,
+      leaveFormId: 1705,
+      overtimeFormId: 102,
+      dutyFormId: null,
+    },
+  ],
+};
