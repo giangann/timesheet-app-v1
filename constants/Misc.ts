@@ -37,3 +37,18 @@ export enum ROLE_CODE {
 //   statusCode: 200,
 //   timestamp: "2024-09-08T11:57:19.672520792",
 // };
+
+export const delcoEggToken =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJJZCI6IjEifSwiaWF0IjoxNzI2MjI5OTI5LCJleHAiOjE3Mjg4MjE5Mjl9.NW5HBpGLOlPiDPtsOaKfTmSZmuUofwS34XtmxiMPork";
+
+export const user = {
+  createdAt: "2024-01-21T03:55:29.000Z",
+  updatedAt: "2024-03-10T03:30:28.000Z",
+  id: 1,
+  username: "admin_giangann@gmail.com",
+  phone_number: "0901521738",
+  fullname: "Admin Giang An",
+  isAdmin: true,
+  company_name: "Delco Farm",
+  note: null,
+};
