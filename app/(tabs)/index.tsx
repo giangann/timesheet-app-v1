@@ -10,11 +10,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
+import { ROLE_CODE } from "@/constants/Misc";
 
 const Illustration1 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration2 = require("@/assets/images/illu-team-member.png");
 const Illustration3 = require("@/assets/images/illu-setting.png");
 const Illustration4 = require("@/assets/images/illu-user-info.png");
+const Illustration5 = require("@/assets/images/illu-timekeeping.png");
 
 export default function HomeScreen() {
   const { signOut, userInfo } = useSession();
@@ -66,17 +68,16 @@ export default function HomeScreen() {
         </View>
 
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-          {/* QUICK ACTION */}
-          {/* QUICK ACTION __ ROW 1 */}
+          {/* QUICK ACTION __ ROW 1: Common (MyForm, MyTimeSheet) */}
           <View style={styles.quickActionContainer}>
             <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
-              <Pressable onPress={() => router.navigate("/(tabs)/approveForm")}>
+              <Pressable onPress={() => router.navigate("/(tabs)/form")}>
                 <View style={styles.quickActionItemBoxInner}>
-                  <NunitoText type="subtitle1">Đơn từ</NunitoText>
-                  <NunitoText type="body3">Đơn cần xử lý</NunitoText>
+                  <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
+                  <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
                   <View style={styles.chipCircle}>
                     <NunitoText type="body2" lightColor="white">
-                      {"06"}
+                      {"02"}
                     </NunitoText>
                   </View>
 
@@ -90,16 +91,15 @@ export default function HomeScreen() {
             <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
               <Pressable
                 onPress={() => {
-                  router.navigate("/");
+                  router.navigate("/(tabs)/timesheet");
                 }}
               >
                 <View style={styles.quickActionItemBoxInner}>
-                  <NunitoText type="subtitle1">Nhân sự</NunitoText>
-                  <NunitoText type="body3">Quản lý nhân sự</NunitoText>
+                  <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
+                  <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
                   <View style={styles.chipCircle}>
-                    <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
                     <NunitoText type="body2" lightColor="white">
-                      {"25"}
+                      {"19"}
                     </NunitoText>
                   </View>
 
@@ -111,27 +111,93 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View style={{ height: 16 }} />
-          {/* QUICK ACTION __ ROW 2 */}
-          <View style={styles.quickActionContainer}>
-            <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
-              <Pressable onPress={() => router.navigate("/(tabs)/setting")}>
-                <View style={styles.quickActionItemBoxInner}>
-                  <NunitoText type="subtitle1">Cài đặt</NunitoText>
-                  <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
-                  <View style={styles.quickActionItemIllu}>
-                    <Image source={Illustration3} />
-                  </View>
+          {/* QUICK ACTION __ ROW 2: Archivist (Setting, TimeKeeping) */}
+          {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
+            <>
+              <View style={{ height: 16 }} />
+              <View style={styles.quickActionContainer}>
+                <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
+                  <Pressable onPress={() => router.navigate("/(tabs)/setting")}>
+                    <View style={styles.quickActionItemBoxInner}>
+                      <NunitoText type="subtitle1">Cài đặt</NunitoText>
+                      <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
+                      <View style={styles.quickActionItemIllu}>
+                        <Image source={Illustration3} />
+                      </View>
+                    </View>
+                  </Pressable>
                 </View>
-              </Pressable>
-            </View>
 
-            {/* _placehoder__item_ */}
-            <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
-          </View>
+                <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                  <Pressable onPress={() => router.navigate("/(tabs)/timeKeeping")}>
+                    <View style={styles.quickActionItemBoxInner}>
+                      <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
+                      <NunitoText type="body3">Hôm nay bạn chưa chấm công cho các thành viên. Chấm thôi !</NunitoText>
+                      <View style={styles.quickActionItemIllu}>
+                        <Image source={Illustration5} />
+                      </View>
+                    </View>
+                  </Pressable>
+                </View>
+              </View>
+            </>
+          )}
 
-          <View style={{ height: 32 }} />
+          {/* QUICK ACTION __ ROW 3: Director (ApproveForm) */}
+          {(userInfo?.roleCode === ROLE_CODE.TEAM_DIRECTOR || userInfo?.roleCode === ROLE_CODE.DEPARTMENT_DIRECTOR) && (
+            <>
+              <View style={{ height: 16 }} />
+              <View style={styles.quickActionContainer}>
+                <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                  <Pressable onPress={() => router.navigate("/(tabs)/approveForm")}>
+                    <View style={styles.quickActionItemBoxInner}>
+                      <NunitoText type="subtitle1">Đơn từ</NunitoText>
+                      <NunitoText type="body3">Đơn cần xử lý</NunitoText>
+                      <View style={styles.chipCircle}>
+                        <NunitoText type="body2" lightColor="white">
+                          {"06"}
+                        </NunitoText>
+                      </View>
+
+                      <View style={styles.quickActionItemIllu}>
+                        <Image source={Illustration1} />
+                      </View>
+                    </View>
+                  </Pressable>
+                </View>
+
+                {/* __placholder_item__ */}
+                <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
+
+                {/* QUICK ACTION __ ROW 3.2: Prepare for future features */}
+                {/* <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
+              <Pressable
+                onPress={() => {
+                  router.navigate("/");
+                }}
+              >
+                <View style={styles.quickActionItemBoxInner}>
+                <NunitoText type="subtitle1">Nhân sự</NunitoText>
+                  <NunitoText type="body3">Quản lý nhân sự</NunitoText>
+                  <View style={styles.chipCircle}>
+                    <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
+                    <NunitoText type="body2" lightColor="white">
+                      {"25"}
+                    </NunitoText>
+                    </View>
+
+                  <View style={styles.quickActionItemIllu}>
+                  <Image source={Illustration2} />
+                  </View>
+                  </View>
+                  </Pressable>
+            </View> */}
+              </View>
+            </>
+          )}
+
           {/* USER INFORMATION BRIEF */}
+          <View style={{ height: 32 }} />
           <View style={styles.userInfoContainer}>
             <NunitoText>Thông tin của tôi</NunitoText>
             <View style={styles.userInfoBox}>
