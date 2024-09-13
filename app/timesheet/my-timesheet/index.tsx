@@ -6,7 +6,7 @@ import { View, StyleSheet } from "react-native";
 export default function MyTimeSheet() {
   return (
     <View style={styles.container}>
-      <NunitoText>My Time Sheet</NunitoText>
+      {/* <NunitoText>My Time Sheet</NunitoText> */}
       <BasicCalendar/>
       {/* <BasicWeekCalendar /> */}
     </View>
@@ -15,7 +15,7 @@ export default function MyTimeSheet() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 0,
     paddingBottom: 0,
     height: "100%",
   },
