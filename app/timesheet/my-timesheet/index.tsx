@@ -5,6 +5,7 @@ import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
+import SkeletonLoader from "@/ui/SkeletonLoader";
 import moment from "moment";
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
@@ -42,30 +43,42 @@ type TLeaveFormDetail = {
 
 export default function MyTimeSheet() {
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const { session } = useSession();
   const onFetchLeaveFrom = (formId: number | null) => {
-    if (!formId) return;
+    if (!formId) {
+      setLeaveForm(null);
+      return;
+    }
     fetchLeaveFormDetail(formId.toString());
   };
 
   const fetchLeaveFormDetail = async (formId: string) => {
-    const token = `Bearer ${session}` ?? "xxx";
+    setIsFetching(true);
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
-    const endpoint = `/leave-forms/${formId}`;
-    const url = `${baseUrl}${endpoint}`;
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = `/leave-forms/${formId}`;
+      const url = `${baseUrl}${endpoint}`;
 
-    if (responseJson.statusCode === 200) {
-      setLeaveForm(responseJson.data.leaveFormDetail);
-    } else {
-      MyToast.error(responseJson.error);
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+
+      if (responseJson.statusCode === 200) {
+        setLeaveForm(responseJson.data.leaveFormDetail);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsFetching(false);
     }
   };
   return (
@@ -73,7 +86,8 @@ export default function MyTimeSheet() {
       {/* <NunitoText>My Time Sheet</NunitoText> */}
       <BasicCalendar onFetchLeaveFrom={onFetchLeaveFrom} />
       {/* <BasicWeekCalendar /> */}
-      {leaveForm && (
+      {isFetching && <SkeletonLoader />}
+      {leaveForm && !isFetching && (
         <View style={styles.selectedDateDetail}>
           <BoxStatus status={leaveForm.status} approveDate={leaveForm.approveDate} />
           <Item
