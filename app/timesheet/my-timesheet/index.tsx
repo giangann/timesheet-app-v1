@@ -8,9 +8,11 @@ import { useSession } from "@/contexts/ctx";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import moment from "moment";
 import { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 
 export default function MyTimeSheet() {
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
@@ -106,53 +108,111 @@ export default function MyTimeSheet() {
       {/* <NunitoText>My Time Sheet</NunitoText> */}
       <BasicCalendar onFetchForms={onFetchForms} />
       {/* <BasicWeekCalendar /> */}
-      {isFetching && <SkeletonLoader />}
-      {leaveForm && !isFetching && (
-        <View style={styles.selectedDateDetail}>
-          <BoxStatus status={leaveForm.status} approveDate={leaveForm.approveDate} />
-          <Item
-            title="Ngày xin nghỉ"
-            content={`${moment(leaveForm.startDate).format("DD/MM/YYYY <HH:mm>")} --> ${moment(leaveForm.endDate).format("DD/MM/YYYY <HH:mm>")}`}
-          />
-          <Item title="Loại nghỉ" content={leaveForm.leaveFormType} />
-          <Item title="Người phê duyệt" content={`${leaveForm.userApproveName} (${leaveForm.userApproveRole.name})`} />
-        </View>
-      )}
+      <View style={styles.formsWrapper}>
+        {isFetching && <SkeletonLoader />}
+        {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
+        {otForm && !isFetching && <OTFormInfo otForm={otForm} />}
+        {dutyForm && !isFetching && <DutyFormInfo dutyForm={dutyForm} />}
+      </View>
     </View>
   );
 }
 
-const LeaveFormInfo = (leaveForm: TLeaveFormDetail) => {
+const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
+  const router = useRouter();
+  const onGotoLeaveFormDetail = () => router.navigate({ pathname: "/forms/leave_forms/[id]", params: { id: leaveForm.id } });
   return (
-    <View>
-      <NunitoText type="subtitle1">Đơn xin nghỉ</NunitoText>
+    <View style={styles.formContainer}>
+      <View style={styles.formTitleRow}>
+        <NunitoText type="subtitle1">Đơn xin nghỉ</NunitoText>
+        <Pressable onPress={onGotoLeaveFormDetail}>
+          <View style={styles.gotoDetailButton}>
+            <NunitoText type="body4" style={{ opacity: 1 }}>
+              Chi tiết
+            </NunitoText>
+            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+          </View>
+        </Pressable>
+      </View>
+
+      <View style={styles.formContentContainer}>
+        <View style={styles.formContentItemLeft}>
+          <NunitoText type="body3">{leaveForm.leaveFormType}</NunitoText>
+        </View>
+
+        <View style={styles.formContentItemRight}>
+          <NunitoText type="body4">{`${moment(leaveForm.startDate).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(leaveForm.endDate).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+        </View>
+      </View>
     </View>
   );
 };
 
-const OTFormInfo = (otForm: any) => {
+const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
+  const router = useRouter();
+  const onGotoOvertimeFormDetail = () => router.navigate({ pathname: "/forms/overtime_forms/[id]", params: { id: otForm.id } });
   return (
-    <View>
-      <NunitoText type="subtitle1">Đơn tăng ca</NunitoText>
+    <View style={styles.formContainer}>
+      <View style={styles.formTitleRow}>
+        <NunitoText type="subtitle1">Đơn tăng ca</NunitoText>
+        <Pressable onPress={onGotoOvertimeFormDetail}>
+          <View style={styles.gotoDetailButton}>
+            <NunitoText type="body4" style={{ opacity: 1 }}>
+              Chi tiết
+            </NunitoText>
+            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+          </View>
+        </Pressable>
+      </View>
+
+      <View style={styles.formContentContainer}>
+        <View style={styles.formContentItemLeft}>
+          <NunitoText type="body3">{otForm.salaryCoefficientType.name}</NunitoText>
+        </View>
+
+        <View style={styles.formContentItemRight}>
+          <NunitoText type="body4">{`${moment(otForm.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(otForm.startTime).format("HH:mm")} - ${moment(otForm.endTime).format("HH:mm")}`}</NunitoText>
+        </View>
+      </View>
     </View>
   );
 };
 
-const DutyFormInfo = (dutyForm: any) => {
-  return (
-    <View>
-      <NunitoText type="subtitle1">Đơn trực</NunitoText>
-    </View>
-  );
-};
+const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
+  const router = useRouter();
+  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id ?? 1 } });
 
-const Item = ({ title, content }: { title: string; content: string }) => {
   return (
-    <View style={styles.item}>
-      <NunitoText type="body3" style={{ opacity: 0.5 }}>
-        {title}
-      </NunitoText>
-      <NunitoText type="body3">{content}</NunitoText>
+    <View style={styles.formContainer}>
+      <View style={styles.formTitleRow}>
+        <NunitoText type="subtitle1">Đơn trực</NunitoText>
+        <Pressable onPress={onGotoDutyFormDetail}>
+          <View style={styles.gotoDetailButton}>
+            <NunitoText type="body4" style={{ opacity: 1 }}>
+              Chi tiết
+            </NunitoText>
+            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+          </View>
+        </Pressable>
+      </View>
+
+      <View style={styles.formContentContainer}>
+        <View style={styles.formContentItemLeft}>
+          <NunitoText type="body3">{dutyForm.dutyCalendar.dutyType.name}</NunitoText>
+          <NunitoText type="body3">{`${
+            dutyForm.dutyCalendar.salaryCoefficientType.name
+          } (x${dutyForm.dutyCalendar.salaryCoefficientType.coefficient.toFixed(2)}`}</NunitoText>
+        </View>
+
+        <View style={styles.formContentItemRight}>
+          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.startTime).format("HH:mm")} - ${moment(dutyForm.dutyCalendar.endTime).format(
+            "HH:mm"
+          )}`}</NunitoText>
+        </View>
+      </View>
     </View>
   );
 };
@@ -168,10 +228,35 @@ const styles = StyleSheet.create({
   selectedDateDetail: {
     paddingHorizontal: 16,
   },
-  item: {
+  formsWrapper: {
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  formContainer: {
+    borderWidth: 1,
+    borderColor: `#000000${OPACITY_TO_HEX["25"]}`,
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 12,
+  },
+  formTitleRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  gotoDetailButton: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
-    paddingBottom: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: `#000000${OPACITY_TO_HEX["15"]}`,
+  },
+  formContentContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  formContentItemLeft: {},
+  formContentItemRight: {
+    alignItems: "flex-end",
   },
 });
