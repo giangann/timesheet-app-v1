@@ -168,4 +168,22 @@ export function getMonthNameInVietnamese(date: string): string {
   return `Tháng ${dateObj.getMonth() + 1}`;
 }
 
+/**
+ * Converts a time string from HH:mm:ss format to HH:mm format.
+ * Validates the input to ensure it is in the correct HH:mm:ss format.
+ * @param time - The input time string in HH:mm:ss format.
+ * @returns The time string in HH:mm format or an error message if input is invalid.
+ */
+export function convertTimeToHHMM(time: string | undefined): string | undefined {
+  if (!time) return time;
+  // Regular expression to match the HH:mm:ss format
+  const timeFormatRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
 
+  // Validate the input format
+  if (!timeFormatRegex.test(time)) {
+    return "Invalid time";
+  }
+
+  const [hours, minutes] = time.split(":");
+  return `${hours}:${minutes}`;
+}

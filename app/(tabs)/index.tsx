@@ -1,14 +1,21 @@
+import { fetchHomeData } from "@/api/user";
+import { THomeData } from "@/api/user/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { formatNumberAddLeadingZero, formatNumberWithLeadingZeroOrCap } from "@/helper/common";
+import { convertTimeToHHMM, getDayOfWeekNameInVietnamese } from "@/helper/date";
 import { AvatarByRole } from "@/ui/AvatarByRole";
+import { MyToast } from "@/ui/MyToast";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Foundation from "@expo/vector-icons/Foundation";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import moment from "moment";
+import { useCallback, useState } from "react";
 import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
 const Illustration1 = require("@/assets/images/illu-my-form.png");
@@ -19,7 +26,8 @@ const Illustration5 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration6 = require("@/assets/images/illu-user-info.png");
 
 export default function HomeScreen() {
-  const { userInfo } = useSession();
+  const { userInfo, session } = useSession();
+  const [homeData, setHomeData] = useState<THomeData | null>(null);
   const router = useRouter();
 
   const goToMyProfileScreen = () => router.navigate("/profile/my-profile");
@@ -29,6 +37,25 @@ export default function HomeScreen() {
   const goToTimeKeepingScreen = () => router.navigate("/(tabs)/timeKeeping");
   const goToApproveFormsScreen = () => router.navigate("/(tabs)/approveForm");
   const goToNotiScreen = () => router.navigate("/notification/noti");
+
+  const onFetchHomeData = async () => {
+    try {
+      const responseJson = await fetchHomeData(session ?? "");
+
+      if (responseJson.statusCode === 200) {
+        setHomeData(responseJson.data.profile);
+      } else MyToast.error(responseJson.error);
+    } catch (error: any) {
+      MyToast.error(error?.message);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      onFetchHomeData();
+    }, [])
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -60,18 +87,18 @@ export default function HomeScreen() {
             <View style={styles.todayInfo}>
               <View style={styles.todayDateBox}>
                 <View style={styles.dayOfWeekBox}>
-                  <NunitoText lightColor="white">{"Thứ 4"}</NunitoText>
+                  <NunitoText lightColor="white">{getDayOfWeekNameInVietnamese(moment(Date.now()).format("YYYY-MM-DD"))}</NunitoText>
                 </View>
-                <NunitoText style={{ textAlign: "center" }}>{"11/09"}</NunitoText>
+                <NunitoText style={{ textAlign: "center" }}>{moment(Date.now()).format("DD/MM")}</NunitoText>
               </View>
               <View style={styles.todayTimeKeepingBox}>
-                <NunitoText type="body2">Hôm nay bạn chưa được chấm công</NunitoText>
+                <NunitoText type="body2">{homeData?.haveTimeKeepingToday ? "Đã được chấm công hôm nay" : "Hôm nay chưa được chấm công"}</NunitoText>
                 <View style={styles.wdTime}>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    SA: {"08:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    SA: {convertTimeToHHMM(homeData?.workingDayStartTime) ?? "08:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    CH: {"17:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    CH: {convertTimeToHHMM(homeData?.workingDayEndTime) ?? "17:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                 </View>
               </View>
@@ -86,12 +113,21 @@ export default function HomeScreen() {
               <Pressable onPress={goToMyFormsScreen}>
                 <View style={styles.quickActionItemBoxInner}>
                   <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
-                  <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
-                  <View style={styles.chipCircle}>
-                    <NunitoText type="body2" lightColor="white">
-                      {"02"}
-                    </NunitoText>
-                  </View>
+                  {homeData?.numberOfUnreadFormNoti && (
+                    <>
+                      <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
+                      <View style={styles.chipCircle}>
+                        <NunitoText type="body2" lightColor="white">
+                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfUnreadFormNoti) ?? "00"}
+                        </NunitoText>
+                      </View>
+                    </>
+                  )}
+                  {!homeData?.numberOfUnreadFormNoti && (
+                    <>
+                      <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
+                    </>
+                  )}
 
                   <View style={styles.quickActionItemIllu}>
                     <Image source={Illustration1} />
@@ -107,7 +143,7 @@ export default function HomeScreen() {
                   <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
                   <View style={styles.chipCircle}>
                     <NunitoText type="body2" lightColor="white">
-                      {"19"}
+                      {formatNumberAddLeadingZero(homeData?.numberOfCurrentMonthTimeKeeping) ?? "00"}
                     </NunitoText>
                   </View>
 
@@ -140,7 +176,11 @@ export default function HomeScreen() {
                   <Pressable onPress={goToTimeKeepingScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
-                      <NunitoText type="body3">Hôm nay bạn chưa chấm công cho các thành viên. Chấm thôi !</NunitoText>
+                      <NunitoText type="body3">
+                        {homeData?.haveTimeKeepingForTeamToday
+                          ? "Chấm công cho các thành viên trong phòng ban"
+                          : "Chấm công cho các thành viên trong phòng ban"}
+                      </NunitoText>
                       <View style={styles.quickActionItemIllu}>
                         <Image source={Illustration4} />
                       </View>
@@ -163,7 +203,7 @@ export default function HomeScreen() {
                       <NunitoText type="body3">Đơn cần xử lý</NunitoText>
                       <View style={styles.chipCircle}>
                         <NunitoText type="body2" lightColor="white">
-                          {"06"}
+                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfFormNeedApprove) ?? "00"}
                         </NunitoText>
                       </View>
 
@@ -315,7 +355,7 @@ const styles = StyleSheet.create({
     borderColor: `#000000${OPACITY_TO_HEX["15"]}`,
     borderRadius: 6,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
     gap: 12,
   },
