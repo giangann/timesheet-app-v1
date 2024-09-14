@@ -113,17 +113,17 @@ export default function HomeScreen() {
               <Pressable onPress={goToMyFormsScreen}>
                 <View style={styles.quickActionItemBoxInner}>
                   <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
-                  {homeData?.numberOfUnreadFormNoti && (
+                  {homeData?.numberOfUnreadFormNotify && (
                     <>
                       <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
                       <View style={styles.chipCircle}>
                         <NunitoText type="body2" lightColor="white">
-                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfUnreadFormNoti) ?? "00"}
+                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfUnreadFormNotify) ?? "00"}
                         </NunitoText>
                       </View>
                     </>
                   )}
-                  {!homeData?.numberOfUnreadFormNoti && (
+                  {!homeData?.numberOfUnreadFormNotify && (
                     <>
                       <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
                     </>
