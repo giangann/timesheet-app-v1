@@ -1,13 +1,30 @@
 import { MonthTimesheet, MonthTimesheetList, timesheetMockResponse } from "@/constants/Misc";
 import moment from "moment";
-import { StyleSheet, Text, View } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { useMemo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Calendar, DateData } from "react-native-calendars";
 
-export const BasicCalendar = () => {
-  const timesheetDataMap = timsheetDataToMap(timesheetMockResponse.timesheet);
+// const INITIAL_DATE = moment(Date.now()).format("YYYY-MM-DD");
+const INITIAL_DATE = "2024-09-10";
+
+const DEFAULT_SELECTED_COLOR = "#00adf5";
+export const BasicCalendar = ({ onFetchLeaveFrom }: { onFetchLeaveFrom: (formId: number | null) => void }) => {
+  const [selectedDate, setSelectedDate] = useState(INITIAL_DATE);
+  const timesheetDataMap = useMemo(() => timsheetDataToMap(timesheetMockResponse.timesheet), []);
+  const onDayPressHandler = (date: DateData | undefined) => {
+    if (!date) return;
+    //
+    setSelectedDate(date.dateString);
+
+    //
+    const timesheetDate = timesheetDataMap[date.dateString];
+    onFetchLeaveFrom(timesheetDate.leaveFormId);
+  };
   return (
     <View>
       <Calendar
+        current={selectedDate}
+        initialDate={selectedDate}
         dayComponent={({ date, state }) => {
           // get key
           const dateKey = date?.dateString;
@@ -55,16 +72,36 @@ export const BasicCalendar = () => {
           if (dateLeaveFormId) dots.push(FORM_TYPE.LEAVE);
           if (dateOtFormId || dateDutyFormId) dots.push(FORM_TYPE.OT_OR_DUTY);
 
+          // Extracting text color logic
+          const isSelected = date?.dateString === selectedDate;
+          let textColor = "black";
+          if (state === "disabled") {
+            textColor = "gray";
+          } else if (isSelected) {
+            textColor = "white"; // Optional: Override for selected date
+          } else if (state === "today") {
+            textColor = DEFAULT_SELECTED_COLOR;
+          }
           return (
-            <View style={isFuture ? { alignItems: "center" } : [styles.dateContainer, { borderColor: dateBorderColor }]}>
-              <Text style={{ color: state === "disabled" ? "gray" : state === "today" ? "#00adf5" : "black" }}>{date?.day}</Text>
-              {/* Custom Dot */}
-              <View style={styles.dots}>
-                {dots.map((dot) => (
-                  <View style={[styles.dot, { backgroundColor: dot === FORM_TYPE.LEAVE ? "#AF32D0" : "#0B67CC" }]} />
-                ))}
+            <TouchableOpacity onPress={() => onDayPressHandler(date)}>
+              <View
+                style={[
+                  isSelected
+                    ? [styles.dateContainer, { backgroundColor: DEFAULT_SELECTED_COLOR }]
+                    : isFuture
+                    ? { alignItems: "center" }
+                    : [styles.dateContainer, { borderColor: dateBorderColor }],
+                ]}
+              >
+                <Text style={{ color: textColor }}>{date?.day}</Text>
+                {/* Custom Dot */}
+                <View style={styles.dots}>
+                  {dots.map((dot) => (
+                    <View key={dot} style={[styles.dot, { backgroundColor: dot === FORM_TYPE.LEAVE ? "#AF32D0" : "#0B67CC" }]} />
+                  ))}
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
