@@ -1,18 +1,17 @@
 import { fetchDutyFormDetail, fetchLeaveFormDetail, fetchOvertimeFormDetail } from "@/api/form";
 import { TDutyFormDetail, TLeaveFormDetail, TOvertimeFormDetail } from "@/api/form/types";
 import { BasicCalendar } from "@/components/my-rn-calendar/BasicCalendar";
-// import { BasicWeekCalendar } from "@/components/my-rn-calendar/BasicWeekCalendar";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { TIMESHEET_FORM_TYPE, TIMESHEET_FORM_TYPE_COLOR, WORKING_TYPE, WORKING_TYPE_COLOR, WORKING_TYPE_NULL_COLOR } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import moment from "moment";
 import { useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 export default function MyTimeSheet() {
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
@@ -105,9 +104,10 @@ export default function MyTimeSheet() {
   };
   return (
     <View style={styles.container}>
-      {/* <NunitoText>My Time Sheet</NunitoText> */}
-      <BasicCalendar onFetchForms={onFetchForms} />
-      {/* <BasicWeekCalendar /> */}
+      <View>
+        <BasicCalendar onFetchForms={onFetchForms} />
+        <MarkedSymbolNote />
+      </View>
       <View style={styles.formsWrapper}>
         {isFetching && <SkeletonLoader />}
         {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
@@ -117,6 +117,50 @@ export default function MyTimeSheet() {
     </View>
   );
 }
+
+const MarkedSymbolNote = () => {
+  return (
+    <View style={styles.noteContainer}>
+      <View style={styles.noteWkTypeRow}>
+        <View style={styles.noteWkTypeRowItem}>
+          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.ALL] }]}>
+            <NunitoText type="body4">24</NunitoText>
+          </View>
+          <NunitoText type="subtitle2">Cả công</NunitoText>
+        </View>
+        <View style={styles.noteWkTypeRowItem}>
+          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.HALF] }]}>
+            <NunitoText type="body4">24</NunitoText>
+          </View>
+          <NunitoText type="subtitle2">Nửa công</NunitoText>
+        </View>
+        <View style={styles.noteWkTypeRowItem}>
+          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_NULL_COLOR }]}>
+            <NunitoText type="body4">24</NunitoText>
+          </View>
+          <NunitoText type="subtitle2">Chưa chấm</NunitoText>
+        </View>
+      </View>
+
+      <View style={styles.noteFormTypeRow}>
+        <View style={styles.noteFormTypeRowItem}>
+          <View style={[styles.markDotBox]}>
+            <NunitoText type="body4">24</NunitoText>
+            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT_OR_DUTY] }]} />
+          </View>
+          <NunitoText type="subtitle2">Có đơn ngoài giờ </NunitoText>
+        </View>
+        <View style={styles.noteFormTypeRowItem}>
+          <View style={[styles.markDotBox]}>
+            <NunitoText type="body4">24</NunitoText>
+            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.LEAVE] }]} />
+          </View>
+          <NunitoText type="subtitle2">Có đơn xin nghỉ</NunitoText>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
   const router = useRouter();
@@ -268,5 +312,51 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexGrow: 1,
     flexBasis: 1,
+  },
+  noteContainer: {
+    backgroundColor: "#EFF5FF",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    gap: 4,
+  },
+  noteWkTypeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  noteWkTypeRowItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  markBorder: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noteFormTypeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  noteFormTypeRowItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  markDotBox: {
+    alignItems: "center",
+    gap: 1,
+    padding: 6,
+  },
+  markDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "black",
   },
 });
