@@ -15,7 +15,7 @@ export type TUserProfile = {
   teamName: string;
   teamHotline: string;
   // salary info
-  salaryCoef: number; // hệ số lương
-  positionBonus: number; // phụ cấp chức vụ
-  otherBonus: number; // phu cap khac
+  salaryCoefficient: number; // hệ số lương
+  positionBonusCoefficient: number; // phụ cấp chức vụ
+  otherBonusCoefficient: number; // phu cap khac
 };

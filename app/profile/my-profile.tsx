@@ -4,19 +4,40 @@ import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { MyModal } from "@/components/MyModal";
+import { TUserProfile } from "@/api/user/types";
+import { fetchUserProfile } from "@/api/user";
+import { MyToast } from "@/ui/MyToast";
 export default function MyProfile() {
+  const [profileData, setProfileData] = useState<TUserProfile | null>(null);
   const [openChangePwModal, setOpenChangePwModal] = useState(false);
   const [openCfLogout, setOpenCfLogout] = useState(false);
-  const { userInfo, signOut } = useSession();
+  const { userInfo, signOut, session } = useSession();
   const router = useRouter();
   const onLogout = () => {
     signOut();
     router.navigate("/auth/login");
   };
 
+  const onFetchProfileData = async () => {
+    try {
+      const responseJson = await fetchUserProfile(session ?? "");
+
+      if (responseJson.statusCode === 200) {
+        setProfileData(responseJson.data.profile);
+      } else MyToast.error(responseJson.error);
+    } catch (error: any) {
+      MyToast.error(error?.message);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      onFetchProfileData();
+    }, [])
+  );
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
@@ -77,9 +98,9 @@ export default function MyProfile() {
               </NunitoText>
             </View>
             <View style={styles.infoBoxContent}>
-              <NunitoText type="body2">Tên phòng ban: {"__Cơ yếu__"}</NunitoText>
-              <NunitoText type="body2">Hotline phòng ban: {"__ __"}</NunitoText>
-              <NunitoText type="body2">Thành viên: {"__ __"}</NunitoText>
+              <NunitoText type="body2">Tên phòng ban: {profileData?.teamName ?? "__ __"}</NunitoText>
+              <NunitoText type="body2">Hotline phòng ban: {profileData?.teamHotline ?? "__ __"}</NunitoText>
+              <NunitoText type="body2">Thành viên: {profileData?.numberOfTeamMember ?? "__ __"}</NunitoText>
             </View>
           </View>
 
@@ -90,10 +111,10 @@ export default function MyProfile() {
               </NunitoText>
             </View>
             <View style={styles.infoBoxContent}>
-              <NunitoText type="body2">Hệ số lương: {"__ __"}</NunitoText>
-              <NunitoText type="body2">Phụ cấp chức vụ: {"__ __"}</NunitoText>
-              <NunitoText type="body2">Phụ cấp thâm niên: {"__ __"}</NunitoText>
-              <NunitoText type="body2">Phụ cấp khác: {"__ __"}</NunitoText>
+              <NunitoText type="body2">Hệ số lương: {profileData?.salaryCoefficient.toFixed(1) ?? "__ __"}</NunitoText>
+              <NunitoText type="body2">Phụ cấp chức vụ: {profileData?.positionBonusCoefficient.toFixed(1) ?? "__ __"}</NunitoText>
+              {/* <NunitoText type="body2">Phụ cấp thâm niên: {profileData?.longWorkBonusCoefficient ?? "__ __"}</NunitoText> */}
+              <NunitoText type="body2">Phụ cấp khác: {profileData?.otherBonusCoefficient.toFixed(1) ?? "__ __"}</NunitoText>
             </View>
           </View>
 
