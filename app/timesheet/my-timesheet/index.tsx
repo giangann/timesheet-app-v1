@@ -75,7 +75,7 @@ export default function MyTimeSheet() {
       const responseJson = await fetchOvertimeFormDetail(session ?? "", formId);
 
       if (responseJson.statusCode === 200) {
-        setOTForm(responseJson.data.leaveFormDetail);
+        setOTForm(responseJson.data.overtimeFormDetail);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -93,7 +93,7 @@ export default function MyTimeSheet() {
       const responseJson = await fetchDutyFormDetail(session ?? "", formId);
 
       if (responseJson.statusCode === 200) {
-        setDutyForm(responseJson.data.leaveFormDetail);
+        setDutyForm(responseJson.data.dutyForm);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -168,12 +168,12 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
 
       <View style={styles.formContentContainer}>
         <View style={styles.formContentItemLeft}>
-          <NunitoText type="body3">{otForm.salaryCoefficientType.name}</NunitoText>
+          <NunitoText type="body3">{`${otForm.salaryCoefficientType.name} (x${otForm.salaryCoefficientType.coefficient.toFixed(2)})`}</NunitoText>
         </View>
 
         <View style={styles.formContentItemRight}>
           <NunitoText type="body4">{`${moment(otForm.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
-          <NunitoText type="body4">{`${moment(otForm.startTime).format("HH:mm")} - ${moment(otForm.endTime).format("HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${otForm.startTime} - ${otForm.endTime}`}</NunitoText>
         </View>
       </View>
     </View>
@@ -208,9 +208,7 @@ const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
 
         <View style={styles.formContentItemRight}>
           <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
-          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.startTime).format("HH:mm")} - ${moment(dutyForm.dutyCalendar.endTime).format(
-            "HH:mm"
-          )}`}</NunitoText>
+          <NunitoText type="body4">{`${dutyForm.dutyCalendar.startTime} - ${dutyForm.dutyCalendar.endTime}`}</NunitoText>
         </View>
       </View>
     </View>
@@ -255,8 +253,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "space-between",
   },
-  formContentItemLeft: {},
+  formContentItemLeft: {
+    flexGrow: 1,
+    flexBasis: 1,
+  },
   formContentItemRight: {
     alignItems: "flex-end",
+    flexGrow: 1,
+    flexBasis: 1,
   },
 });
