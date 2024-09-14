@@ -14,11 +14,11 @@ export const BasicCalendar = ({ onFetchLeaveFrom }: { onFetchLeaveFrom: (formId:
   const onDayPressHandler = (date: DateData | undefined) => {
     if (!date) return;
     //
-    setSelectedDate(date.dateString);
-
-    //
     const timesheetDate = timesheetDataMap[date.dateString];
     onFetchLeaveFrom(timesheetDate.leaveFormId);
+
+    //
+    setSelectedDate(date.dateString);
   };
   return (
     <View>
