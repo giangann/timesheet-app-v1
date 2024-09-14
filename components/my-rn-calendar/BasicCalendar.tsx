@@ -4,18 +4,21 @@ import { useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 
-// const INITIAL_DATE = moment(Date.now()).format("YYYY-MM-DD");
-const INITIAL_DATE = "2024-09-10";
+const INITIAL_DATE = moment(Date.now()).format("YYYY-MM-DD");
+// const INITIAL_DATE = "2024-09-10";
 
 const DEFAULT_SELECTED_COLOR = "#00adf5";
-export const BasicCalendar = ({ onFetchLeaveFrom }: { onFetchLeaveFrom: (formId: number | null) => void }) => {
+export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | null, otfId: number | null, dtfId: number | null) => void }) => {
   const [selectedDate, setSelectedDate] = useState(INITIAL_DATE);
   const timesheetDataMap = useMemo(() => timsheetDataToMap(timesheetMockResponse.timesheet), []);
   const onDayPressHandler = (date: DateData | undefined) => {
     if (!date) return;
     //
     const timesheetDate = timesheetDataMap[date.dateString];
-    onFetchLeaveFrom(timesheetDate.leaveFormId);
+    if (!timesheetDate) return;
+
+    //
+    onFetchForms(timesheetDate.leaveFormId, timesheetDate.overtimeFormId, timesheetDate.dutyFormId);
 
     //
     setSelectedDate(date.dateString);

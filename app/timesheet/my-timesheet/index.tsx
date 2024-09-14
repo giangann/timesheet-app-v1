@@ -1,3 +1,5 @@
+import { fetchDutyFormDetail, fetchLeaveFormDetail, fetchOvertimeFormDetail } from "@/api/form";
+import { TDutyFormDetail, TLeaveFormDetail, TOvertimeFormDetail } from "@/api/form/types";
 import { BasicCalendar } from "@/components/my-rn-calendar/BasicCalendar";
 // import { BasicWeekCalendar } from "@/components/my-rn-calendar/BasicWeekCalendar";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -9,66 +11,48 @@ import SkeletonLoader from "@/ui/SkeletonLoader";
 import moment from "moment";
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-type TLeaveFormDetail = {
-  id: number;
-  userIdentifyCard: string;
-  userName: string;
-  startDate: string;
-  endDate: string;
-  note: string;
-  leaveFormType: string;
-  attachFilePath: string;
-  status: number;
-  userRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string;
-  };
-  reason: string | null;
-  userApproveRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userApproveIdentifyCard: string;
-  userApproveName: string;
-  approveDate: string | null;
-};
 
 export default function MyTimeSheet() {
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
+  const [otForm, setOTForm] = useState<TOvertimeFormDetail | null>(null);
+  const [dutyForm, setDutyForm] = useState<TDutyFormDetail | null>(null);
+
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const { session } = useSession();
+
+  const onFetchForms = (lfId: number | null, otfId: number | null, dtfId: number | null) => {
+    onFetchLeaveFrom(lfId);
+    onFetchOvertimeFrom(otfId);
+    onFetchDutyFrom(dtfId);
+  };
+
   const onFetchLeaveFrom = (formId: number | null) => {
     if (!formId) {
       setLeaveForm(null);
       return;
     }
-    fetchLeaveFormDetail(formId.toString());
+    fetchLFdetail(formId);
+  };
+  const onFetchOvertimeFrom = (formId: number | null) => {
+    if (!formId) {
+      setOTForm(null);
+      return;
+    }
+    fetchOtFDetail(formId);
+  };
+  const onFetchDutyFrom = (formId: number | null) => {
+    if (!formId) {
+      setDutyForm(null);
+      return;
+    }
+    fetchDtFDetail(formId);
   };
 
-  const fetchLeaveFormDetail = async (formId: string) => {
+  const fetchLFdetail = async (formId: number) => {
     setIsFetching(true);
 
     try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/leave-forms/${formId}`;
-      const url = `${baseUrl}${endpoint}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
+      const responseJson = await fetchLeaveFormDetail(session ?? "", formId);
 
       if (responseJson.statusCode === 200) {
         setLeaveForm(responseJson.data.leaveFormDetail);
@@ -81,10 +65,46 @@ export default function MyTimeSheet() {
       setIsFetching(false);
     }
   };
+
+  const fetchOtFDetail = async (formId: number) => {
+    setIsFetching(true);
+
+    try {
+      const responseJson = await fetchOvertimeFormDetail(session ?? "", formId);
+
+      if (responseJson.statusCode === 200) {
+        setOTForm(responseJson.data.leaveFormDetail);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const fetchDtFDetail = async (formId: number) => {
+    setIsFetching(true);
+
+    try {
+      const responseJson = await fetchDutyFormDetail(session ?? "", formId);
+
+      if (responseJson.statusCode === 200) {
+        setDutyForm(responseJson.data.leaveFormDetail);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsFetching(false);
+    }
+  };
   return (
     <View style={styles.container}>
       {/* <NunitoText>My Time Sheet</NunitoText> */}
-      <BasicCalendar onFetchLeaveFrom={onFetchLeaveFrom} />
+      <BasicCalendar onFetchForms={onFetchForms} />
       {/* <BasicWeekCalendar /> */}
       {isFetching && <SkeletonLoader />}
       {leaveForm && !isFetching && (
@@ -101,6 +121,30 @@ export default function MyTimeSheet() {
     </View>
   );
 }
+
+const LeaveFormInfo = (leaveForm: TLeaveFormDetail) => {
+  return (
+    <View>
+      <NunitoText type="subtitle1">Đơn xin nghỉ</NunitoText>
+    </View>
+  );
+};
+
+const OTFormInfo = (otForm: any) => {
+  return (
+    <View>
+      <NunitoText type="subtitle1">Đơn tăng ca</NunitoText>
+    </View>
+  );
+};
+
+const DutyFormInfo = (dutyForm: any) => {
+  return (
+    <View>
+      <NunitoText type="subtitle1">Đơn trực</NunitoText>
+    </View>
+  );
+};
 
 const Item = ({ title, content }: { title: string; content: string }) => {
   return (
