@@ -1,4 +1,13 @@
-import { MonthTimesheet, MonthTimesheetList, timesheetMockResponse } from "@/constants/Misc";
+import {
+  MonthTimesheet,
+  MonthTimesheetList,
+  TIMESHEET_FORM_TYPE,
+  TIMESHEET_FORM_TYPE_COLOR,
+  WORKING_TYPE,
+  WORKING_TYPE_COLOR,
+  WORKING_TYPE_NULL_COLOR,
+  timesheetMockResponse,
+} from "@/constants/Misc";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -46,34 +55,26 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
           const isFuture = isDayOfDateGreaterThanDateToday || isMonthOfDateGreaterThanMonthToday;
 
           // declare style for wkType
-          const enum WK_TYPE {
-            ALL = 1,
-            HALF = 2,
-          }
           let dateBorderColor: string | undefined;
           switch (dateWkType) {
-            case WK_TYPE.ALL:
-              dateBorderColor = "#067D4E";
+            case WORKING_TYPE.ALL:
+              dateBorderColor = WORKING_TYPE_COLOR[WORKING_TYPE.ALL];
               break;
-            case WK_TYPE.HALF:
-              dateBorderColor = "#FF9C01";
+            case WORKING_TYPE.HALF:
+              dateBorderColor = WORKING_TYPE_COLOR[WORKING_TYPE.HALF];
               break;
             case null:
-              dateBorderColor = "#F31121";
+              dateBorderColor = WORKING_TYPE_NULL_COLOR;
               break;
             default:
-              dateBorderColor = "#F31121";
+              dateBorderColor = WORKING_TYPE_NULL_COLOR;
               break;
           }
 
           // declare style for forms
-          const enum FORM_TYPE {
-            LEAVE = 1,
-            OT_OR_DUTY = 2,
-          }
-          const dots: FORM_TYPE[] = [];
-          if (dateLeaveFormId) dots.push(FORM_TYPE.LEAVE);
-          if (dateOtFormId || dateDutyFormId) dots.push(FORM_TYPE.OT_OR_DUTY);
+          const dots: TIMESHEET_FORM_TYPE[] = [];
+          if (dateLeaveFormId) dots.push(TIMESHEET_FORM_TYPE.LEAVE);
+          if (dateOtFormId || dateDutyFormId) dots.push(TIMESHEET_FORM_TYPE.OT_OR_DUTY);
 
           // Extracting text color logic
           const isSelected = date?.dateString === selectedDate;
@@ -100,7 +101,7 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
                 {/* Custom Dot */}
                 <View style={styles.dots}>
                   {dots.map((dot) => (
-                    <View key={dot} style={[styles.dot, { backgroundColor: dot === FORM_TYPE.LEAVE ? "#AF32D0" : "#0B67CC" }]} />
+                    <View key={dot} style={[styles.dot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[dot] }]} />
                   ))}
                 </View>
               </View>

@@ -151,7 +151,14 @@ const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
 
 const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
   const router = useRouter();
-  const onGotoOvertimeFormDetail = () => router.navigate({ pathname: "/forms/overtime_forms/[id]", params: { id: otForm.id } });
+  const onGotoOvertimeFormDetail = () => {
+    router.navigate({
+      pathname: "/forms/overtime_forms/[id]",
+      params: {
+        id: otForm.id,
+      },
+    });
+  };
   return (
     <View style={styles.formContainer}>
       <View style={styles.formTitleRow}>
@@ -172,7 +179,7 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(otForm.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(otForm.date).format("DD/MM/YYYY")}`}</NunitoText>
           <NunitoText type="body4">{`${otForm.startTime} - ${otForm.endTime}`}</NunitoText>
         </View>
       </View>
@@ -207,7 +214,7 @@ const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.date).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.date).format("DD/MM/YYYY")}`}</NunitoText>
           <NunitoText type="body4">{`${dutyForm.dutyCalendar.startTime} - ${dutyForm.dutyCalendar.endTime}`}</NunitoText>
         </View>
       </View>

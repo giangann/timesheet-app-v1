@@ -21,6 +21,27 @@ export enum ROLE_CODE {
   SPECIALIST = "SPECIALIST",
 }
 
+// FOR TIMESHEET
+export enum WORKING_TYPE {
+  ALL = 1,
+  HALF = 2,
+}
+export const WORKING_TYPE_COLOR = {
+  [WORKING_TYPE.ALL]: "#067D4E",
+  [WORKING_TYPE.HALF]: "#FF9C01",
+};
+export const WORKING_TYPE_NULL_COLOR = "#F31121";
+
+export enum TIMESHEET_FORM_TYPE {
+  LEAVE = 1,
+  OT_OR_DUTY = 2,
+}
+export const TIMESHEET_FORM_TYPE_COLOR = {
+  [TIMESHEET_FORM_TYPE.LEAVE]: "#AF32D0",
+  [TIMESHEET_FORM_TYPE.OT_OR_DUTY]: "#0B67CC",
+};
+//
+
 // const SAMPLE_RESPONSE_JSON = {
 //   data: {
 //     user: {
@@ -122,7 +143,6 @@ HAS_FORM: dot
 Has Leave Form: #AF32D0
 Has Duty/OT Form: #0B67CC
 */
-
 
 export const timesheetMockResponse = {
   timesheet: [
