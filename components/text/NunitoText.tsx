@@ -9,7 +9,7 @@ export type NunitoTextProps = TextProps & {
   type?: "default" | "heading3" | "subtitle1" | "subtitle2" | "body1" | "body2" | "body3" | "body4" | "caption";
 };
 
-export function NunitoText({ style, lightColor, darkColor, type = "default", ...rest }: NunitoTextProps) {
+export function NunitoText({ style, lightColor = "black", darkColor, type = "default", ...rest }: NunitoTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   return (
