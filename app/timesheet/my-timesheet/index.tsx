@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import moment from "moment";
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export default function MyTimeSheet() {
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
@@ -103,18 +103,20 @@ export default function MyTimeSheet() {
     }
   };
   return (
-    <View style={styles.container}>
-      <View>
-        <BasicCalendar onFetchForms={onFetchForms} />
-        <MarkedSymbolNote />
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
+        <View>
+          <BasicCalendar onFetchForms={onFetchForms} />
+          <MarkedSymbolNote />
+        </View>
+        <View style={styles.formsWrapper}>
+          {isFetching && <SkeletonLoader />}
+          {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
+          {otForm && !isFetching && <OTFormInfo otForm={otForm} />}
+          {dutyForm && !isFetching && <DutyFormInfo dutyForm={dutyForm} />}
+        </View>
       </View>
-      <View style={styles.formsWrapper}>
-        {isFetching && <SkeletonLoader />}
-        {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
-        {otForm && !isFetching && <OTFormInfo otForm={otForm} />}
-        {dutyForm && !isFetching && <DutyFormInfo dutyForm={dutyForm} />}
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -267,6 +269,9 @@ const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: 16,
+  },
   container: {
     padding: 0,
     paddingBottom: 0,
