@@ -98,7 +98,7 @@ export type MonthTimesheet = {
   overtimeFormId: number | null; // one of those: 2:102 or null
   dutyFormId: number | null; // one of those: 254:304:352:353 or null
 };
-export type MonthTimesheetList =MonthTimesheet[]
+export type MonthTimesheetList = MonthTimesheet[];
 // 1. Leave
 // 1706:1702:1703:1708:1707:1705:1704:1803:1804:1802:1952:1953:1954
 
@@ -107,6 +107,22 @@ export type MonthTimesheetList =MonthTimesheet[]
 
 // 3. Duty
 // 254:304:352:353
+
+/**
+1-Cả công; 
+2-Nửa  công; 
+null-Không
+
+WK_TYPE: border color
+WkType 1: #067D4E
+WkType 2: #FF9C01
+WkType null: #F31121
+
+HAS_FORM: dot
+Has Leave Form: #AF32D0
+Has Duty/OT Form: #0B67CC
+*/
+
 
 export const timesheetMockResponse = {
   timesheet: [
