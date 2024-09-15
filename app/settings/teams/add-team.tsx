@@ -20,7 +20,7 @@ export default function AddTeam() {
   const onCreate = async (data: CreateItem) => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/teams";
     const url = `${baseUrl}${endpoint}`;
 
@@ -44,12 +44,7 @@ export default function AddTeam() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormInput
-          formInputProps={{ control: control, name: "name" }}
-          label="Tên phòng ban"
-          required
-          placeholder="Nhập tên phòng ban..."
-        />
+        <FormInput formInputProps={{ control: control, name: "name" }} label="Tên phòng ban" required placeholder="Nhập tên phòng ban..." />
         {/* Add more FormInput components as needed */}
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>

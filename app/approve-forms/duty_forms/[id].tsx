@@ -79,7 +79,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}` ?? "xxx";
 
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = `/duty-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -115,7 +115,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}` ?? "xxx";
 
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = `/duty-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -146,7 +146,7 @@ export default function DetailForm() {
   const fetchDutyFormDetail = async (formId: string) => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = `/duty-forms/${formId}`;
     const url = `${baseUrl}${endpoint}`;
 

@@ -29,7 +29,7 @@ export default function AddOutOfWorkingTimeType() {
     };
 
     const token = `Bearer ${session}` ?? "xxx";
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 
@@ -53,19 +53,9 @@ export default function AddOutOfWorkingTimeType() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormInput
-          formInputProps={{ control: control, name: "name" }}
-          label="Tên loại ngoài giờ"
-          required
-          placeholder="Nhập tên loại ngoài giờ..."
-        />
+        <FormInput formInputProps={{ control: control, name: "name" }} label="Tên loại ngoài giờ" required placeholder="Nhập tên loại ngoài giờ..." />
         {/* Add more FormInput components as needed */}
-        <FormInput
-          formInputProps={{ control: control, name: "coefficient" }}
-          label="Hệ số"
-          required
-          placeholder="Nhập hệ số..."
-        />
+        <FormInput formInputProps={{ control: control, name: "coefficient" }} label="Hệ số" required placeholder="Nhập hệ số..." />
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>
         <View style={styles.button}>

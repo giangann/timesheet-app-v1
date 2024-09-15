@@ -1,7 +1,7 @@
 import { TCredentials } from "./type";
 
 export const loginByCredentials = async (credentials: TCredentials) => {
-  const baseUrl = "http://13.228.145.165:8080/api/v1";
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/auth/login";
   const url = `${baseUrl}${endpoint}`;
 
@@ -17,7 +17,7 @@ export const loginByCredentials = async (credentials: TCredentials) => {
 };
 
 export const verifyToken = async (token: string) => {
-  const baseUrl = "http://13.228.145.165:8080/api/v1";
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/auth/verify-token";
   const queryString = `?token=${token}`;
   const url = `${baseUrl}${endpoint}${queryString}`;

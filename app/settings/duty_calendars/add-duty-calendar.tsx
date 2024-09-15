@@ -108,7 +108,7 @@ export default function AddDutyCalendar() {
       console.log("bodyData", bodyData);
 
       const token = `Bearer ${session}` ?? "xxx";
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = "/duty-calendars";
       const url = `${baseUrl}${endpoint}`;
 
@@ -135,7 +135,7 @@ export default function AddDutyCalendar() {
   const fetchHolidays = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const queryString = `?year=2024&sort=date,asc`;
     const endpoint = "/holidays";
     const url = `${baseUrl}${endpoint}${queryString}`;
@@ -163,7 +163,7 @@ export default function AddDutyCalendar() {
   const fetchSalaryCoefTypes = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 
@@ -190,7 +190,7 @@ export default function AddDutyCalendar() {
   const fetchDutyTypes = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/duty-types/all";
     const url = `${baseUrl}${endpoint}`;
 

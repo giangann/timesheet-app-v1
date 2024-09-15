@@ -62,7 +62,7 @@ export default function CreateLeaveForm() {
       });
 
       const token = `Bearer ${session}` ?? "xxx";
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = "/leave-forms/create";
       const url = `${baseUrl}${endpoint}`;
 
@@ -95,7 +95,7 @@ export default function CreateLeaveForm() {
   const fetchLeaveTypes = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/leave-form-types";
     const url = `${baseUrl}${endpoint}`;
 
@@ -116,7 +116,7 @@ export default function CreateLeaveForm() {
   const fetchUserApproves = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/users/list-user-by-role?role=TEAM_DIRECTOR";
     const url = `${baseUrl}${endpoint}`;
 

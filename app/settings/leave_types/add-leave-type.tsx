@@ -20,7 +20,7 @@ export default function AddLeaveType() {
   const onCreate = async (data: CreateItem) => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/leave-form-types";
     const url = `${baseUrl}${endpoint}`;
 
@@ -44,12 +44,7 @@ export default function AddLeaveType() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormInput
-          formInputProps={{ control: control, name: "name" }}
-          label="Tên loại nghỉ"
-          required
-          placeholder="Nhập tên loại nghỉ..."
-        />
+        <FormInput formInputProps={{ control: control, name: "name" }} label="Tên loại nghỉ" required placeholder="Nhập tên loại nghỉ..." />
         {/* Add more FormInput components as needed */}
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>

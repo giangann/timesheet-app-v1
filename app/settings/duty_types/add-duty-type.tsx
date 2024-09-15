@@ -29,7 +29,7 @@ export default function AddDutyType() {
     console.log(data);
 
     const token = `Bearer ${session}` ?? "xxx";
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/duty-types";
     const url = `${baseUrl}${endpoint}`;
 
@@ -52,7 +52,7 @@ export default function AddDutyType() {
   const fetchTeams = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/teams";
     const url = `${baseUrl}${endpoint}`;
 
@@ -80,12 +80,7 @@ export default function AddDutyType() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
-        <FormInput
-          formInputProps={{ control: control, name: "dutyTypeName" }}
-          label="Tên loại trực"
-          required
-          placeholder="Nhập tên loại trực..."
-        />
+        <FormInput formInputProps={{ control: control, name: "dutyTypeName" }} label="Tên loại trực" required placeholder="Nhập tên loại trực..." />
         <FormMultiSelect
           useControllerProps={{ control: control, name: "teamIds" }}
           label="Phòng ban áp dụng"

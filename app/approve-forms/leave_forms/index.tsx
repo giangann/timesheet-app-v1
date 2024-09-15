@@ -53,7 +53,7 @@ export default function ApproveLeaveForms() {
   const fetchLeaveForms = async () => {
     const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "http://13.228.145.165:8080/api/v1";
+    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/leave-forms/filter/user-approve";
     const queryString = `?page=0&size=20&sort=endDate,desc`;
     const url = `${baseUrl}${endpoint}${queryString}`;
