@@ -92,7 +92,7 @@ export default function HomeScreen() {
                 <NunitoText style={{ textAlign: "center" }}>{moment(Date.now()).format("DD/MM")}</NunitoText>
               </View>
               <View style={styles.todayTimeKeepingBox}>
-                <NunitoText type="body2">{homeData?.haveTimeKeepingToday ? "Đã được chấm công hôm nay" : "Hôm nay chưa được chấm công"}</NunitoText>
+                <NunitoText type="body2">{homeData?.haveTimeKeepingToday ? "Đã được chấm công" : "Chưa được chấm công"}</NunitoText>
                 <View style={styles.wdTime}>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
                     SA: {convertTimeToHHMM(homeData?.workingDayStartTime) ?? "08:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
