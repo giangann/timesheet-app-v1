@@ -332,8 +332,6 @@ const styles = StyleSheet.create({
     height: 80,
     width: "100%",
     position: "relative",
-
-    // borderBottomWidth: 1,
     borderBottomColor: "black",
   },
   _absoluteLayer: {
@@ -372,12 +370,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  todayTimeKeepingBox: {},
+  todayTimeKeepingBox: {
+    flexShrink: 1,
+    width:'100%',
+  },
   wdTime: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
-    gap: 28,
+    justifyContent: "space-between",
+    flexWrap:'wrap',
   },
 
   // quick action
@@ -393,7 +394,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: `#000000${OPACITY_TO_HEX["25"]}`,
-
     flexGrow: 1,
     flexBasis: 1,
   },
