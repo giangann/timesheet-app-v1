@@ -91,7 +91,7 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
               <View
                 style={[
                   isSelected
-                    ? [styles.dateContainer, { backgroundColor: DEFAULT_SELECTED_COLOR }]
+                    ? [styles.dateContainer, { backgroundColor: DEFAULT_SELECTED_COLOR, borderColor: dateBorderColor }]
                     : isFuture
                     ? { alignItems: "center" }
                     : [styles.dateContainer, { borderColor: dateBorderColor }],
@@ -125,7 +125,6 @@ function timsheetDataToMap(timesheetData: MonthTimesheetList) {
 const styles = StyleSheet.create({
   dateContainer: {
     alignItems: "center",
-    borderColor: "red",
     width: 36,
     height: 36,
     borderWidth: 1,
