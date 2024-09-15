@@ -1,54 +1,64 @@
 import { NunitoText } from "@/components/text/NunitoText";
-import { user } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { useEffect, useState } from "react";
-import { View, StyleSheet, Button } from "react-native";
-import io from "socket.io-client";
+import { MyToast } from "@/ui/MyToast";
+import { Button, StyleSheet, View } from "react-native";
 
 export default function Noti() {
   const { session } = useSession();
-  const [status, setStatus] = useState<number | null>(null);
 
-  useEffect(() => {
-    console.log("useEffect run");
+  const onHttpCheck = async () => {
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    // Ensure the authorization token is properly formatted
-    const authorizationToken = `Bearer ${session}`;
+      const baseUrl = "http://13.228.145.165:8080/api/v1";
+      const endpoint = `/users/home`;
+      const url = `${baseUrl}${endpoint}`;
 
-    // Create a Socket.IO client instance with headers
-    const socketIoClient = io("http://52.62.216.20:5000", {
-      autoConnect: false,
-      transports: ["websocket"], // Use WebSocket transport
-      extraHeaders: {
-        Authorization: authorizationToken,
-      },
-    });
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
 
-    // Connect to the server
-    socketIoClient.connect();
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Kiểm tra thành công!");
+      } else MyToast.error(responseJson.error);
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
 
-    // Log connection ID
-    socketIoClient.on("connect", () => console.log("connected: ", socketIoClient.id));
+  const onHttpWithTlsCheck = async () => {
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    // parse user
-    socketIoClient.emit("parseUser", user);
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = `/users/home`;
+      const url = `${baseUrl}${endpoint}`;
 
-    // Handle incoming messages
-    socketIoClient.on("newNoti", (msg) => console.log("received newNoti: ", msg));
-    socketIoClient.on("updateListOrder", (msg) => console.log("received updateListOrder: ", msg));
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
 
-    // Cleanup on unmount
-    return () => {
-      socketIoClient.disconnect();
-    };
-  }, [session]);
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Kiểm tra thành công!");
+      } else MyToast.error(responseJson.error);
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <NunitoText>NOTI SCREEN</NunitoText>
-      <NunitoText>Socket status: {status}</NunitoText>
 
-      <Button title="Login delco-egg to take token" />
+      <Button onPress={onHttpCheck} title="Check HTTP without TLS call" />
+
+      <Button onPress={onHttpWithTlsCheck} title="Check HTTPS with TLS call" />
     </View>
   );
 }
@@ -56,5 +66,6 @@ export default function Noti() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    gap: 32,
   },
 });
