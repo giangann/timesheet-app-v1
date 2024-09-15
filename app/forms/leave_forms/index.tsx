@@ -5,6 +5,7 @@ import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
+import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
@@ -47,28 +48,36 @@ type TLeaveForm = {
 };
 
 export default function LeaveForms() {
+  const [isLoading, setIsLoading] = useState(false);
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
   const { session } = useSession();
 
   const fetchLeaveForms = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    setIsLoading(true);
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/leave-forms/filter/user";
-    const queryString = `?page=0&size=20&sort=endDate,desc`;
-    const url = `${baseUrl}${endpoint}${queryString}`;
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = "/leave-forms/filter/user";
+      const queryString = `?page=0&size=50&sort=endDate,desc`;
+      const url = `${baseUrl}${endpoint}${queryString}`;
 
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify({}),
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-    if (responseJson.statusCode === 200) {
-      setLeaveForms(responseJson.data.leaveForms);
-    } else {
-      MyToast.error(responseJson.error);
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      if (responseJson.statusCode === 200) {
+        setLeaveForms(responseJson.data.leaveForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,6 +90,7 @@ export default function LeaveForms() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {isLoading && <SkeletonLoader />}
         <List leaveForms={leaveForms} />
       </ScrollView>
       <ApplyNewForm />
