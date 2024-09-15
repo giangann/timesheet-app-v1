@@ -5,6 +5,7 @@ import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
+import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
@@ -52,28 +53,37 @@ type TDutyForm = {
 };
 
 export default function ApproveDutyForms() {
+  const [isLoading, setIsLoading] = useState(false);
   const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
   const { session } = useSession();
 
   const fetchDutyForms = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    setIsLoading(true);
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/duty-forms/filter/user-approve";
-    const queryString = `?page=0&size=20`;
-    const url = `${baseUrl}${endpoint}${queryString}`;
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify({}),
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-    if (responseJson.statusCode === 200) {
-      setDutyForms(responseJson.data.dutyForm);
-    } else {
-      MyToast.error(responseJson.error);
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = "/duty-forms/filter/user-approve";
+      const queryString = `?page=0&size=20`;
+      const url = `${baseUrl}${endpoint}${queryString}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      if (responseJson.statusCode === 200) {
+        setDutyForms(responseJson.data.dutyForm);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,6 +96,7 @@ export default function ApproveDutyForms() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {isLoading && <SkeletonLoader />}
         <List dutyForms={dutyForms} />
       </ScrollView>
     </View>

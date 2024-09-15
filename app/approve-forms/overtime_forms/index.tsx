@@ -5,6 +5,7 @@ import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
+import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
@@ -49,30 +50,39 @@ type TOvertimeForm = {
   };
 };
 export default function ApproveOvertimeForms() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const [overtimeForms, setOvertimeForms] = useState<TOvertimeForm[]>([]);
   const router = useRouter();
   const { session } = useSession();
 
   const fetchOvertimeForms = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    setIsLoading(true);
+    try {
+      const token = `Bearer ${session}` ?? "xxx";
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/overtime-forms/filter/user-approve";
-    const queryString = `?page=0&size=10`;
-    const url = `${baseUrl}${endpoint}${queryString}`;
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = "/overtime-forms/filter/user-approve";
+      const queryString = `?page=0&size=10`;
+      const url = `${baseUrl}${endpoint}${queryString}`;
 
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify({}),
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-    console.log("responseJson", responseJson);
-    if (responseJson.statusCode === 200) {
-      setOvertimeForms(responseJson.data.overtimeForms);
-    } else {
-      MyToast.error(responseJson.error);
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      console.log("responseJson", responseJson);
+      if (responseJson.statusCode === 200) {
+        setOvertimeForms(responseJson.data.overtimeForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,6 +95,7 @@ export default function ApproveOvertimeForms() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {isLoading && <SkeletonLoader />}
         <List overtimeForms={overtimeForms} />
       </ScrollView>
     </View>
