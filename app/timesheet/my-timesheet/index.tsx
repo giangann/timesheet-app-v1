@@ -1,5 +1,6 @@
 import { fetchDutyFormDetail, fetchLeaveFormDetail, fetchOvertimeFormDetail } from "@/api/form";
 import { TDutyFormDetail, TLeaveFormDetail, TOvertimeFormDetail } from "@/api/form/types";
+import { MonthTimesheetList } from "@/api/timesheet/type";
 import { BasicCalendar } from "@/components/my-rn-calendar/BasicCalendar";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -14,11 +15,12 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export default function MyTimeSheet() {
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
   const [leaveForm, setLeaveForm] = useState<TLeaveFormDetail | null>(null);
   const [otForm, setOTForm] = useState<TOvertimeFormDetail | null>(null);
   const [dutyForm, setDutyForm] = useState<TDutyFormDetail | null>(null);
 
-  const [isFetching, setIsFetching] = useState<boolean>(false);
   const { session } = useSession();
 
   const onFetchForms = (lfId: number | null, otfId: number | null, dtfId: number | null) => {
@@ -102,6 +104,7 @@ export default function MyTimeSheet() {
       setIsFetching(false);
     }
   };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
