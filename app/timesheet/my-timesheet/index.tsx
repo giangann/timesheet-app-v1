@@ -238,7 +238,7 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
 
 const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
   const router = useRouter();
-  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id ?? 152 } });
+  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id} });
 
   return (
     <View style={styles.formContainer}>

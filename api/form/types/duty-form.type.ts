@@ -1,7 +1,7 @@
 import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 
 export type TDutyFormDetail = {
-  id?:number,
+  id:number,
   dutyCalendar: {
     startTime: string;
     endTime: string;
