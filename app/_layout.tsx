@@ -8,6 +8,7 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import "../configs/rnCalendarLocalConfig";
 import * as Sentry from "@sentry/react-native";
 import { NunitoText } from "@/components/text/NunitoText";
+import { SocketProvider } from "@/contexts/socket-ctx";
 
 Sentry.init({
   dsn: "https://449a5848754654eceaa1424ad7da4636@o4507923809173504.ingest.us.sentry.io/4507928784732160",
@@ -36,49 +37,51 @@ function Root() {
     <RootSiblingParent>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <SessionProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="forms" options={{ headerShown: false }} />
-            <Stack.Screen name="settings" options={{ headerShown: false }} />
-            <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
-            <Stack.Screen name="time-keepings" options={{ headerShown: false }} />
-            <Stack.Screen name="timesheet" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="profile/my-profile"
-              options={{
-                title: "Hồ sơ cá nhân",
-                headerShown: true,
-                headerStyle: {
-                  backgroundColor: "#0B3A82",
-                },
-                headerTintColor: "white",
-                headerTitleAlign: "center",
-                headerTitle: (props) => (
-                  <NunitoText type="heading3" style={{ color: props.tintColor }}>
-                    {props.children}
-                  </NunitoText>
-                ),
-              }}
-            />
+          <SocketProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="forms" options={{ headerShown: false }} />
+              <Stack.Screen name="settings" options={{ headerShown: false }} />
+              <Stack.Screen name="approve-forms" options={{ headerShown: false }} />
+              <Stack.Screen name="time-keepings" options={{ headerShown: false }} />
+              <Stack.Screen name="timesheet" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="profile/my-profile"
+                options={{
+                  title: "Hồ sơ cá nhân",
+                  headerShown: true,
+                  headerStyle: {
+                    backgroundColor: "#0B3A82",
+                  },
+                  headerTintColor: "white",
+                  headerTitleAlign: "center",
+                  headerTitle: (props) => (
+                    <NunitoText type="heading3" style={{ color: props.tintColor }}>
+                      {props.children}
+                    </NunitoText>
+                  ),
+                }}
+              />
 
-            <Stack.Screen
-              name="notification/noti"
-              options={{
-                title: "Thông báo",
-                headerShown: true,
-                headerStyle: {
-                  backgroundColor: "#0B3A82",
-                },
-                headerTintColor: "white",
-                headerTitleAlign: "center",
-                headerTitle: (props) => (
-                  <NunitoText type="heading3" style={{ color: props.tintColor }}>
-                    {props.children}
-                  </NunitoText>
-                ),
-              }}
-            />
-          </Stack>
+              <Stack.Screen
+                name="notification/noti"
+                options={{
+                  title: "Thông báo",
+                  headerShown: true,
+                  headerStyle: {
+                    backgroundColor: "#0B3A82",
+                  },
+                  headerTintColor: "white",
+                  headerTitleAlign: "center",
+                  headerTitle: (props) => (
+                    <NunitoText type="heading3" style={{ color: props.tintColor }}>
+                      {props.children}
+                    </NunitoText>
+                  ),
+                }}
+              />
+            </Stack>
+          </SocketProvider>
         </SessionProvider>
       </ThemeProvider>
     </RootSiblingParent>
