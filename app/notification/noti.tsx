@@ -1,64 +1,40 @@
 import { NunitoText } from "@/components/text/NunitoText";
-import { useSession } from "@/contexts/ctx";
-import { MyToast } from "@/ui/MyToast";
-import { Button, StyleSheet, View } from "react-native";
-
+import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 export default function Noti() {
-  const { session } = useSession();
+  useEffect(() => {
+    const wsClient = new WebSocket("wss://proven-incredibly-redbird.ngrok-free.app/api/v1/ws");
 
-  const onHttpCheck = async () => {
-    try {
-      const token = `Bearer ${session}` ?? "xxx";
+    const onOpen = () => {
+      console.log("connection opened");
+    };
+    const onClose = (ev: CloseEvent) => {
+      console.log("connection closed:", ev.timeStamp);
+    };
+    const onMessage = (ev: WebSocketMessageEvent) => {
+      console.log("new event: ", ev);
+      console.log("event info:", ev.target, ev.data);
+    };
+    const onError = (ev: WebSocketMessageEvent) => {
+      console.log("error occured: ", ev);
+    };
 
-      const baseUrl = "http://13.228.145.165:8080/api/v1";
-      const endpoint = `/users/home`;
-      const url = `${baseUrl}${endpoint}`;
+    wsClient.onopen = onOpen;
+    wsClient.onclose = onClose;
+    wsClient.onmessage = onMessage;
+    wsClient.onerror = onError;
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Kiểm tra thành công!");
-      } else MyToast.error(responseJson.error);
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  };
-
-  const onHttpWithTlsCheck = async () => {
-    try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = `/users/home`;
-      const url = `${baseUrl}${endpoint}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Kiểm tra thành công!");
-      } else MyToast.error(responseJson.error);
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  };
-
+    return () => {
+      wsClient.close();
+      wsClient.removeEventListener("open", onOpen);
+      wsClient.removeEventListener("close", onClose);
+      wsClient.removeEventListener("message", onMessage);
+      wsClient.removeEventListener("error", onError);
+    };
+  }, []);
   return (
     <View style={styles.container}>
       <NunitoText>NOTI SCREEN</NunitoText>
-
-      <Button onPress={onHttpCheck} title="Check HTTP without TLS call" />
-
-      <Button onPress={onHttpWithTlsCheck} title="Check HTTPS with TLS call" />
     </View>
   );
 }
