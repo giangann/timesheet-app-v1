@@ -48,4 +48,28 @@ export class MyToast {
       }
     }
   }
+
+  static notify(message: string, extraToastOpts?: ToastOptions) {
+    try {
+      const notiMessage = `🔔 ${message}`;
+
+      const toastOptions: ToastOptions = {
+        duration: 3000,
+        position: -100,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+        ...extraToastOpts,
+      };
+
+      Toast.show(notiMessage, toastOptions);
+    } catch (error: any) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("Unknown Error");
+      }
+    }
+  }
 }

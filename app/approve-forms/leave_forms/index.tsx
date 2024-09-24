@@ -2,13 +2,14 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { useSocketClient } from "@/hooks/useSocketClient";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
@@ -51,6 +52,7 @@ export default function ApproveLeaveForms() {
   const [isLoading, setIsLoading] = useState(false);
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
   const { session } = useSession();
+  const { wsClient } = useSocketClient();
 
   const fetchLeaveForms = async () => {
     setIsLoading(true);
@@ -86,6 +88,25 @@ export default function ApproveLeaveForms() {
       fetchLeaveForms();
     }, [])
   );
+
+  useEffect(() => {
+    console.log("useEffect run");
+    if (wsClient) {
+      console.log("useEffect run, have socket client");
+      const onNewFormMessage = (ev: WebSocketMessageEvent) => {
+        const evDataParsed = JSON.parse(ev.data);
+        const evType = evDataParsed.type;
+
+        console.log(evDataParsed);
+      };
+      wsClient.addEventListener("message", onNewFormMessage);
+
+      return () => {
+        console.log("component unmount, run clean function");
+        wsClient.removeEventListener("message", onNewFormMessage);
+      };
+    }
+  }, [wsClient]);
 
   return (
     <View style={styles.container}>

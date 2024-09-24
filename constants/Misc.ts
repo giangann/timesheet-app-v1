@@ -7,6 +7,12 @@ export enum FORM_STATUS {
   REJECTED = 2,
 }
 
+export enum FORM_NOTI_TYPE {
+  LEAVE_FORM = "leaveForm",
+  OVERTIME_FORM = "overtimeForm",
+  DUTY_FORM = "dutyForm",
+}
+
 export const FORM_STATUS_NAME = {
   [FORM_STATUS.WATING_APPROVE]: "Chờ phê duyệt",
   [FORM_STATUS.ACCEPTED]: "Chấp thuận",

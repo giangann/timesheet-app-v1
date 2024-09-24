@@ -1,7 +1,7 @@
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { FORM_NOTI_TYPE, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 
 export type TDutyFormDetail = {
-  id:number,
+  id: number;
   dutyCalendar: {
     startTime: string;
     endTime: string;
@@ -50,3 +50,46 @@ export type TDutyFormDetail = {
     roleCode: ROLE_CODE;
   }[];
 };
+
+export type TDutyFormCreateNoti = {
+  message: string;
+  obj: {
+    approveDate: string | null;
+    attachFileId: number;
+    createdAt: string;
+    dutyCalendarId: number;
+    id: number;
+    isDeleted: boolean;
+    note: string;
+    reason: string | null;
+    status: FORM_STATUS;
+    updatedAt: string;
+    userApproveId: number;
+  };
+  status: FORM_STATUS;
+  timestamp: string;
+  title: string;
+  type: FORM_NOTI_TYPE.DUTY_FORM;
+};
+/*
+const sampleResponse = {
+  message: "Yêu cầu phê duyệt",
+  obj: {
+    approveDate: null,
+    attachFileId: 2265,
+    createdAt: "2024-09-24T16:14:04.041+00:00",
+    dutyCalendarId: 1,
+    id: 402,
+    isDeleted: false,
+    note: "trực",
+    reason: null,
+    status: 0,
+    updatedAt: "2024-09-24T16:14:04.041+00:00",
+    userApproveId: 102,
+  },
+  status: 0,
+  timestamp: "2024-09-24T23:14:04.046844258",
+  title: "Thông báo",
+  type: "dutyForm",
+};
+*/
