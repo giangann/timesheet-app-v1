@@ -22,8 +22,6 @@ export default function Noti() {
   const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const handleEndListReached = () => {
-    console.log("end list reached!");
-
     const newPagiParams = { ...pagiParams, page: pagiParams.page + 1 };
 
     fetchMoreNotis(newPagiParams);
@@ -35,8 +33,6 @@ export default function Noti() {
     try {
       const responseJson = await fetchMyNotis(session);
       if (responseJson.statusCode === 200) {
-        console.log(responseJson.data.pageable);
-
         setNotis(responseJson.data.notifications);
         setPageable(responseJson.data.pageable);
       } else {
@@ -54,8 +50,6 @@ export default function Noti() {
     try {
       const responseJson = await fetchMyNotis(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        console.log(responseJson.data.pageable);
-
         const moreNotis = responseJson.data.notifications;
         setNotis((prev) => [...prev, ...moreNotis]);
         setPageable(responseJson.data.pageable);
