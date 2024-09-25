@@ -6,7 +6,7 @@ import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
-import { hasNullishValue } from "@/helper/common";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialIcons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -32,8 +32,8 @@ type CreateItem = {
   endTime: string;
   salaryCoefficientTypeId: number;
   userApproveIdentifyCard: string;
-  attachFile: File;
-  note: string;
+  attachFile?: File | null;
+  note?: string | null;
 };
 
 type TSalaryCoefficientType = {
@@ -51,7 +51,7 @@ export default function CreateOvertimeForm() {
 
   const { session } = useSession();
   const router = useRouter();
-  const { control, handleSubmit } = useForm<CreateItemForm>();
+  const { control, handleSubmit } = useForm<CreateItemForm>({ defaultValues: { note: null, attachFile: null } });
 
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,
@@ -61,7 +61,11 @@ export default function CreateOvertimeForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
-      if (hasNullishValue(value)) return;
+      const requiredValues = pickProperties(value, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "userApproveIdentifyCard"]);
+      if (hasNullishValue(requiredValues)) {
+        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+        return;
+      }
 
       const bodyData: CreateItem = {
         date: value.date ? moment(value.date).format("YYYY-MM-DD") : "", // Handle null or Date
@@ -69,15 +73,17 @@ export default function CreateOvertimeForm() {
         endTime: value.endTime ? moment(value.endTime).format("HH:mm:ss") : "", // Handle null or Date
         salaryCoefficientTypeId: value.salaryCoefficientTypeId ?? 0, // Handle null or number
         userApproveIdentifyCard: value.userApproveIdentifyCard ?? "", // Handle null or number
-        attachFile: value.attachFile ?? new File([], ""), // Handle null or File
-        note: value.note ?? "", // Handle null or string
+        attachFile: value.attachFile,
+        note: value.note,
       };
       const formData = new FormData();
       Object.entries(bodyData).forEach(([k, v]) => {
-        if (v instanceof Date) formData.append(k, moment(v).format("YYYY-MM-DD"));
-        else if (v instanceof File) formData.append(k, v as File);
-        else if (typeof v === "number") formData.append(k, v.toString());
-        else formData.append(k, v);
+        if (v !== null && v !== undefined) {
+          if (v instanceof Date) formData.append(k, moment(v).format("YYYY-MM-DD"));
+          else if (v instanceof File) formData.append(k, v as File);
+          else if (typeof v === "number") formData.append(k, v.toString());
+          else formData.append(k, v);
+        }
       });
 
       const token = `Bearer ${session}` ?? "xxx";
@@ -96,16 +102,14 @@ export default function CreateOvertimeForm() {
       });
 
       const responseJson = await response.json();
-
       if (responseJson.statusCode === 200) {
         MyToast.success("Thành công");
         router.back();
       } else {
-        MyToast.error(responseJson.error);
+        MyToast.error(responseJson.error ?? responseJson.message);
       }
     } catch (error: any) {
       MyToast.error(error.message);
-      console.log(error);
     }
   };
 
@@ -207,7 +211,7 @@ export default function CreateOvertimeForm() {
           leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
         />
 
-        <FormUploadImage label="Ảnh đính kèm" required useControllerProps={{ control: control, name: "attachFile" }} />
+        <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
 
         <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
       </ScrollView>

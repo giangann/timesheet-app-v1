@@ -85,3 +85,13 @@ export function fakeDelay(seconds: number): Promise<void> {
     }, seconds * 1000);
   });
 }
+
+export function pickProperties<T extends Record<string, any>>(object: T, selectedKeys: (keyof T)[]): Partial<T> {
+  const filteredObject: Partial<T> = {};
+  for (const key in object) {
+    if (selectedKeys.includes(key)) {
+      filteredObject[key] = object[key];
+    }
+  }
+  return filteredObject;
+}

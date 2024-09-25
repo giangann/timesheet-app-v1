@@ -12,7 +12,6 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-
 export default function DetailForm() {
   const [form, setForm] = useState<TDutyFormDetail | null>(null);
   const [openCfAcceptModal, setOpenCfAcceptModal] = useState(false);
@@ -167,7 +166,7 @@ export default function DetailForm() {
 
             <Item title="Ghi chú" content={form.note} />
             {/* Attach Image */}
-            <AttachImageFile path={form.attachFile.url} />
+            <AttachImageFile path={form?.attachFile?.url} />
           </ScrollView>
 
           {form.status === FORM_STATUS.WATING_APPROVE && (
@@ -233,13 +232,14 @@ const Item = ({ title, content }: { title: string; content: string | undefined |
   );
 };
 
-const AttachImageFile = ({ path }: { path: string }) => {
+const AttachImageFile = ({ path }: { path: string | null | undefined }) => {
   return (
     <View>
       <NunitoText type="body3" style={{ opacity: 0.5, marginBottom: 4 }}>
         {"Ảnh đính kèm"}
       </NunitoText>
-      <ViewImageFullScreen imagePath={path} />
+      {!path && <NunitoText type="body3">{"Không có ảnh đính kèm"}</NunitoText>}
+      {path && <ViewImageFullScreen imagePath={path} />}
     </View>
   );
 };

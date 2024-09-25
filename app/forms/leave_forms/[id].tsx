@@ -115,13 +115,14 @@ const Item = ({ title, content }: { title: string; content: string }) => {
   );
 };
 
-const AttachImageFile = ({ path }: { path: string }) => {
+const AttachImageFile = ({ path }: { path: string | null | undefined }) => {
   return (
     <View>
       <NunitoText type="body3" style={{ opacity: 0.5, marginBottom: 4 }}>
         {"Ảnh đính kèm"}
       </NunitoText>
-      <ViewImageFullScreen imagePath={path} />
+      {!path && <NunitoText type="body3">{"Không có ảnh đính kèm"}</NunitoText>}
+      {path && <ViewImageFullScreen imagePath={path} />}
     </View>
   );
 };

@@ -5,7 +5,7 @@ import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
-import { hasNullishValue } from "@/helper/common";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -18,8 +18,8 @@ type CreateItemForm = {
   endDate: string | Date;
   leaveFormTypeId: number;
   userApproveIdentifyCard: number;
-  attachFile: File;
-  note: string;
+  attachFile: File | null;
+  note: string | null;
 };
 
 type TLeaveType = {
@@ -38,7 +38,7 @@ export default function CreateLeaveForm() {
   const router = useRouter();
 
   const { control, handleSubmit } = useForm<CreateItemForm>({
-    defaultValues: { startDate: undefined, endDate: undefined, note: "" },
+    defaultValues: { startDate: undefined, endDate: undefined },
   });
 
   const leaveTypeOpts = leaveTypes.map((leaveType) => ({ value: leaveType.id, label: leaveType.name }));
@@ -46,11 +46,11 @@ export default function CreateLeaveForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
-      console.log(value)
-      if (hasNullishValue(value)) {
-        MyToast.error('Hãy nhập đủ các thông tin yêu cầu')
+      const requiredValues = pickProperties(value, ["startDate", "endDate", "leaveFormTypeId", "userApproveIdentifyCard"]);
+      if (hasNullishValue(requiredValues)) {
+        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
         return;
-      };
+      }
       const bodyData: CreateItemForm = {
         ...value,
       };
@@ -58,11 +58,13 @@ export default function CreateLeaveForm() {
       const formData = new FormData();
 
       Object.entries(bodyData).forEach(([k, v]) => {
-        if (typeof v === "number") formData.append(k, v.toString());
-        else if (v instanceof Date) {
-          const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
-          formData.append(k, formattedDate);
-        } else formData.append(k, v as File);
+        if (v !== null && v !== undefined) {
+          if (typeof v === "number") formData.append(k, v.toString());
+          else if (v instanceof Date) {
+            const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
+            formData.append(k, formattedDate);
+          } else formData.append(k, v as File);
+        }
       });
 
       const token = `Bearer ${session}` ?? "xxx";
@@ -86,7 +88,7 @@ export default function CreateLeaveForm() {
         MyToast.success("Thành công");
         router.back();
       } else {
-        MyToast.error(responseJson.error);
+        MyToast.error(responseJson.error ?? responseJson.message);
       }
     } catch (error: any) {
       MyToast.error(error.message);
@@ -181,7 +183,7 @@ export default function CreateLeaveForm() {
           leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
         />
 
-        <FormUploadImage label="Ảnh đính kèm" required useControllerProps={{ control: control, name: "attachFile" }} />
+        <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
 
         <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
       </ScrollView>

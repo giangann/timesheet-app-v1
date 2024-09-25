@@ -115,7 +115,7 @@ export default function DetailForm() {
             <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.code})`} />
 
             {/* Attach Image */}
-            <AttachImageFile path={form.attachFile.url} />
+            <AttachImageFile path={form?.attachFile?.url} />
           </ScrollView>
         </View>
       )}
@@ -134,13 +134,14 @@ const Item = ({ title, content }: { title: string; content: string | undefined }
   );
 };
 
-const AttachImageFile = ({ path }: { path: string }) => {
+const AttachImageFile = ({ path }: { path: string | null | undefined }) => {
   return (
     <View>
       <NunitoText type="body3" style={{ opacity: 0.5, marginBottom: 4 }}>
         {"Ảnh đính kèm"}
       </NunitoText>
-      <ViewImageFullScreen imagePath={path} />
+      {!path && <NunitoText type="body3">{"Không có ảnh đính kèm"}</NunitoText>}
+      {path && <ViewImageFullScreen imagePath={path} />}
     </View>
   );
 };
