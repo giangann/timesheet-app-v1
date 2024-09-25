@@ -9,12 +9,11 @@ import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useRouter } from "expo-router";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function Noti() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetchMore, setIsFetchMore] = useState(false);
   const [notis, setNotis] = useState<TNoti[]>([]);
   const [pageable, setPageable] = useState<TPageable | null>(null);
   const { session } = useSession();
@@ -22,31 +21,11 @@ export default function Noti() {
   const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const handleEndListReached = () => {
-    const newPagiParams = { ...pagiParams, page: pagiParams.page + 1 };
-
-    fetchMoreNotis(newPagiParams);
-    setPagiParams(newPagiParams);
+    setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
   };
 
-  const fetchNotis = useCallback(async () => {
+  const fetchNotis = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
-    try {
-      const responseJson = await fetchMyNotis(session);
-      if (responseJson.statusCode === 200) {
-        setNotis(responseJson.data.notifications);
-        setPageable(responseJson.data.pageable);
-      } else {
-        MyToast.error(responseJson.error);
-      }
-    } catch (error: any) {
-      MyToast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [session]);
-
-  const fetchMoreNotis = async (pagiParams: TPagiParams) => {
-    setIsFetchMore(true);
     try {
       const responseJson = await fetchMyNotis(session, pagiParams);
       if (responseJson.statusCode === 200) {
@@ -59,27 +38,24 @@ export default function Noti() {
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
-      setIsFetchMore(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchNotis();
-  }, []);
+    fetchNotis(pagiParams);
+  }, [pagiParams]);
 
   return (
     <View style={styles.container}>
-      {isLoading && <SkeletonLoader />}
-      {!isLoading && (
-        <FlatList
-          data={notis}
-          renderItem={({ item }) => <NotiItem noti={item} />}
-          keyExtractor={(_item, index) => index.toString()}
-          onEndReached={isFetchMore ? () => {} : handleEndListReached}
-          onEndReachedThreshold={0.15}
-          ListFooterComponent={(pageable?.currentPage ?? 0) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
-        />
-      )}
+      <FlatList
+        data={notis}
+        renderItem={({ item }) => <NotiItem noti={item} />}
+        keyExtractor={(_item, index) => index.toString()}
+        onEndReached={isLoading ? () => {} : handleEndListReached}
+        onEndReachedThreshold={0.15}
+        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
+      />
     </View>
   );
 }
