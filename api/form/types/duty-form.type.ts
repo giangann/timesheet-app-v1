@@ -1,4 +1,4 @@
-import { FORM_NOTI_TYPE, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 
 export type TDutyFormDetail = {
   id: number;
@@ -66,8 +66,8 @@ export type TDutyFormCreateNoti = {
     updatedAt: string;
     userApproveId: number;
   };
-  status: FORM_STATUS;
-  timestamp: string;
+  status: NOTI_STATUS;
+  timestamp: string | number | null;
   title: string;
   type: FORM_NOTI_TYPE.DUTY_FORM;
 };

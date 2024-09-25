@@ -46,6 +46,11 @@ export const TIMESHEET_FORM_TYPE_COLOR = {
   [TIMESHEET_FORM_TYPE.LEAVE]: "#AF32D0",
   [TIMESHEET_FORM_TYPE.OT_OR_DUTY]: "#0B67CC",
 };
+
+export enum NOTI_STATUS {
+  UNREAD = 0,
+  READ = 1,
+}
 //
 
 // const SAMPLE_RESPONSE_JSON = {

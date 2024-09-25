@@ -1,4 +1,4 @@
-import { FORM_NOTI_TYPE, FORM_STATUS } from "@/constants/Misc";
+import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS } from "@/constants/Misc";
 
 export type TOvertimeFormDetail = {
   id: number;
@@ -59,8 +59,8 @@ export type TOvertimeFormCreateNoti = {
     userApproveId: number;
     userId: number;
   };
-  status: FORM_STATUS;
-  timestamp: string;
+  status: NOTI_STATUS;
+  timestamp: string | number | null;
   title: string;
   type: FORM_NOTI_TYPE.OVERTIME_FORM;
 };
