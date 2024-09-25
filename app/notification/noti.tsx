@@ -1,4 +1,4 @@
-import { fetchAllMyNotis } from "@/api/noti";
+import { fetchAllMyNotis, readNoti } from "@/api/noti";
 import { TNoti } from "@/api/noti/type";
 import { NunitoText } from "@/components/text/NunitoText";
 import { FORM_NOTI_NAME, FORM_NOTI_TYPE, FORM_STATUS_NAME, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
@@ -62,11 +62,30 @@ type NotiItemProps = {
 };
 const NotiItem: React.FC<NotiItemProps> = ({ noti }) => {
   const router = useRouter();
+  const { session } = useSession();
+
   const onNotiPress = () => {
+    onReadNoti();
+    onGotoFormDetail();
+  };
+
+  const onReadNoti = async () => {
+    try {
+      const responseJson = await readNoti(session, 363);
+      if (responseJson.statusCode !== 200) {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+
+  const onGotoFormDetail = () => {
     if (noti.type === FORM_NOTI_TYPE.LEAVE_FORM) router.navigate({ pathname: "/approve-forms/leave_forms/[id]", params: { id: noti.obj.id } });
     if (noti.type === FORM_NOTI_TYPE.OVERTIME_FORM) router.navigate({ pathname: "/approve-forms/overtime_forms/[id]", params: { id: noti.obj.id } });
     if (noti.type === FORM_NOTI_TYPE.DUTY_FORM) router.navigate({ pathname: "/approve-forms/duty_forms/[id]", params: { id: noti.obj.id } });
   };
+
   return (
     <TouchableOpacity onPress={onNotiPress}>
       <View style={styles.itemWrapper}>
