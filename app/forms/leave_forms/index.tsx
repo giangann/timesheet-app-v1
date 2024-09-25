@@ -33,7 +33,6 @@ export default function LeaveForms() {
   const fetchLeaveForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      console.log("fetch with params:", { pagiParams });
       const responseJson = await fetchMyLeaveForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
         const moreLeaveForms = responseJson.data.leaveForms;
