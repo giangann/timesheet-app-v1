@@ -190,7 +190,7 @@ export default function CreateLeaveForm() {
       <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer}>
         <View style={styles.button}>
           <NunitoText type="body3" style={{ color: "white" }}>
-            Tạo mới
+            Gửi duyệt
           </NunitoText>
         </View>
       </TouchableOpacity>
