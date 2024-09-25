@@ -1,3 +1,4 @@
+import * as Progress from "react-native-progress";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
@@ -51,7 +52,11 @@ export default function CreateOvertimeForm() {
 
   const { session } = useSession();
   const router = useRouter();
-  const { control, handleSubmit } = useForm<CreateItemForm>({ defaultValues: { note: null, attachFile: null } });
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<CreateItemForm>({ defaultValues: { note: null, attachFile: null } });
 
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,
@@ -215,8 +220,9 @@ export default function CreateOvertimeForm() {
 
         <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
       </ScrollView>
-      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer}>
+      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
         <View style={styles.button}>
+          {isSubmitting && <Progress.Circle indeterminate size={14} />}
           <NunitoText type="body3" style={{ color: "white" }}>
             Gửi duyệt
           </NunitoText>
@@ -253,10 +259,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white", // Optional: To give the button a distinct background
   },
   button: {
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+
+    gap: 8,
   },
 });

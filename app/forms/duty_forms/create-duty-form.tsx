@@ -1,3 +1,4 @@
+import * as Progress from "react-native-progress";
 import { FormInput } from "@/components/FormInput";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
@@ -65,7 +66,11 @@ export default function CreateDutyForm() {
   const { session, userInfo } = useSession();
   const router = useRouter();
 
-  const { control, handleSubmit } = useForm<CreateItemForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<CreateItemForm>({
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
   const { control: control2 } = useForm<TExtraForm>();
@@ -268,8 +273,9 @@ export default function CreateDutyForm() {
 
         <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
       </ScrollView>
-      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer}>
+      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
         <View style={styles.button}>
+          {isSubmitting && <Progress.Circle indeterminate size={14} />}
           <NunitoText type="body3" style={{ color: "white" }}>
             Gửi duyệt
           </NunitoText>
@@ -307,11 +313,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white", // Optional: To give the button a distinct background
   },
   button: {
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+
+    gap: 8,
   },
 });
 
