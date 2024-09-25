@@ -1,5 +1,5 @@
 import { NunitoText } from "@/components/text/NunitoText";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { View, StyleSheet, Pressable, ScrollView } from "react-native";
@@ -7,18 +7,43 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { MyModal } from "@/components/MyModal";
-import { TUserProfile } from "@/api/user/types";
-import { fetchUserProfile } from "@/api/user";
+import { TChangePassword, TUserProfile } from "@/api/user/types";
+import { changePassword, fetchUserProfile } from "@/api/user";
 import { MyToast } from "@/ui/MyToast";
+import { FormInput } from "@/components/FormInput";
+import { useForm } from "react-hook-form";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 export default function MyProfile() {
   const [profileData, setProfileData] = useState<TUserProfile | null>(null);
   const [openChangePwModal, setOpenChangePwModal] = useState(false);
   const [openCfLogout, setOpenCfLogout] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+
   const { userInfo, signOut, session } = useSession();
   const router = useRouter();
+
+  const { control, handleSubmit } = useForm<TChangePassword>();
+
+  const onToggleShowPw = () => {
+    setShowPw(!showPw);
+  };
   const onLogout = () => {
     signOut();
     router.navigate("/auth/login");
+  };
+
+  const onChangePw = async (values: TChangePassword) => {
+    try {
+      const responseJson = await changePassword(session, values);
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+      } else {
+        MyToast.error(responseJson.error ?? responseJson.message);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
   };
 
   const onFetchProfileData = async () => {
@@ -145,11 +170,55 @@ export default function MyProfile() {
         <MyModal
           title={"Bạn muốn đổi mật khẩu?"}
           onClose={() => setOpenChangePwModal(false)}
-          cb={() => {}}
+          cb={handleSubmit(onChangePw)}
           modalProps={{ animationType: "slide", transparent: true }}
         >
-          <View>
-            <NunitoText type="body3">Nhập mật khẩu mới</NunitoText>
+          <View style={{ gap: 16 }}>
+            <FormInput
+              formInputProps={{ control: control, name: "oldPassword" }}
+              secureTextEntry={!showPw}
+              required
+              label="Mật khẩu hiện tại"
+              placeholder="Nhập mật khẩu hiện tại..."
+              leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
+              rightIconEl={
+                <Pressable onPress={onToggleShowPw}>
+                  <View style={{ padding: 8 }}>
+                    <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
+                  </View>
+                </Pressable>
+              }
+            />
+            <FormInput
+              formInputProps={{ control: control, name: "newPassword" }}
+              secureTextEntry={!showPw}
+              required
+              label="Mật khẩu mới"
+              placeholder="Nhập mật khẩu mới..."
+              leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
+              rightIconEl={
+                <Pressable onPress={onToggleShowPw}>
+                  <View style={{ padding: 8 }}>
+                    <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
+                  </View>
+                </Pressable>
+              }
+            />
+            <FormInput
+              formInputProps={{ control: control, name: "confirmPassword" }}
+              secureTextEntry={!showPw}
+              required
+              label="Xác nhận mật khẩu"
+              placeholder="Nhập lại mật khẩu mới..."
+              leftIcon={<MaterialIcons name="password" size={18} color={Colors.light.inputIconNone} />}
+              rightIconEl={
+                <Pressable onPress={onToggleShowPw}>
+                  <View style={{ padding: 8 }}>
+                    <Feather name={showPw ? "eye-off" : "eye"} size={18} color={Colors.light.inputIconNone} />
+                  </View>
+                </Pressable>
+              }
+            />
           </View>
         </MyModal>
       )}

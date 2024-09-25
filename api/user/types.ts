@@ -19,3 +19,9 @@ export type TUserProfile = {
   positionBonusCoefficient: number; // phụ cấp chức vụ
   otherBonusCoefficient: number; // phu cap khac
 };
+
+export type TChangePassword = {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
