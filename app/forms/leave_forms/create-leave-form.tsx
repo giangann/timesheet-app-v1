@@ -81,19 +81,15 @@ export default function CreateLeaveForm() {
       });
 
       const responseJson = await response.json();
-      console.log("responseJson", responseJson);
-      console.log(responseJson);
 
       if (responseJson.statusCode === 200) {
         MyToast.success("Thành công");
         router.back();
       } else {
         MyToast.error(responseJson.error);
-        console.log(responseJson);
       }
     } catch (error: any) {
       MyToast.error(error.message);
-      console.log(error);
     }
   };
 
