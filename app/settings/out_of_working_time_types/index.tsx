@@ -91,7 +91,7 @@ const Item: React.FC<ItemProps> = ({ id, name, coefficient }) => {
       {/* left */}
       <View style={styles.itemBoxLeft}>
         <View style={styles.indexBox}>
-          <NunitoText type="body2" lightColor="white">
+          <NunitoText type="body2" lightColor="white" darkColor="white">
             {addPrefix(id)}
           </NunitoText>
         </View>
@@ -100,7 +100,7 @@ const Item: React.FC<ItemProps> = ({ id, name, coefficient }) => {
       {/* right */}
       <View style={styles.chipBox}>
         <View style={styles.chip}>
-          <NunitoText lightColor="white" type="body2">
+          <NunitoText lightColor="white" darkColor="white" type="body2">
             {"x "}
             {coefficient.toPrecision(3)}
           </NunitoText>

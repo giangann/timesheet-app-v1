@@ -101,7 +101,7 @@ const Item: React.FC<ItemProps> = ({ dutyFormId, date, dutyType, dayOfWeek }) =>
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
-        <NunitoText type="body2" lightColor="white">
+        <NunitoText type="body2" lightColor="white" darkColor="white">
           {getDayOfWeekShortNameInVietnamese(date)}
         </NunitoText>
       </View>

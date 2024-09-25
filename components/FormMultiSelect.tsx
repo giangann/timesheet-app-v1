@@ -77,7 +77,7 @@ export function FormMultiSelect<T extends FieldValues>({ useControllerProps, opt
                   <>
                     {labelsOfValue.map((labl: string, index: number) => (
                       <View style={styles.labelSelected} key={index}>
-                        <NunitoText lightColor="white" type="body3">
+                        <NunitoText lightColor="white" darkColor="white" type="body3">
                           {labl}
                         </NunitoText>
                       </View>

@@ -91,7 +91,7 @@ const Item: React.FC<ItemProps> = ({ leaveType }) => {
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
-        <NunitoText type="body2" lightColor="white">
+        <NunitoText type="body2" lightColor="white" darkColor="white">
           {addPrefix(id)}
         </NunitoText>
       </View>

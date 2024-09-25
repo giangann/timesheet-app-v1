@@ -67,10 +67,10 @@ export default function HomeScreen() {
                 <AvatarByRole role={userInfo?.roleCode} customStyles={{ borderColor: "white" }} />
               </Pressable>
               <View style={styles.welcome}>
-                <NunitoText type="body3" lightColor="white">
+                <NunitoText type="body3" lightColor="white" darkColor="white">
                   Xin chào !
                 </NunitoText>
-                <NunitoText type="heading3" lightColor="white">
+                <NunitoText type="heading3" lightColor="white" darkColor="white">
                   {userInfo?.name}
                 </NunitoText>
               </View>
@@ -87,7 +87,9 @@ export default function HomeScreen() {
             <View style={styles.todayInfo}>
               <View style={styles.todayDateBox}>
                 <View style={styles.dayOfWeekBox}>
-                  <NunitoText lightColor="white">{getDayOfWeekNameInVietnamese(moment(Date.now()).format("YYYY-MM-DD"))}</NunitoText>
+                  <NunitoText lightColor="white" darkColor="white">
+                    {getDayOfWeekNameInVietnamese(moment(Date.now()).format("YYYY-MM-DD"))}
+                  </NunitoText>
                 </View>
                 <NunitoText style={{ textAlign: "center" }}>{moment(Date.now()).format("DD/MM")}</NunitoText>
               </View>
@@ -117,7 +119,7 @@ export default function HomeScreen() {
                     <>
                       <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
                       <View style={styles.chipCircle}>
-                        <NunitoText type="body2" lightColor="white">
+                        <NunitoText type="body2" lightColor="white" darkColor="white">
                           {formatNumberWithLeadingZeroOrCap(homeData?.numberOfUnreadFormNotify) ?? "00"}
                         </NunitoText>
                       </View>
@@ -142,7 +144,7 @@ export default function HomeScreen() {
                   <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
                   <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
                   <View style={styles.chipCircle}>
-                    <NunitoText type="body2" lightColor="white">
+                    <NunitoText type="body2" lightColor="white" darkColor="white">
                       {formatNumberAddLeadingZero(homeData?.numberOfCurrentMonthTimeKeeping) ?? "00"}
                     </NunitoText>
                   </View>
@@ -202,7 +204,7 @@ export default function HomeScreen() {
                       <NunitoText type="subtitle1">Đơn từ</NunitoText>
                       <NunitoText type="body3">Đơn cần xử lý</NunitoText>
                       <View style={styles.chipCircle}>
-                        <NunitoText type="body2" lightColor="white">
+                        <NunitoText type="body2" lightColor="white" darkColor="white">
                           {formatNumberWithLeadingZeroOrCap(homeData?.numberOfFormNeedApprove) ?? "00"}
                         </NunitoText>
                       </View>
@@ -229,7 +231,7 @@ export default function HomeScreen() {
                   <NunitoText type="body3">Quản lý nhân sự</NunitoText>
                   <View style={styles.chipCircle}>
                     <MaterialCommunityIcons name="microsoft-teams" size={20} color="white" />
-                    <NunitoText type="body2" lightColor="white">
+                    <NunitoText type="body2" lightColor="white" darkColor="white">
                       {"25"}
                     </NunitoText>
                     </View>
@@ -372,13 +374,13 @@ const styles = StyleSheet.create({
   },
   todayTimeKeepingBox: {
     flexShrink: 1,
-    width:'100%',
+    width: "100%",
   },
   wdTime: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    flexWrap:'wrap',
+    flexWrap: "wrap",
   },
 
   // quick action

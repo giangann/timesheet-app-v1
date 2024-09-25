@@ -93,7 +93,7 @@ const Item: React.FC<ItemProps> = ({ id, name, teams, createdAt, updatedAt }) =>
       <View style={styles.itemBoxLeft}>
         <View style={styles.indexBoxWrapper}>
           <View style={styles.indexBox}>
-            <NunitoText type="body2" lightColor="white">
+            <NunitoText type="body2" lightColor="white" darkColor="white">
               {addPrefix(id)}
             </NunitoText>
           </View>
@@ -114,7 +114,7 @@ const Item: React.FC<ItemProps> = ({ id, name, teams, createdAt, updatedAt }) =>
       <View style={styles.chipBox}>
         {teams.map((teamName, index) => (
           <View key={index} style={styles.chip}>
-            <NunitoText lightColor="white" type="body4">
+            <NunitoText lightColor="white" darkColor="white" type="body4">
               {teamName}
             </NunitoText>
           </View>

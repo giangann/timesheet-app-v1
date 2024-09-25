@@ -66,7 +66,7 @@ export default function MyProfile() {
         <View style={styles.listInfoBox}>
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <NunitoText type="body3" lightColor="white">
+              <NunitoText type="body3" lightColor="white" darkColor="white">
                 Thông tin cá nhân
               </NunitoText>
             </View>
@@ -81,7 +81,7 @@ export default function MyProfile() {
 
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <NunitoText type="body3" lightColor="white">
+              <NunitoText type="body3" lightColor="white" darkColor="white">
                 Thông tin liên lạc
               </NunitoText>
             </View>
@@ -93,7 +93,7 @@ export default function MyProfile() {
 
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <NunitoText type="body3" lightColor="white">
+              <NunitoText type="body3" lightColor="white" darkColor="white">
                 Thông tin phòng ban
               </NunitoText>
             </View>
@@ -106,7 +106,7 @@ export default function MyProfile() {
 
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <NunitoText type="body3" lightColor="white">
+              <NunitoText type="body3" lightColor="white" darkColor="white">
                 Thông tin hệ số lương
               </NunitoText>
             </View>
@@ -120,7 +120,7 @@ export default function MyProfile() {
 
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <NunitoText type="body3" lightColor="white">
+              <NunitoText type="body3" lightColor="white" darkColor="white">
                 Thông tin đăng nhập
               </NunitoText>
             </View>
@@ -131,7 +131,7 @@ export default function MyProfile() {
               </View>
               <Pressable onPress={() => setOpenChangePwModal(true)}>
                 <View style={styles.changePasswordButton}>
-                  <NunitoText type="body2" lightColor="white">
+                  <NunitoText type="body2" lightColor="white" darkColor="white">
                     Đổi mật khẩu
                   </NunitoText>
                 </View>

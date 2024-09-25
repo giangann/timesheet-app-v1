@@ -104,7 +104,7 @@ const Login = () => {
                 <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onLogin)} disabled={isSubmitting}>
                   <View style={styles.btnInner}>
                     {isSubmitting && <Progress.Circle indeterminate size={14} />}
-                    <NunitoText type="body3" lightColor="white">
+                    <NunitoText type="body3" lightColor="white" darkColor="white">
                       Đăng nhập
                     </NunitoText>
                   </View>

@@ -27,7 +27,7 @@ export const ChipStatus: React.FC<Props> = ({ status }) => {
     <View
       style={{ backgroundColor: color, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, alignItems: "center", justifyContent: "center" }}
     >
-      <NunitoText type="body4" lightColor="white">
+      <NunitoText type="body4" lightColor="white" darkColor="white">
         {FORM_STATUS_NAME[status]}
       </NunitoText>
     </View>
