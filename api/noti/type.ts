@@ -1,6 +1,7 @@
 import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS } from "@/constants/Misc";
 
 export type TNoti = {
+  id: number;
   message: string;
   obj: {
     approveDate: string | null;

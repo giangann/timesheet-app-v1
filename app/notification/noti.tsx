@@ -53,7 +53,7 @@ export default function Noti() {
       <FlatList
         data={notis}
         renderItem={({ item }) => <NotiItem noti={item} />}
-        keyExtractor={(_item, index) => index.toString()}
+        keyExtractor={(_item) => _item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
@@ -76,7 +76,7 @@ const NotiItem = memo(({ noti }: NotiItemProps) => {
 
   const onReadNoti = async () => {
     try {
-      const responseJson = await readNoti(session, 363);
+      const responseJson = await readNoti(session, noti.id);
       if (responseJson.statusCode !== 200) {
         MyToast.error(responseJson.error);
       }
@@ -98,8 +98,7 @@ const NotiItem = memo(({ noti }: NotiItemProps) => {
 
         <View style={styles.itemContent}>
           <NunitoText type="body2">Yêu cầu phê duyệt mới</NunitoText>
-          <NunitoText type="subtitle1">{noti.obj.id}</NunitoText>
-          <NunitoText type="subtitle1">{noti.status}</NunitoText>
+          <NunitoText type="body4">{noti.id}</NunitoText>
 
           <NunitoText type="body4">
             <NunitoText type="body4">{"__Role Name__"}</NunitoText>
