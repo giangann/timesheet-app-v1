@@ -1,7 +1,7 @@
 import { fetchAllMyNotis } from "@/api/noti";
 import { TNoti } from "@/api/noti/type";
 import { NunitoText } from "@/components/text/NunitoText";
-import { FORM_NOTI_NAME, FORM_NOTI_TYPE, FORM_STATUS_NAME, ROLE_CODE } from "@/constants/Misc";
+import { FORM_NOTI_NAME, FORM_NOTI_TYPE, FORM_STATUS_NAME, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { formatRelativeTime } from "@/helper/date";
 import { AvatarByRole } from "@/ui/AvatarByRole";
@@ -75,6 +75,8 @@ const NotiItem: React.FC<NotiItemProps> = ({ noti }) => {
         <View style={styles.itemContent}>
           <NunitoText type="body2">Yêu cầu phê duyệt mới</NunitoText>
           <NunitoText type="subtitle1">{noti.obj.id}</NunitoText>
+          <NunitoText type="subtitle1">{noti.status}</NunitoText>
+
           <NunitoText type="body4">
             <NunitoText type="body4">{"__Role Name__"}</NunitoText>
             <NunitoText type="body4"> {"__User Name__"} </NunitoText>
@@ -89,7 +91,7 @@ const NotiItem: React.FC<NotiItemProps> = ({ noti }) => {
           </NunitoText>
         </View>
 
-        <BadgeUnreadNoti />
+        {noti.status === NOTI_STATUS.UNREAD && <BadgeUnreadNoti />}
       </View>
     </TouchableOpacity>
   );
