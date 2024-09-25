@@ -1,3 +1,5 @@
+import { TPagiParams } from "@/types";
+
 export const UNIT_DIMENSION = 1;
 export const UNIT_FONTSIZE = 1;
 
@@ -57,6 +59,11 @@ export enum NOTI_STATUS {
   UNREAD = 0,
   READ = 1,
 }
+
+export const DEFAULT_PAGI_PARAMS: TPagiParams = {
+  page: 0,
+  size: 10,
+};
 //
 
 // const SAMPLE_RESPONSE_JSON = {

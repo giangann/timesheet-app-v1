@@ -1,8 +1,14 @@
-export const fetchMyNotis = async (session: string | undefined | null, page?: number) => {
+import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
+import { TPagiParams } from "@/types";
+
+export const fetchMyNotis = async (session: string | undefined | null, pagiParams?: TPagiParams) => {
   const token = `Bearer ${session}` ?? "xxx";
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/notifications";
-  const queryString = `?page=${page ?? 0}&size=6`;
+
+  const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
+  const { page, size } = paginationParams;
+  const queryString = `?page=${page}&size=${size}`;
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 

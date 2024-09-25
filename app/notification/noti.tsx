@@ -1,9 +1,10 @@
 import { fetchMyNotis, readNoti } from "@/api/noti";
 import { TNoti } from "@/api/noti/type";
 import { NunitoText } from "@/components/text/NunitoText";
-import { FORM_NOTI_NAME, FORM_NOTI_TYPE, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS, FORM_NOTI_NAME, FORM_NOTI_TYPE, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { formatRelativeTime } from "@/helper/date";
+import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
@@ -15,15 +16,18 @@ export default function Noti() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchMore, setIsFetchMore] = useState(false);
   const [notis, setNotis] = useState<TNoti[]>([]);
-  const [page, setPage] = useState<number>(0);
+  const [pageable, setPageable] = useState<TPageable | null>(null);
   const { session } = useSession();
+
+  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const handleEndListReached = () => {
     console.log("end list reached!");
 
-    fetchMoreNotis(page + 1);
+    const newPagiParams = { ...pagiParams, page: pagiParams.page + 1 };
 
-    setPage((page) => page + 1);
+    fetchMoreNotis(newPagiParams);
+    setPagiParams(newPagiParams);
   };
 
   const fetchNotis = useCallback(async () => {
@@ -31,7 +35,10 @@ export default function Noti() {
     try {
       const responseJson = await fetchMyNotis(session);
       if (responseJson.statusCode === 200) {
+        console.log(responseJson.data.pageable);
+
         setNotis(responseJson.data.notifications);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -42,13 +49,16 @@ export default function Noti() {
     }
   }, [session]);
 
-  const fetchMoreNotis = async (page: number) => {
+  const fetchMoreNotis = async (pagiParams: TPagiParams) => {
     setIsFetchMore(true);
     try {
-      const responseJson = await fetchMyNotis(session, page);
+      const responseJson = await fetchMyNotis(session, pagiParams);
       if (responseJson.statusCode === 200) {
+        console.log(responseJson.data.pageable);
+
         const moreNotis = responseJson.data.notifications;
         setNotis((prev) => [...prev, ...moreNotis]);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -73,7 +83,7 @@ export default function Noti() {
           keyExtractor={(_item, index) => index.toString()}
           onEndReached={isFetchMore ? () => {} : handleEndListReached}
           onEndReachedThreshold={0.15}
-          ListFooterComponent={<SkeletonLoader />}
+          ListFooterComponent={(pageable?.currentPage ?? 0) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
         />
       )}
     </View>
