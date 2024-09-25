@@ -1,81 +1,43 @@
+import { fetchMyDutyForms } from "@/api/form";
+import { TDutyForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-const UserAvatar = require("@/assets/images/avatar-test.png");
+import { useEffect, useState } from "react";
+import { FlatList, Image, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
-type TFormUserApply = {
-  name: string;
-  identifyCard: string;
-  roleId: number;
-  roleName: string;
-  roleCode: string;
-};
-
-type TDutyForm = {
-  id: number;
-  startTime: string;
-  endTime: string;
-  date: string;
-  status: FORM_STATUS;
-  userApproveName: string;
-  userApproveIdentifyCard: string;
-  note: string;
-  reason: string | null;
-  approveDate: string | null;
-  attachFilePath: string;
-  isDeleted: boolean;
-  dutyTypeName: string;
-  salaryCoefficientTypeName: string;
-  salaryCoefficient: number;
-  users: TFormUserApply[];
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
-};
-
 export default function DutyForms() {
-  const [isLoading, setIsLoading] = useState(false);
   const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
+  const [pageable, setPageable] = useState<TPageable | null>(null);
+
   const { session } = useSession();
 
-  const fetchDutyForms = async () => {
+  const handleEndListReached = () => {
+    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
+      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    }
+  };
+
+  const fetchDutyForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/duty-forms/filter/user";
-      const queryString = `?page=0&size=20`;
-      const url = `${baseUrl}${endpoint}${queryString}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
+      const responseJson = await fetchMyDutyForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        setDutyForms(responseJson.data.dutyForm);
+        const moreDutyForms = responseJson.data.dutyForm;
+        setDutyForms((prev) => [...prev, ...moreDutyForms]);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -86,35 +48,25 @@ export default function DutyForms() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchDutyForms();
-    }, [])
-  );
+  useEffect(() => {
+    fetchDutyForms(pagiParams);
+  }, [pagiParams]);
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {isLoading && <SkeletonLoader />}
-        <List dutyForms={dutyForms} />
-      </ScrollView>
+      <FlatList
+        data={dutyForms}
+        renderItem={({ item }) => <Item dutyForm={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleEndListReached}
+        onEndReachedThreshold={0.15}
+        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
+        style={styles.flatList}
+      />
       <ApplyNewForm />
     </View>
   );
 }
-
-type ListProps = {
-  dutyForms: TDutyForm[];
-};
-const List: React.FC<ListProps> = ({ dutyForms }) => {
-  return (
-    <View style={styles.listBox}>
-      {dutyForms.map((form) => (
-        <Item key={form.id} dutyForm={form} />
-      ))}
-    </View>
-  );
-};
 
 type ItemProps = {
   dutyForm: TDutyForm;
@@ -122,7 +74,6 @@ type ItemProps = {
 const Item: React.FC<ItemProps> = ({ dutyForm }) => {
   const [isExpand, setIsExpand] = useState(false);
   const router = useRouter();
-  const { userInfo } = useSession();
 
   const onGoToFormDetail = () => {
     router.navigate({
@@ -211,7 +162,7 @@ const ApplyNewForm = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -228,18 +179,15 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
-  scrollContent: {
-    gap: 20,
-    paddingBottom: 100, // Space at the bottom to prevent overlap with the button
-  },
-  listBox: {
-    paddingBottom: 16,
-    gap: 20,
+  flatList: {
+    paddingTop: 16,
   },
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
+    //
+    marginBottom: 20,
   },
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
@@ -284,13 +232,20 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
   },
   button: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+    backgroundColor: "#0B3A82",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // For Android shadow
   },
 });

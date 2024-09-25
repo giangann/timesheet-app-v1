@@ -35,7 +35,8 @@ export default function OvertimeForms() {
     try {
       const responseJson = await fetchMyOvertimeForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        setOvertimeForms(responseJson.data.overtimeForms);
+        const moreOvertimeForms = responseJson.data.overtimeForms;
+        setOvertimeForms((prev) => [...prev, ...moreOvertimeForms]);
         setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
