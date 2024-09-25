@@ -1,3 +1,4 @@
+import { TOvertimeFormDetail } from "@/api/form/types";
 import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -11,44 +12,6 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-type TOvertimeFormDetail = {
-  id: number;
-  userIdentifyCard: string;
-  userName: string;
-  note: string;
-  attachFilePath: string;
-  status: number;
-  userRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string;
-  };
-  reason: string | null;
-  userApproveRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userApproveIdentifyCard: string;
-  userApproveName: string;
-  approveDate: string | null;
-
-  date: string;
-  startTime: string;
-  endTime: string;
-  typeOfWorking: string | null;
-  salaryCoefficientType: {
-    id: number;
-    name: string;
-    coefficient: number;
-  };
-};
 
 export default function DetailForm() {
   const [form, setForm] = useState<TOvertimeFormDetail | null>(null);
