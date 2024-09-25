@@ -1,25 +1,35 @@
-import { fetchAllMyNotis, readNoti } from "@/api/noti";
+import { fetchMyNotis, readNoti } from "@/api/noti";
 import { TNoti } from "@/api/noti/type";
 import { NunitoText } from "@/components/text/NunitoText";
-import { FORM_NOTI_NAME, FORM_NOTI_TYPE, FORM_STATUS_NAME, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { FORM_NOTI_NAME, FORM_NOTI_TYPE, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { formatRelativeTime } from "@/helper/date";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import { memo, useCallback, useEffect, useState } from "react";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function Noti() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchMore, setIsFetchMore] = useState(false);
   const [notis, setNotis] = useState<TNoti[]>([]);
+  const [page, setPage] = useState<number>(0);
   const { session } = useSession();
 
-  const fetchAllNotis = async () => {
+  const handleEndListReached = () => {
+    console.log("end list reached!");
+
+    fetchMoreNotis(page + 1);
+
+    setPage((page) => page + 1);
+  };
+
+  const fetchNotis = useCallback(async () => {
     setIsLoading(true);
     try {
-      const responseJson = await fetchAllMyNotis(session);
+      const responseJson = await fetchMyNotis(session);
       if (responseJson.statusCode === 200) {
         setNotis(responseJson.data.notifications);
       } else {
@@ -30,37 +40,50 @@ export default function Noti() {
     } finally {
       setIsLoading(false);
     }
+  }, [session]);
+
+  const fetchMoreNotis = async (page: number) => {
+    setIsFetchMore(true);
+    try {
+      const responseJson = await fetchMyNotis(session, page);
+      if (responseJson.statusCode === 200) {
+        const moreNotis = responseJson.data.notifications;
+        setNotis((prev) => [...prev, ...moreNotis]);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsFetchMore(false);
+    }
   };
 
   useEffect(() => {
-    fetchAllNotis();
+    fetchNotis();
   }, []);
 
   return (
     <View style={styles.container}>
       {isLoading && <SkeletonLoader />}
-      {!isLoading && <NotiList notis={notis} />}
+      {!isLoading && (
+        <FlatList
+          data={notis}
+          renderItem={({ item }) => <NotiItem noti={item} />}
+          keyExtractor={(_item, index) => index.toString()}
+          onEndReached={isFetchMore ? () => {} : handleEndListReached}
+          onEndReachedThreshold={0.15}
+          ListFooterComponent={<SkeletonLoader />}
+        />
+      )}
     </View>
   );
 }
 
-type NotiListProps = {
-  notis: TNoti[];
-};
-const NotiList: React.FC<NotiListProps> = ({ notis }) => {
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      {notis.map((noti, index) => (
-        <NotiItem key={index} noti={noti} />
-      ))}
-    </ScrollView>
-  );
-};
-
 type NotiItemProps = {
   noti: TNoti;
 };
-const NotiItem: React.FC<NotiItemProps> = ({ noti }) => {
+const NotiItem = memo(({ noti }: NotiItemProps) => {
   const router = useRouter();
   const { session } = useSession();
 
@@ -114,7 +137,7 @@ const NotiItem: React.FC<NotiItemProps> = ({ noti }) => {
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const BadgeUnreadNoti = () => {
   return (
@@ -136,6 +159,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 12,
+
+    //
+    marginBottom: 12,
   },
   itemContent: {
     flexShrink: 1,

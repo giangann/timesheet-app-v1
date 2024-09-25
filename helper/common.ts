@@ -77,3 +77,11 @@ export function formatNumberAddLeadingZero(num: number | null | undefined): stri
   // For negative numbers, return the number as a string
   return num.toFixed(1);
 }
+
+export function fakeDelay(seconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, seconds * 1000);
+  });
+}
