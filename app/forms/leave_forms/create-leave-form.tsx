@@ -38,7 +38,7 @@ export default function CreateLeaveForm() {
   const router = useRouter();
 
   const { control, handleSubmit } = useForm<CreateItemForm>({
-    defaultValues: { startDate: undefined, endDate: undefined },
+    defaultValues: { startDate: undefined, endDate: undefined, note: "" },
   });
 
   const leaveTypeOpts = leaveTypes.map((leaveType) => ({ value: leaveType.id, label: leaveType.name }));
@@ -46,7 +46,11 @@ export default function CreateLeaveForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
-      if (hasNullishValue(value)) return;
+      console.log(value)
+      if (hasNullishValue(value)) {
+        MyToast.error('Hãy nhập đủ các thông tin yêu cầu')
+        return;
+      };
       const bodyData: CreateItemForm = {
         ...value,
       };
