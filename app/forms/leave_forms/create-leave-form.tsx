@@ -77,6 +77,7 @@ export default function CreateLeaveForm() {
       });
 
       const responseJson = await response.json();
+      console.log("responseJson", responseJson);
       console.log(responseJson);
 
       if (responseJson.statusCode === 200) {
