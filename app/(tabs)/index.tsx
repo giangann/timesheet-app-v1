@@ -4,7 +4,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { formatNumberAddLeadingZero, formatNumberWithLeadingZeroOrCap } from "@/helper/common";
+import { formatNumberAddLeadingZero } from "@/helper/common";
 import { convertTimeToHHMM, getDayOfWeekNameInVietnamese } from "@/helper/date";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
@@ -76,7 +76,10 @@ export default function HomeScreen() {
               </View>
             </View>
             <Pressable onPress={goToNotiScreen}>
-              <Ionicons name="notifications" size={24} color="white" />
+              <View style={styles.notiBox}>
+                <Ionicons name="notifications" size={24} color="white" />
+                {homeData?.numberOfUnreadFormNotify && <View style={styles.notiBadge} />}
+              </View>
             </Pressable>
           </View>
         </View>
@@ -120,7 +123,7 @@ export default function HomeScreen() {
                       <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
                       <View style={styles.chipCircle}>
                         <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfUnreadFormNotify) ?? "00"}
+                          {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify) ?? "00"}
                         </NunitoText>
                       </View>
                     </>
@@ -205,7 +208,7 @@ export default function HomeScreen() {
                       <NunitoText type="body3">Đơn cần xử lý</NunitoText>
                       <View style={styles.chipCircle}>
                         <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberWithLeadingZeroOrCap(homeData?.numberOfFormNeedApprove) ?? "00"}
+                          {formatNumberAddLeadingZero(homeData?.numberOfFormNeedApprove) ?? "00"}
                         </NunitoText>
                       </View>
 
@@ -326,6 +329,19 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
     gap: 8,
+  },
+  notiBox: {
+    position: "relative",
+  },
+  notiBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#C84851",
   },
   welcome: {},
 

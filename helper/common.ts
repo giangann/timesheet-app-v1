@@ -40,7 +40,7 @@ export function marginByRole(role: ROLE_CODE | undefined): number {
  */
 export function formatNumberWithLeadingZeroOrCap(num: number | null | undefined): string | null | undefined {
   if (num === undefined || num === null) return num;
-  
+
   // Check if number is a float within the range [0, 9]
   if (num >= 0 && num < 10 && !Number.isInteger(num)) {
     return num.toFixed(1); // Return the float as a string without leading zero
@@ -51,19 +51,26 @@ export function formatNumberWithLeadingZeroOrCap(num: number | null | undefined)
     return `0${num}`;
   }
 
-  // For numbers 10 or greater, return "9+"
-  if (num >= 10) {
-    return "9+";
+  // // For numbers 10 or greater, return "9+"
+  // if (num >= 10) {
+  //   return "9+";
+  // }
+
+  // For numbers 10 or greater, return number
+  if (num >= 10 && Number.isInteger(num)) {
+    return num.toString();
+  }
+  if (num >= 10 && !Number.isInteger(num)) {
+    return num.toFixed(1);
   }
 
   // For negative numbers, return the number as a string
   return num.toFixed(1);
 }
 
-
 export function formatNumberAddLeadingZero(num: number | null | undefined): string | null | undefined {
   if (num === undefined || num === null) return num;
-  
+
   // Check if number is a float within the range [0, 9]
   if (num >= 0 && num < 10 && !Number.isInteger(num)) {
     return num.toFixed(1); // Return the float as a string without leading zero
@@ -72,6 +79,14 @@ export function formatNumberAddLeadingZero(num: number | null | undefined): stri
   // For integers in the range [0, 9], add a leading zero
   if (num >= 0 && num < 10 && Number.isInteger(num)) {
     return `0${num}`;
+  }
+
+  // For numbers 10 or greater, return number
+  if (num >= 10 && Number.isInteger(num)) {
+    return num.toString();
+  }
+  if (num >= 10 && !Number.isInteger(num)) {
+    return num.toFixed(1);
   }
 
   // For negative numbers, return the number as a string
