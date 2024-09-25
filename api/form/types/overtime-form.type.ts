@@ -1,4 +1,39 @@
-import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS } from "@/constants/Misc";
+import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+export type TOvertimeForm = {
+  id: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  userApproveIdentifyCard: string;
+  userApproveName: string;
+  note: string;
+  status: FORM_STATUS;
+  isDeleted: boolean;
+  typeOfWorking: any;
+  reason: string | null;
+  approveDate: string | null;
+  attachFilePath: string;
+  salaryCoefficientName: string;
+  salaryCoefficient: number;
+  userName: string;
+  userIdentifyCard: string;
+  userRole: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+};
 
 export type TOvertimeFormDetail = {
   id: number;
