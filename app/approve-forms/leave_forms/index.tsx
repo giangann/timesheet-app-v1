@@ -1,44 +1,78 @@
-import { fetchLeaveFormApproves } from "@/api/form";
-import { TLeaveFormApprove } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
+import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { TPageable, TPagiParams } from "@/types";
+import { useSocketClient } from "@/hooks/useSocketClient";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+const UserAvatar = require("@/assets/images/avatar-test.png");
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
-export default function ApproveLeaveForms() {
-  const [leaveForms, setLeaveForms] = useState<TLeaveFormApprove[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
-  const [pageable, setPageable] = useState<TPageable | null>(null);
-  const isFirstRender = useRef(true);
-
-  const { session } = useSession();
-
-  const handleEndListReached = () => {
-    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
-      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
-    }
+type TLeaveForm = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  note: string;
+  userIdentifyCard: string;
+  userName: string;
+  userApproveName: string;
+  leaveFormTypeName: string;
+  status: FORM_STATUS;
+  filePath: string;
+  isDeleted: boolean;
+  userRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
   };
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveIdentifyCard: string;
+  approveDate: string;
+  reason: string;
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+};
 
-  const fetchLeaveForms = async (pagiParams: TPagiParams) => {
+export default function ApproveLeaveForms() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
+  const { session } = useSession();
+  const { wsClient } = useSocketClient();
+
+  const fetchLeaveForms = async () => {
     setIsLoading(true);
     try {
-      const responseJson = await fetchLeaveFormApproves(session, pagiParams);
+      const token = `Bearer ${session}` ?? "xxx";
+
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = "/leave-forms/filter/user-approve";
+      const queryString = `?page=0&size=20&sort=endDate,desc`;
+      const url = `${baseUrl}${endpoint}${queryString}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
       if (responseJson.statusCode === 200) {
-        const moreLeaveForms = responseJson.data.leaveForms;
-        setLeaveForms((prev) => [...prev, ...moreLeaveForms]);
-        setPageable(responseJson.data.pageable);
+        setLeaveForms(responseJson.data.leaveForms);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -49,38 +83,38 @@ export default function ApproveLeaveForms() {
     }
   };
 
-  // useEffect(() => {
-  //   fetchLeaveForms(pagiParams);
-  // }, [pagiParams]);
-
   useFocusEffect(
-    React.useCallback(() => {
-      isFirstRender.current = false
-
-      if (isFirstRender.current){
-        
-      }
-      fetchLeaveForms(pagiParams);
-    }, [pagiParams])
+    useCallback(() => {
+      fetchLeaveForms();
+    }, [])
   );
+
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={leaveForms}
-        renderItem={({ item }) => <Item leaveForm={item} />}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReached={handleEndListReached}
-        onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
-        style={styles.flatList}
-      />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {isLoading && <SkeletonLoader />}
+        <List leaveForms={leaveForms} />
+      </ScrollView>
     </View>
   );
 }
 
+type ListProps = {
+  leaveForms: TLeaveForm[];
+};
+const List: React.FC<ListProps> = ({ leaveForms }) => {
+  return (
+    <View style={styles.listBox}>
+      {leaveForms.map((form) => (
+        <Item key={form.id} leaveForm={form} />
+      ))}
+    </View>
+  );
+};
+
 type ItemProps = {
-  leaveForm: TLeaveFormApprove;
+  leaveForm: TLeaveForm;
 };
 const Item: React.FC<ItemProps> = ({ leaveForm }) => {
   const [isExpand, setIsExpand] = useState(false);
@@ -103,8 +137,6 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
           <View style={styles.userInfo}>
             <AvatarByRole role={leaveForm.userRole.code} />
             <View style={{ gap: 4 }}>
-              <NunitoText type="subtitle1">{leaveForm.id}</NunitoText>
-
               <NunitoText type="body3">{leaveForm.userName}</NunitoText>
               <NunitoText type="body4" style={{ opacity: 0.75 }}>
                 {leaveForm.userRole.name}
@@ -159,7 +191,7 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    padding: 16,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -176,15 +208,18 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
-  flatList: {
-    paddingTop: 16,
+  scrollContent: {
+    gap: 20,
+    paddingBottom: 16,
+  },
+  listBox: {
+    paddingBottom: 16,
+    gap: 20,
   },
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
-    //
-    marginBottom: 20,
   },
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
@@ -222,5 +257,20 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     borderBottomEndRadius: 6,
     borderBottomRightRadius: 8,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: "white", // Optional: To give the button a distinct background
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0B3A82",
+    height: 44,
+    borderRadius: 4,
   },
 });
