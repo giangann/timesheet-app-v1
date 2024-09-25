@@ -52,7 +52,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       if (evType === "AUTH_FAILED") {
         // if (!pathname.match("/auth/login")) {
         // }
-        MyToast.error(`khởi tạo Websocket thất bại: ${evDataParsed.message}`);
+        // MyToast.error(`khởi tạo Websocket thất bại: ${evDataParsed.message}`);
       }
     };
 
