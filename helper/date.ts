@@ -1,3 +1,5 @@
+import moment from "moment";
+
 /**
  * Sorts an array of objects by a `date` field in either ascending or descending order.
  *
@@ -187,3 +189,25 @@ export function convertTimeToHHMM(time: string | undefined): string | undefined 
   const [hours, minutes] = time.split(":");
   return `${hours}:${minutes}`;
 }
+
+export const formatRelativeTime = (dateString: string) => {
+  const now = moment();
+  const date = moment(dateString);
+  const diffInMinutes = now.diff(date, "minutes");
+  const diffInHours = now.diff(date, "hours");
+  const diffInDays = now.diff(date, "days");
+
+  if (diffInMinutes < 60) {
+    // Less than an hour ago
+    return `${diffInMinutes} phút trước`;
+  } else if (diffInHours < 24) {
+    // Less than a day ago
+    return `Hôm nay ${date.format("HH:mm")}`;
+  } else if (diffInDays === 1) {
+    // Yesterday
+    return `Hôm qua ${date.format("HH:mm")}`;
+  } else {
+    // More than a day ago
+    return date.format("DD/MM/YYYY HH:mm");
+  }
+};

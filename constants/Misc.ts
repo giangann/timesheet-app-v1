@@ -13,6 +13,12 @@ export enum FORM_NOTI_TYPE {
   DUTY_FORM = "dutyForm",
 }
 
+export const FORM_NOTI_NAME = {
+  [FORM_NOTI_TYPE.LEAVE_FORM]: "Đơn xin nghỉ",
+  [FORM_NOTI_TYPE.OVERTIME_FORM]: "Đơn tăng ca",
+  [FORM_NOTI_TYPE.DUTY_FORM]: "Đơn trực",
+};
+
 export const FORM_STATUS_NAME = {
   [FORM_STATUS.WATING_APPROVE]: "Chờ phê duyệt",
   [FORM_STATUS.ACCEPTED]: "Chấp thuận",
