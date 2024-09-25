@@ -21,7 +21,9 @@ export default function Noti() {
   const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const handleEndListReached = () => {
-    setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
+      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    }
   };
 
   const fetchNotis = async (pagiParams: TPagiParams) => {
@@ -52,7 +54,7 @@ export default function Noti() {
         data={notis}
         renderItem={({ item }) => <NotiItem noti={item} />}
         keyExtractor={(_item, index) => index.toString()}
-        onEndReached={isLoading ? () => {} : handleEndListReached}
+        onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
       />

@@ -1,76 +1,44 @@
+import { fetchMyLeaveForms } from "@/api/form";
+import { TLeaveForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-const UserAvatar = require("@/assets/images/avatar-test.png");
+import { useEffect, useState } from "react";
+import { FlatList, Image, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
-type TLeaveForm = {
-  id: number;
-  startDate: string;
-  endDate: string;
-  note: string;
-  userIdentifyCard: string;
-  userName: string;
-  userApproveName: string;
-  leaveFormTypeName: string;
-  status: FORM_STATUS;
-  filePath: string;
-  isDeleted: false;
-  userRole: {
-    id: number;
-    code: string;
-    name: string;
-  };
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string;
-  };
-  userApproveRole: {
-    id: number;
-    name: string;
-    code: ROLE_CODE;
-  };
-
-  approveDate: string | null;
-  reason: string | null;
-};
-
 export default function LeaveForms() {
-  const [isLoading, setIsLoading] = useState(false);
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
+  const [pageable, setPageable] = useState<TPageable | null>(null);
+
   const { session } = useSession();
 
-  const fetchLeaveForms = async () => {
+  const handleEndListReached = () => {
+    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
+      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    }
+  };
+
+  const fetchLeaveForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/leave-forms/filter/user";
-      const queryString = `?page=0&size=50&sort=endDate,desc`;
-      const url = `${baseUrl}${endpoint}${queryString}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
+      console.log("fetch with params:", { pagiParams });
+      const responseJson = await fetchMyLeaveForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        setLeaveForms(responseJson.data.leaveForms);
+        const moreLeaveForms = responseJson.data.leaveForms;
+        setLeaveForms((prev) => [...prev, ...moreLeaveForms]);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -81,35 +49,25 @@ export default function LeaveForms() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchLeaveForms();
-    }, [])
-  );
+  useEffect(() => {
+    fetchLeaveForms(pagiParams);
+  }, [pagiParams]);
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {isLoading && <SkeletonLoader />}
-        <List leaveForms={leaveForms} />
-      </ScrollView>
+      <FlatList
+        data={leaveForms}
+        renderItem={({ item }) => <Item leaveForm={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleEndListReached}
+        onEndReachedThreshold={0.15}
+        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
+        style={styles.flatList}
+      />
       <ApplyNewForm />
     </View>
   );
 }
-
-type ListProps = {
-  leaveForms: TLeaveForm[];
-};
-const List: React.FC<ListProps> = ({ leaveForms }) => {
-  return (
-    <View style={styles.listBox}>
-      {leaveForms.map((form) => (
-        <Item key={form.id} leaveForm={form} />
-      ))}
-    </View>
-  );
-};
 
 type ItemProps = {
   leaveForm: TLeaveForm;
@@ -203,7 +161,7 @@ const ApplyNewForm = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -220,18 +178,15 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
-  scrollContent: {
-    gap: 20,
-    paddingBottom: 100, // Space at the bottom to prevent overlap with the button
-  },
-  listBox: {
-    paddingBottom: 16,
-    gap: 20,
+  flatList: {
+    paddingTop: 16,
   },
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
+    //
+    marginBottom: 20,
   },
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
@@ -276,13 +231,20 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
   },
   button: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+    backgroundColor: "#0B3A82",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // For Android shadow
   },
 });

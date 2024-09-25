@@ -1,4 +1,37 @@
-import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS } from "@/constants/Misc";
+import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+
+export type TLeaveForm = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  note: string;
+  userIdentifyCard: string;
+  userName: string;
+  userApproveName: string;
+  leaveFormTypeName: string;
+  status: FORM_STATUS;
+  filePath: string;
+  isDeleted: false;
+  userRole: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string;
+  };
+  userApproveRole: {
+    id: number;
+    name: string;
+    code: ROLE_CODE;
+  };
+
+  approveDate: string | null;
+  reason: string | null;
+};
 
 export type TLeaveFormDetail = {
   id: number;
