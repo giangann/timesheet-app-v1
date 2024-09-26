@@ -36,6 +36,45 @@ export type TDutyForm = {
     name: string;
   };
 };
+
+export type TApproveDutyForm = {
+  id: number;
+  startTime: string;
+  endTime: string;
+  date: string;
+  status: FORM_STATUS;
+  userApproveName: string;
+  userApproveIdentifyCard: string;
+  note: string;
+  reason: string | null;
+  approveDate: string | null;
+  attachFilePath: string;
+  isDeleted: boolean;
+  dutyTypeName: string;
+  salaryCoefficientTypeName: string;
+  salaryCoefficient: number;
+  users: [
+    {
+      name: string;
+      identifyCard: string;
+      roleId: number;
+      roleName: string;
+      roleCode: ROLE_CODE;
+    }
+  ];
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+};
+
 export type TDutyFormDetail = {
   id: number;
   dutyCalendar: {

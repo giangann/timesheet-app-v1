@@ -1,82 +1,52 @@
+import { fetchApproveDutyForms } from "@/api/form";
+import { TApproveDutyForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-const UserAvatar = require("@/assets/images/avatar-test.png");
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
-type TDutyForm = {
-  id: number;
-  startTime: string;
-  endTime: string;
-  date: string;
-  status: FORM_STATUS;
-  userApproveName: string;
-  userApproveIdentifyCard: string;
-  note: string;
-  reason: string | null;
-  approveDate: string | null;
-  attachFilePath: string;
-  isDeleted: boolean;
-  dutyTypeName: string;
-  salaryCoefficientTypeName: string;
-  salaryCoefficient: number;
-  users: [
-    {
-      name: string;
-      identifyCard: string;
-      roleId: number;
-      roleName: string;
-      roleCode: ROLE_CODE;
-    }
-  ];
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
-};
-
 export default function ApproveDutyForms() {
+  const [dutyForms, setDutyForms] = useState<TApproveDutyForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
+  const [pageable, setPageable] = useState<TPageable | null>(null);
+  const isFirstRender = useRef(true);
+  const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
+
   const { session } = useSession();
 
-  const fetchDutyForms = async () => {
+  const handleEndListReached = () => {
+    if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
+      // calculate new pagi (next page)
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const newPagiParams: TPagiParams = { page: currentPage + 1, size };
+
+      // fetch data with next page
+      fetchAndUpdateListForms(newPagiParams);
+
+      // update current pagi to new pagi (next page)
+      pagiParamsRef.current = newPagiParams;
+    }
+  };
+
+  const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
-
     try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/duty-forms/filter/user-approve";
-      const queryString = `?page=0&size=20`;
-      const url = `${baseUrl}${endpoint}${queryString}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
+      const responseJson = await fetchApproveDutyForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        setDutyForms(responseJson.data.dutyForm);
+        const moreDutyForms = responseJson.data.dutyForm;
+        setDutyForms((prev) => [...prev, ...moreDutyForms]);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -86,38 +56,59 @@ export default function ApproveDutyForms() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const pagiParams = pagiParamsRef.current;
+    fetchAndUpdateListForms(pagiParams);
 
+    setTimeout(() => {
+      isFirstRender.current = false;
+    }, 1000);
+  }, []);
+
+  const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
+    try {
+      const responseJson = await fetchApproveDutyForms(session, pagiParams);
+      if (responseJson.statusCode === 200) {
+        const overrideDutyForms = responseJson.data.dutyForm;
+        setDutyForms(overrideDutyForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
   useFocusEffect(
     useCallback(() => {
-      fetchDutyForms();
-    }, [])
-  );
+      // Fetch notifications only when navigating back to this screen, not on first render
+      if (isFirstRender.current === false) {
+        // Calculate pagi params
+        const { page: currentPage, size } = pagiParamsRef.current;
+        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
 
+        // Fetch and override list with pagi params
+        fetchAndOverrideListForms(overridePagiParams);
+      }
+      // We still want to update the callback when pagiParams changes, but not trigger it
+    }, [session]) // Only depend on `session` here, or any other non-changing dependencies
+  );
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {isLoading && <SkeletonLoader />}
-        <List dutyForms={dutyForms} />
-      </ScrollView>
+      <FlatList
+        data={dutyForms}
+        renderItem={({ item }) => <Item dutyForm={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleEndListReached}
+        onEndReachedThreshold={0.15}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        style={styles.flatList}
+      />
     </View>
   );
 }
 
-type ListProps = {
-  dutyForms: TDutyForm[];
-};
-const List: React.FC<ListProps> = ({ dutyForms }) => {
-  return (
-    <View style={styles.listBox}>
-      {dutyForms.map((form) => (
-        <Item key={form.id} dutyForm={form} />
-      ))}
-    </View>
-  );
-};
-
 type ItemProps = {
-  dutyForm: TDutyForm;
+  dutyForm: TApproveDutyForm;
 };
 const Item: React.FC<ItemProps> = ({ dutyForm }) => {
   const [isExpand, setIsExpand] = useState(false);
@@ -214,7 +205,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -231,18 +222,15 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
-  scrollContent: {
-    gap: 20,
-    paddingBottom: 16,
-  },
-  listBox: {
-    paddingBottom: 16,
-    gap: 20,
+  flatList: {
+    paddingTop: 16,
   },
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
+    //
+    marginBottom: 20,
   },
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
@@ -280,20 +268,5 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     borderBottomEndRadius: 6,
     borderBottomRightRadius: 8,
-  },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
-  },
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0B3A82",
-    height: 44,
-    borderRadius: 4,
   },
 });
