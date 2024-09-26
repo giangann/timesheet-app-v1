@@ -9,7 +9,7 @@ export async function fetchMyDutyForms(session: string | undefined | null, pagiP
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
   const { page, size } = paginationParams;
-  const queryString = `?page=${page}&size=${size}`;
+  const queryString = `?page=${page}&size=${size}&sort=id,desc`;
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
