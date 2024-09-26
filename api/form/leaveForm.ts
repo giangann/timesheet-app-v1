@@ -9,7 +9,7 @@ export async function fetchMyLeaveForms(session: string | undefined | null, pagi
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
   const { page, size } = paginationParams;
-  const queryString = `?page=${page}&size=${size}&sort=endDate,desc`;
+  const queryString = `?page=${page}&size=${size}&sort=endDate,desc&sort=id,asc`;
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 

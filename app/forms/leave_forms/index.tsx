@@ -9,9 +9,9 @@ import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
@@ -21,16 +21,26 @@ export default function LeaveForms() {
   const [isLoading, setIsLoading] = useState(false);
   const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
   const [pageable, setPageable] = useState<TPageable | null>(null);
+  const isFirstRender = useRef(true);
+  const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const { session } = useSession();
 
   const handleEndListReached = () => {
-    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
-      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
+      // calculate new pagi (next page)
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const newPagiParams: TPagiParams = { page: currentPage + 1, size };
+
+      // fetch data with next page
+      fetchAndUpdateListForms(newPagiParams);
+
+      // update current pagi to new pagi (next page)
+      pagiParamsRef.current = newPagiParams;
     }
   };
 
-  const fetchLeaveForms = async (pagiParams: TPagiParams) => {
+  const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
       const responseJson = await fetchMyLeaveForms(session, pagiParams);
@@ -47,10 +57,42 @@ export default function LeaveForms() {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchLeaveForms(pagiParams);
-  }, [pagiParams]);
+    const pagiParams = pagiParamsRef.current;
+    fetchAndUpdateListForms(pagiParams);
+
+    setTimeout(() => {
+      isFirstRender.current = false;
+    }, 1000);
+  }, []);
+
+  const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
+    try {
+      const responseJson = await fetchMyLeaveForms(session, pagiParams);
+      if (responseJson.statusCode === 200) {
+        const overrideLeaveForms = responseJson.data.leaveForms;
+        setLeaveForms(overrideLeaveForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch notifications only when navigating back to this screen, not on first render
+      if (isFirstRender.current === false) {
+        // Calculate pagi params
+        const { page: currentPage, size } = pagiParamsRef.current;
+        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
+
+        // Fetch and override list with pagi params
+        fetchAndOverrideListForms(overridePagiParams);
+      }
+      // We still want to update the callback when pagiParams changes, but not trigger it
+    }, [session]) // Only depend on `session` here, or any other non-changing dependencies
+  );
 
   return (
     <View style={styles.container}>
@@ -60,7 +102,7 @@ export default function LeaveForms() {
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
         style={styles.flatList}
       />
       <ApplyNewForm />

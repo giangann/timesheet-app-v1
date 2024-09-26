@@ -69,8 +69,8 @@ export default function OvertimeForms() {
     try {
       const responseJson = await fetchMyOvertimeForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        const moreOvertimeForms = responseJson.data.overtimeForms;
-        setOvertimeForms(moreOvertimeForms);
+        const overrideOvertimeForms = responseJson.data.overtimeForms;
+        setOvertimeForms(overrideOvertimeForms);
       } else {
         MyToast.error(responseJson.error);
       }
