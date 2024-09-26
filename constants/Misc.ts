@@ -62,7 +62,7 @@ export enum NOTI_STATUS {
 
 export const DEFAULT_PAGI_PARAMS: TPagiParams = {
   page: 0,
-  size: 10,
+  size: 5,
 };
 //
 

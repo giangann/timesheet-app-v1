@@ -8,8 +8,8 @@ import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
-import { useRouter } from "expo-router";
-import { memo, useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function Noti() {
@@ -17,16 +17,25 @@ export default function Noti() {
   const [notis, setNotis] = useState<TNoti[]>([]);
   const [pageable, setPageable] = useState<TPageable | null>(null);
   const { session } = useSession();
-
-  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
+  const isFirstRender = useRef(true);
+  const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
   const handleEndListReached = () => {
-    if (!isLoading && (pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0)) {
-      setPagiParams((prev) => ({ ...prev, page: prev.page + 1 }));
+    if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
+      // calculate new pagi (next page)
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const newPagiParams: TPagiParams = { page: currentPage + 1, size };
+
+      // fetch data with next page
+      fetchAndUpdateNotis(newPagiParams);
+
+      // update current pagi to new pagi (next page)
+      pagiParamsRef.current = newPagiParams;
     }
   };
 
-  const fetchNotis = async (pagiParams: TPagiParams) => {
+  const fetchAndUpdateNotis = async (pagiParams: TPagiParams) => {
+    console.log({ pagiParams });
     setIsLoading(true);
     try {
       const responseJson = await fetchMyNotis(session, pagiParams);
@@ -43,10 +52,44 @@ export default function Noti() {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchNotis(pagiParams);
-  }, [pagiParams]);
+    const pagiParams = pagiParamsRef.current;
+    fetchAndUpdateNotis(pagiParams);
+
+    setTimeout(() => {
+      isFirstRender.current = false;
+    }, 1000);
+  }, []);
+
+  const fetchAndOverrideNotis = async (pagiParams: TPagiParams) => {
+    console.log("fetchAndOverrideNotis called");
+    try {
+      const responseJson = await fetchMyNotis(session, pagiParams);
+      if (responseJson.statusCode === 200) {
+        const overrideNotis = responseJson.data.notifications;
+        setNotis(overrideNotis);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch notifications only when navigating back to this screen, not on first render
+      if (isFirstRender.current === false) {
+        // Calculate pagi params
+        const { page: currentPage, size } = pagiParamsRef.current;
+        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
+
+        // Fetch and override list with pagi params
+        console.log({ overridePagiParams });
+        fetchAndOverrideNotis(overridePagiParams);
+      }
+      // We still want to update the callback when pagiParams changes, but not trigger it
+    }, [session]) // Only depend on `session` here, or any other non-changing dependencies
+  );
 
   return (
     <View style={styles.container}>
@@ -56,7 +99,7 @@ export default function Noti() {
         keyExtractor={(_item) => _item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -1) < (pageable?.totalPages ?? 0) ? <SkeletonLoader /> : null}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
       />
     </View>
   );
