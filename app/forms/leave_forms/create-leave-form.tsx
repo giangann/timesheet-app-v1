@@ -13,6 +13,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { formatDateToLocalString } from "@/helper/date";
 
 type CreateItemForm = {
   startDate: string | Date;
@@ -66,7 +67,7 @@ export default function CreateLeaveForm() {
         if (v !== null && v !== undefined) {
           if (typeof v === "number") formData.append(k, v.toString());
           else if (v instanceof Date) {
-            const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
+            const formattedDate = formatDateToLocalString(v); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
             formData.append(k, formattedDate);
           } else formData.append(k, v as File);
         }
