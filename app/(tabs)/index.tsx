@@ -78,7 +78,7 @@ export default function HomeScreen() {
             <Pressable onPress={goToNotiScreen}>
               <View style={styles.notiBox}>
                 <Ionicons name="notifications" size={24} color="white" />
-                {homeData?.numberOfUnreadFormNotify && <View style={styles.notiBadge} />}
+                {(homeData?.numberOfUnreadFormNotify || null) && <View style={styles.notiBadge} />}
               </View>
             </Pressable>
           </View>
@@ -118,17 +118,17 @@ export default function HomeScreen() {
               <Pressable onPress={goToMyFormsScreen}>
                 <View style={styles.quickActionItemBoxInner}>
                   <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
-                  {homeData?.numberOfUnreadFormNotify && (
+                  {(homeData?.numberOfUnreadFormNotify || null) && (
                     <>
                       <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
                       <View style={styles.chipCircle}>
                         <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify) ?? "00"}
+                          {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify || null) ?? "00"}
                         </NunitoText>
                       </View>
                     </>
                   )}
-                  {!homeData?.numberOfUnreadFormNotify && (
+                  {!(homeData?.numberOfUnreadFormNotify || null) && (
                     <>
                       <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
                     </>
