@@ -1,81 +1,52 @@
+import { fetchApproveOvertimeForms } from "@/api/form";
+import { TApproveOvertimeForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-const UserAvatar = require("@/assets/images/avatar-test.png");
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
-type TOvertimeForm = {
-  id: number;
-  date: string;
-  startTime: string;
-  endTime: string;
-  userApproveIdentifyCard: string;
-  userApproveName: string;
-  note: string;
-  status: FORM_STATUS;
-  isDeleted: boolean;
-  typeOfWorking: any;
-  reason: string | null;
-  approveDate: string | null;
-  attachFilePath: string;
-  salaryCoefficientName: string;
-  salaryCoefficient: number;
-  userName: string;
-  userIdentifyCard: string;
-  userRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
-};
 export default function ApproveOvertimeForms() {
+  const [overtimeForms, setOvertimeForms] = useState<TApproveOvertimeForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pageable, setPageable] = useState<TPageable | null>(null);
+  const isFirstRender = useRef(true);
+  const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
 
-  const [overtimeForms, setOvertimeForms] = useState<TOvertimeForm[]>([]);
-  const router = useRouter();
   const { session } = useSession();
 
-  const fetchOvertimeForms = async () => {
+  const handleEndListReached = () => {
+    if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
+      // calculate new pagi (next page)
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const newPagiParams: TPagiParams = { page: currentPage + 1, size };
+
+      // fetch data with next page
+      fetchAndUpdateListForms(newPagiParams);
+
+      // update current pagi to new pagi (next page)
+      pagiParamsRef.current = newPagiParams;
+    }
+  };
+
+  const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const token = `Bearer ${session}` ?? "xxx";
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/overtime-forms/filter/user-approve";
-      const queryString = `?page=0&size=10`;
-      const url = `${baseUrl}${endpoint}${queryString}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-      console.log("responseJson", responseJson);
+      const responseJson = await fetchApproveOvertimeForms(session, pagiParams);
       if (responseJson.statusCode === 200) {
-        setOvertimeForms(responseJson.data.overtimeForms);
+        const moreOvertimeForms = responseJson.data.overtimeForms;
+        setOvertimeForms((prev) => [...prev, ...moreOvertimeForms]);
+        setPageable(responseJson.data.pageable);
       } else {
         MyToast.error(responseJson.error);
       }
@@ -85,37 +56,59 @@ export default function ApproveOvertimeForms() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const pagiParams = pagiParamsRef.current;
+    fetchAndUpdateListForms(pagiParams);
 
+    setTimeout(() => {
+      isFirstRender.current = false;
+    }, 1000);
+  }, []);
+
+  const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
+    try {
+      const responseJson = await fetchApproveOvertimeForms(session, pagiParams);
+      if (responseJson.statusCode === 200) {
+        const overrideOvertimeForms = responseJson.data.overtimeForms;
+        setOvertimeForms(overrideOvertimeForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
   useFocusEffect(
     useCallback(() => {
-      fetchOvertimeForms();
-    }, [])
-  );
+      // Fetch notifications only when navigating back to this screen, not on first render
+      if (isFirstRender.current === false) {
+        // Calculate pagi params
+        const { page: currentPage, size } = pagiParamsRef.current;
+        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
 
+        // Fetch and override list with pagi params
+        fetchAndOverrideListForms(overridePagiParams);
+      }
+      // We still want to update the callback when pagiParams changes, but not trigger it
+    }, [session]) // Only depend on `session` here, or any other non-changing dependencies
+  );
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {isLoading && <SkeletonLoader />}
-        <List overtimeForms={overtimeForms} />
-      </ScrollView>
+      <FlatList
+        data={overtimeForms}
+        renderItem={({ item }) => <Item overtimeForm={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleEndListReached}
+        onEndReachedThreshold={0.15}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        style={styles.flatList}
+      />
     </View>
   );
 }
-type ListProps = {
-  overtimeForms: TOvertimeForm[];
-};
-const List: React.FC<ListProps> = ({ overtimeForms }) => {
-  return (
-    <View style={styles.listBox}>
-      {overtimeForms.map((form) => (
-        <Item key={form.id} overtimeForm={form} />
-      ))}
-    </View>
-  );
-};
 
 type ItemProps = {
-  overtimeForm: TOvertimeForm;
+  overtimeForm: TApproveOvertimeForm;
 };
 const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
   const [isExpand, setIsExpand] = useState(false);
@@ -194,7 +187,7 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -211,18 +204,15 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
-  scrollContent: {
-    gap: 20,
-    paddingBottom: 100, // Space at the bottom to prevent overlap with the button
-  },
-  listBox: {
-    paddingBottom: 16,
-    gap: 20,
+  flatList: {
+    paddingTop: 16,
   },
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
+    //
+    marginBottom: 20,
   },
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
@@ -260,20 +250,5 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     borderBottomEndRadius: 6,
     borderBottomRightRadius: 8,
-  },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
-  },
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0B3A82",
-    height: 44,
-    borderRadius: 4,
   },
 });
