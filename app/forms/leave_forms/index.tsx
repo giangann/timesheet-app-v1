@@ -19,7 +19,6 @@ const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 export default function LeaveForms() {
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [pagiParams, setPagiParams] = useState<TPagiParams>(DEFAULT_PAGI_PARAMS);
   const [pageable, setPageable] = useState<TPageable | null>(null);
   const isFirstRender = useRef(true);
   const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);

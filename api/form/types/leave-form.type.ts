@@ -32,6 +32,38 @@ export type TLeaveForm = {
   approveDate: string | null;
   reason: string | null;
 };
+export type TApproveLeaveForm = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  note: string;
+  userIdentifyCard: string;
+  userName: string;
+  userApproveName: string;
+  leaveFormTypeName: string;
+  status: FORM_STATUS;
+  filePath: string;
+  isDeleted: boolean;
+  userRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+  userTeam: {
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
+  userApproveIdentifyCard: string;
+  approveDate: string;
+  reason: string;
+  userApproveRole: {
+    id: number;
+    code: ROLE_CODE;
+    name: string;
+  };
+};
 
 export type TLeaveFormDetail = {
   id: number;
