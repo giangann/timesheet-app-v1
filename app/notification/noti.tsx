@@ -35,7 +35,6 @@ export default function Noti() {
   };
 
   const fetchAndUpdateNotis = async (pagiParams: TPagiParams) => {
-    console.log({ pagiParams });
     setIsLoading(true);
     try {
       const responseJson = await fetchMyNotis(session, pagiParams);
@@ -62,7 +61,6 @@ export default function Noti() {
   }, []);
 
   const fetchAndOverrideNotis = async (pagiParams: TPagiParams) => {
-    console.log("fetchAndOverrideNotis called");
     try {
       const responseJson = await fetchMyNotis(session, pagiParams);
       if (responseJson.statusCode === 200) {
@@ -84,7 +82,6 @@ export default function Noti() {
         const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
 
         // Fetch and override list with pagi params
-        console.log({ overridePagiParams });
         fetchAndOverrideNotis(overridePagiParams);
       }
       // We still want to update the callback when pagiParams changes, but not trigger it

@@ -9,7 +9,7 @@ export async function fetchMyOvertimeForms(session: string | undefined | null, p
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
   const { page, size } = paginationParams;
-  const queryString = `?page=${page}&size=${size}`;
+  const queryString = `?page=${page}&size=${size}&sort=date,desc&sort=id,asc`;
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
