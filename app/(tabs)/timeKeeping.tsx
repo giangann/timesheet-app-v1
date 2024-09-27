@@ -26,6 +26,19 @@ export default function TimeKeeping() {
           </View>
         </Pressable>
 
+        <Pressable onPress={() => router.push("/time-keepings/emp-owt")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <Image source={SettingTeamIconImage} />
+              </View>
+              <NunitoText type="body1">Ngoài giờ cá nhân</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Image source={GotoDetailIconImage} />
+            </View>
+          </View>
+        </Pressable>
         <Pressable onPress={() => router.push("/time-keepings/team-owt")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>

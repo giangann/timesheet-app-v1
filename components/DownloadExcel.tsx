@@ -1,3 +1,4 @@
+import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -5,15 +6,15 @@ import React, { useState } from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 import { NunitoText } from "./text/NunitoText";
-import { useSession } from "@/contexts/ctx";
-import { _mockExcelDownloadLink } from "@/constants/Misc";
 
 type Props = {
   month: number;
   year: number;
+  url: string;
+  fileName?: string | null;
 };
 
-export const DownloadExcel: React.FC<Props> = ({ month, year }) => {
+export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName = "bang-bao-cao" }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { session } = useSession();
 
@@ -21,11 +22,6 @@ export const DownloadExcel: React.FC<Props> = ({ month, year }) => {
     try {
       setIsSubmitting(true);
       const token = `Bearer ${session}` ?? "xxx";
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/users/export-user-overtime-working";
-      const queryString = `month=${month}&year=${year}`;
-      const url = `${baseUrl}${endpoint}?${queryString}`;
-      // const url = _mockExcelDownloadLink
 
       const response = await fetch(url, {
         method: "GET",
@@ -38,13 +34,13 @@ export const DownloadExcel: React.FC<Props> = ({ month, year }) => {
       }
 
       const blob = await response.blob();
-      const fileUri = FileSystem.documentDirectory + "overtime-report.xlsx";
+      const fileUri = FileSystem.documentDirectory + `${fileName}.xlsx`;
       const base64 = await blobToBase64(blob);
       await FileSystem.writeAsStringAsync(fileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
 
       // Notify the user of successful download
-      const msg = `Download complete. Preparing to export...`;
-      MyToast.success(msg);
+      const msg = `Tải xuống thành công`;
+      MyToast.success(msg, { position: -300 });
       console.log(msg);
 
       // Export the file based on platform
@@ -73,9 +69,9 @@ export const DownloadExcel: React.FC<Props> = ({ month, year }) => {
           );
 
           await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
-          MyToast.success(`File saved to: ${uri}`);
+          MyToast.success(`Lưu file thành công tại: ${uri}`);
         } else {
-          MyToast.error("Storage permission not granted");
+          MyToast.error("Quyền truy cập bộ nhớ chưa được cho phép");
         }
       } else {
         // For iOS, use Sharing API
@@ -101,14 +97,18 @@ export const DownloadExcel: React.FC<Props> = ({ month, year }) => {
   };
 
   return (
-    <TouchableOpacity onPress={downloadFile} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
-      <View style={styles.button}>
-        {isSubmitting && <Progress.Circle indeterminate size={14} />}
-        <NunitoText type="body3" style={{ color: "white" }}>
-          Tải file
-        </NunitoText>
-      </View>
-    </TouchableOpacity>
+    <View>
+      {/* <NunitoText>{`T${month}/${year}`}</NunitoText> */}
+      <TouchableOpacity onPress={downloadFile} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
+        <View style={styles.button}>
+          {isSubmitting && <Progress.Circle indeterminate size={14} />}
+          <NunitoText type="body3" style={{ color: "white" }}>
+            Tải file
+          </NunitoText>
+          <NunitoText type="body2" lightColor="white" darkColor="white">{`T${month}/${year}`}</NunitoText>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 

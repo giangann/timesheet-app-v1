@@ -1,7 +1,7 @@
 import Toast, { ToastOptions } from "react-native-root-toast";
 
 export class MyToast {
-  static success(message: string) {
+  static success(message: string, extraToastOpts?: ToastOptions) {
     try {
       const successMessage = `✅ ${message}`;
 
@@ -13,6 +13,7 @@ export class MyToast {
         animation: true,
         hideOnPress: true,
         delay: 0,
+        ...extraToastOpts,
       };
 
       Toast.show(successMessage, toastOptions);

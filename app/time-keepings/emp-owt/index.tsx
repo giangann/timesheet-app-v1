@@ -4,14 +4,13 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import moment from "moment";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { _mockExcelDownloadLink } from "@/constants/Misc";
 
-type TTeamOwtForm = {
+type TEmpOwtForm = {
+  userIdentifyCard: number;
   month: number | null;
   year: number | null;
   fileName: string | null;
 };
-
 const startYear = 2024;
 const currYear = moment(Date.now()).get("year");
 const currMonth = moment(Date.now()).get("month") + 1;
@@ -19,11 +18,11 @@ const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const years = getAbleYears(startYear, currYear);
 
 const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-const endpoint = "/users/export-payment-for-user-overtime-working";
+const endpoint = "/users/export-user-overtime-working";
 
-export default function TeamOwt() {
-  const { control, handleSubmit, watch } = useForm<TTeamOwtForm>({
-    defaultValues: { year: currYear, month: currMonth, fileName: "ngoai-gio-don-vi" },
+export default function EmpOwt() {
+  const { control, handleSubmit, watch } = useForm<TEmpOwtForm>({
+    defaultValues: { year: currYear, month: currMonth, fileName: "ngoai-gio-ca-nhan" },
   });
 
   const yearOpts = years.map((year) => ({ label: year.toString(), value: year }));
@@ -33,13 +32,11 @@ export default function TeamOwt() {
   const year = watch("year") ?? currYear;
   const queryString = `month=${month}&year=${year}`;
 
-  // const url = `${baseUrl}${endpoint}?${queryString}`;
-  
-  const url = _mockExcelDownloadLink;
-
+  const url = `${baseUrl}${endpoint}?${queryString}`;
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <FormSelectV2 useControllerProps={{ control: control, name: "userIdentifyCard" }} label="Cá nhân" placeholder="Chọn cá nhân" />
         <View style={styles.monthYearContainer}>
           <View style={styles.monthYearItem}>
             <FormSelectV2 useControllerProps={{ control: control, name: "year" }} label="Năm" placeholder="Chọn năm" required options={yearOpts} />
@@ -68,6 +65,7 @@ function getAbleYears(startYear: number, currYear: number) {
   }
   return ableYears;
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
