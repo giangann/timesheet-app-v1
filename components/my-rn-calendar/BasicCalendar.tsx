@@ -5,8 +5,7 @@ import {
   TIMESHEET_FORM_TYPE_COLOR,
   WORKING_TYPE,
   WORKING_TYPE_COLOR,
-  WORKING_TYPE_NULL_COLOR,
-  timesheetMockResponse,
+  WORKING_TYPE_NULL_COLOR
 } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";

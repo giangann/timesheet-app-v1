@@ -83,21 +83,6 @@ export const DEFAULT_PAGI_PARAMS: TPagiParams = {
 //   timestamp: "2024-09-08T11:57:19.672520792",
 // };
 
-export const delcoEggToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJJZCI6IjEifSwiaWF0IjoxNzI2MjI5OTI5LCJleHAiOjE3Mjg4MjE5Mjl9.NW5HBpGLOlPiDPtsOaKfTmSZmuUofwS34XtmxiMPork";
-
-export const user = {
-  createdAt: "2024-01-21T03:55:29.000Z",
-  updatedAt: "2024-03-10T03:30:28.000Z",
-  id: 1,
-  username: "admin_giangann@gmail.com",
-  phone_number: "0901521738",
-  fullname: "Admin Giang An",
-  isAdmin: true,
-  company_name: "Delco Farm",
-  note: null,
-};
-
 /**
  * 3. Api bảng chấm công
  * params:{
@@ -140,98 +125,5 @@ Has Leave Form: #AF32D0
 Has Duty/OT Form: #0B67CC
 */
 
-export const timesheetMockResponse = {
-  timesheet: [
-    {
-      date: "2024-09-01",
-      workingTypeId: null,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: 254,
-    },
-    {
-      date: "2024-09-02",
-      workingTypeId: 1,
-      leaveFormId: 1802,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-03",
-      workingTypeId: 1,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-04",
-      workingTypeId: 1,
-      leaveFormId: 1804,
-      overtimeFormId: 2,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-05",
-      workingTypeId: 1,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-06",
-      workingTypeId: 2,
-      leaveFormId: null,
-      overtimeFormId: 102,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-07",
-      workingTypeId: null,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: 152,
-    },
-    {
-      date: "2024-09-08",
-      workingTypeId: null,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-09",
-      workingTypeId: 1,
-      leaveFormId: 1804,
-      overtimeFormId: 102,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-10",
-      workingTypeId: 2,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-11",
-      workingTypeId: 1,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-12",
-      workingTypeId: 1,
-      leaveFormId: null,
-      overtimeFormId: 2,
-      dutyFormId: null,
-    },
-    {
-      date: "2024-09-13",
-      workingTypeId: null,
-      leaveFormId: null,
-      overtimeFormId: null,
-      dutyFormId: null,
-    },
-  ],
-};
+export const _mockExcelDownloadLink =
+  "https://drive.usercontent.google.com/download?id=14XTWaLyXSwQHFLfvcE6NOAPs_397okz5&export=download&authuser=0&confirm=t&uuid=fd8dddb5-1899-4831-94a4-95a9b9cd1c35&at=AN_67v162qd6Nz2J5xwMQEZXu8hf:1727430176186";
