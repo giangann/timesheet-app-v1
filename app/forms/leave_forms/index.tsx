@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { fetchMyLeaveForms } from "@/api/form";
 import { TLeaveForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -12,7 +13,7 @@ import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
 const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
 
@@ -95,6 +96,7 @@ export default function LeaveForms() {
 
   return (
     <View style={styles.container}>
+      <FilterBar />
       <FlatList
         data={leaveForms}
         renderItem={({ item }) => <Item leaveForm={item} />}
@@ -108,6 +110,67 @@ export default function LeaveForms() {
     </View>
   );
 }
+
+const FilterBar = () => {
+  return (
+    <View style={styles.filterBarContainer}>
+      {/* Filter Status */}
+      <ScrollView horizontal>
+        <FilterStatus />
+      </ScrollView>
+      {/* Filter Fields Button */}
+      <FilterFieldsModal />
+    </View>
+  );
+};
+
+const FilterStatus = () => {
+  return (
+    <View style={styles.statusTabsContainer}>
+      <Pressable>
+        <View style={[styles.statusTabItem, { borderColor: "#0B3A82" }]}>
+          <NunitoText lightColor="#0B3A82" darkColor="#0B3A82" type="body2">
+            Tất cả
+          </NunitoText>
+        </View>
+      </Pressable>
+
+      <Pressable>
+        <View style={[styles.statusTabItem, { borderColor: "#F2A900" }]}>
+          <NunitoText lightColor="#F2A900" darkColor="#F2A900" type="body2">
+            Chờ phê duyệt
+          </NunitoText>
+        </View>
+      </Pressable>
+
+      <Pressable>
+        <View style={[styles.statusTabItem, { borderColor: "#067D4E" }]}>
+          <NunitoText lightColor="#067D4E" darkColor="#067D4E" type="body2">
+            Chấp thuận
+          </NunitoText>
+        </View>
+      </Pressable>
+
+      <Pressable>
+        <View style={[styles.statusTabItem, { borderColor: "#C84851" }]}>
+          <NunitoText lightColor="#C84851" darkColor="#C84851" type="body2">
+            Từ chối
+          </NunitoText>
+        </View>
+      </Pressable>
+    </View>
+  );
+};
+
+const FilterFieldsModal = () => {
+  return (
+    <TouchableOpacity>
+      <View style={styles.filterIconWrapper}>
+        <Ionicons name="filter" size={24} color="black" />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 type ItemProps = {
   leaveForm: TLeaveForm;
@@ -212,15 +275,36 @@ const styles = StyleSheet.create({
      * => can't see all element inside scrollView
      */
   },
+
+  // filter bar here:
+  filterBarContainer: {
+    marginVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+
+    gap: 12,
+  },
+  statusTabsContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  statusTabItem: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 12,
+
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  filterIconWrapper: {},
+  //
   toolbar: {
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 4,
     marginBottom: 20,
   },
-  flatList: {
-    paddingTop: 16,
-  },
+  flatList: {},
   itemBox: {
     borderRadius: 8,
     borderColor: "#B0CEFF",
