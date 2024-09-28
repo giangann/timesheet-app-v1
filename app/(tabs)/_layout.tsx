@@ -1,24 +1,26 @@
-import Octicons from "@expo/vector-icons/Octicons";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { SimpleLineIcons } from "@expo/vector-icons";
+import SkeletonLoader from "@/ui/SkeletonLoader";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Octicons from "@expo/vector-icons/Octicons";
 import { Redirect, Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
-import { Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
+  const [isVerifying, setIsVerifying] = useState(true);
   const { session, isLoading, verifySessionToken, userInfo } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     async function checkIsValidSessionToken(session: string) {
       const isValidSession = await verifySessionToken(session);
+      setIsVerifying(false);
       if (!isValidSession) {
         router.replace("/auth/login");
       }
@@ -29,8 +31,8 @@ export default function AppLayout() {
     }
   }, [session]);
 
-  if (isLoading) {
-    return <Text>Loading...</Text>;
+  if (isLoading || isVerifying) {
+    return <SkeletonLoader />;
   }
 
   if (!session) {

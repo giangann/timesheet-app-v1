@@ -38,7 +38,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
     const responseJson = await loginByCredentials(credentials);
 
     if (responseJson.statusCode === 200) {
-      console.log("login success");
       setSession(responseJson.data.token);
     } else {
       throw new Error(responseJson.error);
