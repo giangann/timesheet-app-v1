@@ -13,8 +13,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
-const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
-const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
+import Entypo from "@expo/vector-icons/Entypo";
 
 export default function ApproveDutyForms() {
   const [dutyForms, setDutyForms] = useState<TApproveDutyForm[]>([]);
@@ -196,7 +195,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
       {/* expand button */}
       <Pressable onPress={onToggleExpand}>
         <View style={styles.itemExpandBtn}>
-          <Image source={isExpand ? CollapseIcon : ExpandIcon} />
+          <Entypo name={isExpand ? "chevron-up" : "chevron-down"} size={22} color="black" />
         </View>
       </Pressable>
     </View>
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
   itemExpandBtn: {
     backgroundColor: "#B0CEFF",
     alignItems: "center",
-    paddingVertical: 2,
+    paddingVertical: 0,
 
     borderBottomLeftRadius: 8,
     borderBottomStartRadius: 6,

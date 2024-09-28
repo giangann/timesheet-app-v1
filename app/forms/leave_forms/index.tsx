@@ -1,4 +1,3 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { fetchMyLeaveForms } from "@/api/form";
 import { TLeaveForm } from "@/api/form/types";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -10,12 +9,12 @@ import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
+import Entypo from "@expo/vector-icons/Entypo";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-const ExpandIcon = require("@/assets/images/arrow-down-expand.png");
-const CollapseIcon = require("@/assets/images/arrow-up-collapse.png");
+import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LeaveForms() {
   const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
@@ -243,7 +242,7 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
       {/* expand button */}
       <Pressable onPress={onToggleExpand}>
         <View style={styles.itemExpandBtn}>
-          <Image source={isExpand ? CollapseIcon : ExpandIcon} />
+          <Entypo name={isExpand ? "chevron-up" : "chevron-down"} size={22} color="black" />
         </View>
       </Pressable>
     </View>
@@ -342,7 +341,7 @@ const styles = StyleSheet.create({
   itemExpandBtn: {
     backgroundColor: "#B0CEFF",
     alignItems: "center",
-    paddingVertical: 2,
+    paddingVertical: 0,
 
     borderBottomLeftRadius: 8,
     borderBottomStartRadius: 6,
