@@ -1,7 +1,15 @@
 import { fetchMyNotis, readNoti } from "@/api/noti";
 import { TNoti } from "@/api/noti/type";
 import { NunitoText } from "@/components/text/NunitoText";
-import { DEFAULT_PAGI_PARAMS, FORM_NOTI_NAME, FORM_NOTI_TYPE, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+import {
+  DEFAULT_PAGI_PARAMS,
+  FORM_NOTI_ACTION_TYPE,
+  FORM_NOTI_NAME,
+  FORM_NOTI_TYPE,
+  FORM_STATUS_NAME,
+  NOTI_STATUS,
+  ROLE_CODE,
+} from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { formatRelativeTime } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
@@ -134,23 +142,46 @@ const NotiItem = memo(({ noti }: NotiItemProps) => {
   return (
     <TouchableOpacity onPress={onNotiPress}>
       <View style={styles.itemWrapper}>
-        <AvatarByRole role={ROLE_CODE.ARCHIVIST} />
+        <AvatarByRole role={noti.senderRoleCode} />
 
         <View style={styles.itemContent}>
-          <NunitoText type="body2">Yêu cầu phê duyệt mới</NunitoText>
+          {/* Titile */}
+          {noti.actionType === FORM_NOTI_ACTION_TYPE.NEW_FORM && <NunitoText type="body2">Yêu cầu phê duyệt mới</NunitoText>}
+          {noti.actionType === FORM_NOTI_ACTION_TYPE.APPROVE_FORM && <NunitoText type="body2">Đơn được phê duyệt mới</NunitoText>}
           <NunitoText type="body4">{noti.id}</NunitoText>
-
-          <NunitoText type="body4">
-            <NunitoText type="body4">{"__Role Name__"}</NunitoText>
-            <NunitoText type="body4"> {"__User Name__"} </NunitoText>
-            yêu cầu phê duyệt
-            <NunitoText type="body4" style={{ fontWeight: 700 }}>
-              {" "}
-              {FORM_NOTI_NAME[noti.type]}
+          {/* Content */}
+          {noti.actionType === FORM_NOTI_ACTION_TYPE.NEW_FORM && (
+            <NunitoText type="body4">
+              <NunitoText type="body4">{noti.senderRoleName}</NunitoText>
+              <NunitoText type="body4"> {noti.senderName} </NunitoText>
+              yêu cầu phê duyệt
+              <NunitoText type="body4" style={{ fontWeight: 700 }}>
+                {" "}
+                {FORM_NOTI_NAME[noti.type]}
+              </NunitoText>
             </NunitoText>
-          </NunitoText>
+          )}
+          {noti.actionType === FORM_NOTI_ACTION_TYPE.APPROVE_FORM && (
+            <NunitoText type="body4">
+              <NunitoText type="body4">{noti.senderRoleName}</NunitoText>
+              <NunitoText type="body4"> {noti.senderName} </NunitoText>
+              phê duyệt
+              <NunitoText type="body4" style={{ fontWeight: 700 }}>
+                {" "}
+                {FORM_STATUS_NAME[noti.obj.status]}
+              </NunitoText>{" "}
+              cho
+              <NunitoText type="body4" style={{ fontWeight: 700 }}>
+                {" "}
+                {FORM_NOTI_NAME[noti.type]}
+              </NunitoText>{" "}
+              của bạn.
+            </NunitoText>
+          )}
+
+          {/* Created At */}
           <NunitoText type="body4" style={{ opacity: 0.5 }}>
-            {formatRelativeTime(noti.obj.createdAt)}
+            {formatRelativeTime(noti.createdAt)}
           </NunitoText>
         </View>
 

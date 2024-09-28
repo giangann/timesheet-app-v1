@@ -14,6 +14,10 @@ export enum FORM_NOTI_TYPE {
   OVERTIME_FORM = "overtimeForm",
   DUTY_FORM = "dutyForm",
 }
+export enum FORM_NOTI_ACTION_TYPE {
+  APPROVE_FORM = "APPROVE_FORM",
+  NEW_FORM = "NEW_FORM",
+}
 
 export const FORM_NOTI_NAME = {
   [FORM_NOTI_TYPE.LEAVE_FORM]: "Đơn xin nghỉ",

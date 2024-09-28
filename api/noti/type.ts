@@ -1,4 +1,4 @@
-import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS } from "@/constants/Misc";
+import { FORM_NOTI_ACTION_TYPE, FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 
 export type TNoti = {
   id: number;
@@ -23,4 +23,12 @@ export type TNoti = {
   timestamp: string | number | null;
   title: string;
   type: FORM_NOTI_TYPE;
+  //
+  actionType: FORM_NOTI_ACTION_TYPE;
+  createdAt: string;
+  senderName: string;
+  senderRoleId: number;
+  senderRoleName: string;
+  senderRoleCode: ROLE_CODE;
+  senderTeamName: string | null;
 };
