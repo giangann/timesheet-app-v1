@@ -1,11 +1,11 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
+import Entypo from "@expo/vector-icons/Entypo";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
-const SettingTeamIconImage = require("@/assets/images/setting-team.png");
-const GotoDetailIconImage = require("@/assets/images/gotodetail.png");
 
 export default function Timesheet() {
   const router = useRouter();
@@ -16,12 +16,12 @@ export default function Timesheet() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <MaterialCommunityIcons name="calendar-month-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Bảng chấm công tháng</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -58,13 +58,19 @@ const styles = StyleSheet.create({
     gap: 12 * UNIT_DIMENSION,
   },
   iconBox: {
+    width: 36,
+    height: 36,
     backgroundColor: `#0B3A82`,
-    padding: 8 * UNIT_DIMENSION,
     borderRadius: 8 * UNIT_DIMENSION,
+    justifyContent: "center",
+    alignItems: "center",
   },
   chip: {
+    width: 26,
+    height: 26,
     borderRadius: 16 * UNIT_DIMENSION,
     backgroundColor: `#0B3A82`,
-    padding: 6 * UNIT_DIMENSION,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,14 +1,11 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
+import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { Pressable, View, StyleSheet, ScrollView, Image } from "react-native";
-const SettingTeamIconImage = require("@/assets/images/setting-team.png");
-const SettingOvertimeTypeIconImage = require("@/assets/images/setting-overtimetype.png");
-const SettingLeaveTypeIconImage = require("@/assets/images/setting-leavetype.png");
-const SettingWorkingDayIconImage = require("@/assets/images/setting-workingday.png");
-const SettingHolidayIconImage = require("@/assets/images/setting-holiday.png");
-const GotoDetailIconImage = require("@/assets/images/gotodetail.png");
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export default function Settings() {
   const router = useRouter();
@@ -20,12 +17,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <MaterialIcons name="free-cancellation" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Đơn xin nghỉ</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -34,12 +31,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingOvertimeTypeIconImage} />
+                <FontAwesome6 name="clock-rotate-left" size={16} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Đơn tăng ca</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -48,12 +45,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingLeaveTypeIconImage} />
+                <MaterialIcons name="schedule" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Đơn trực</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -90,13 +87,19 @@ const styles = StyleSheet.create({
     gap: 12 * UNIT_DIMENSION,
   },
   iconBox: {
+    width: 36,
+    height: 36,
     backgroundColor: `#0B3A82`,
-    padding: 8 * UNIT_DIMENSION,
     borderRadius: 8 * UNIT_DIMENSION,
+    justifyContent: "center",
+    alignItems: "center",
   },
   chip: {
+    width: 26,
+    height: 26,
     borderRadius: 16 * UNIT_DIMENSION,
     backgroundColor: `#0B3A82`,
-    padding: 6 * UNIT_DIMENSION,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
