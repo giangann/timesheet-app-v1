@@ -14,7 +14,7 @@ type Props = {
   fileName?: string | null;
 };
 
-export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName = "bang-bao-cao" }) => {
+export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { session } = useSession();
 
@@ -44,7 +44,7 @@ export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName = "b
       console.log(msg);
 
       // Export the file based on platform
-      exportFile(fileUri);
+      exportFile(fileUri, fileName ?? "bang-bao-cao");
     } catch (error: any) {
       console.error("Error downloading file:", error);
       MyToast.error(error.message);
@@ -53,7 +53,7 @@ export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName = "b
     }
   };
 
-  const exportFile = async (fileUri: string) => {
+  const exportFile = async (fileUri: string, fileName: string) => {
     try {
       if (Platform.OS === "android") {
         const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -64,7 +64,7 @@ export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName = "b
 
           const uri = await FileSystem.StorageAccessFramework.createFileAsync(
             permissions.directoryUri,
-            "overtime-report.xlsx",
+            `${fileName}.xlsx`,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           );
 

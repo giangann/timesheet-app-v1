@@ -2,6 +2,7 @@ import { DownloadExcel } from "@/components/DownloadExcel";
 import { FormInput } from "@/components/FormInput";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import moment from "moment";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -21,7 +22,7 @@ const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
 const endpoint = "/users/export-user-overtime-working";
 
 export default function EmpOwt() {
-  const { control, handleSubmit, watch } = useForm<TEmpOwtForm>({
+  const { control, watch, setValue } = useForm<TEmpOwtForm>({
     defaultValues: { year: currYear, month: currMonth, fileName: "ngoai-gio-ca-nhan" },
   });
 
@@ -33,13 +34,24 @@ export default function EmpOwt() {
   const queryString = `month=${month}&year=${year}`;
 
   const url = `${baseUrl}${endpoint}?${queryString}`;
+
+  useEffect(() => {
+    setValue("fileName", `ngoai-gio-ca-nhan-t${watch("month")}-${watch("year")}`);
+  }, [watch("month"), watch("year")]);
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <FormSelectV2 useControllerProps={{ control: control, name: "userIdentifyCard" }} label="Cá nhân" placeholder="Chọn cá nhân" />
         <View style={styles.monthYearContainer}>
           <View style={styles.monthYearItem}>
-            <FormSelectV2 useControllerProps={{ control: control, name: "year" }} label="Năm" placeholder="Chọn năm" required options={yearOpts} />
+            <FormSelectV2
+              useControllerProps={{ control: control, name: "year" }}
+              label="Năm"
+              placeholder="Chọn năm"
+              required
+              options={yearOpts}
+            />
           </View>
           <View style={styles.monthYearItem}>
             <FormSelectV2

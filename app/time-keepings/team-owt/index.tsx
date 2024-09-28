@@ -5,6 +5,7 @@ import moment from "moment";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { _mockExcelDownloadLink } from "@/constants/Misc";
+import { useEffect } from "react";
 
 type TTeamOwtForm = {
   month: number | null;
@@ -22,7 +23,7 @@ const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
 const endpoint = "/users/export-payment-for-user-overtime-working";
 
 export default function TeamOwt() {
-  const { control, handleSubmit, watch } = useForm<TTeamOwtForm>({
+  const { control, watch, setValue } = useForm<TTeamOwtForm>({
     defaultValues: { year: currYear, month: currMonth, fileName: "ngoai-gio-don-vi" },
   });
 
@@ -34,8 +35,12 @@ export default function TeamOwt() {
   const queryString = `month=${month}&year=${year}`;
 
   // const url = `${baseUrl}${endpoint}?${queryString}`;
-  
+
   const url = _mockExcelDownloadLink;
+
+  useEffect(() => {
+    setValue("fileName", `ngoai-gio-don-vi-t${watch("month")}-${watch("year")}`);
+  }, [watch("month"), watch("year")]);
 
   return (
     <View style={styles.container}>
