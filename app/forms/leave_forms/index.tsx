@@ -6,6 +6,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { omitNullishValues, omitProperties } from "@/helper/common";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
@@ -127,7 +128,6 @@ export default function LeaveForms() {
   };
 
   const onFilterFieldsChange = (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => {
-    console.log("onFilterFieldsChange called", newFilterParamsWihoutStatus);
     // update filter params
     filterParamsRef.current = { status: filterParamsRef.current.status, ...newFilterParamsWihoutStatus };
     // reset pagiParams:
@@ -162,7 +162,7 @@ const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: Fil
         <FilterStatus status={filterParams.status} onStatusTabPress={onStatusTabPress} />
       </ScrollView>
       {/* Filter Fields Button */}
-      <FilterFields onFilterFieldsChange={onFilterFieldsChange} />
+      <FilterFields filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
     </View>
   );
 };
@@ -285,11 +285,15 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
 };
 
 type FilterFieldsProps = FilterFieldsFormProps;
-const FilterFields = ({ onFilterFieldsChange }: FilterFieldsProps) => {
+const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps) => {
   const [open, setOpen] = useState(false);
 
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
+
+  const filterFieldsExcludeStatus = omitProperties(filterParams, ["status"]);
+  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(filterFieldsExcludeStatus)
+  const hasFilterExcludeStatus = Object.keys(filterFieldsExcludeStatusAndNullishValue).length > 0;
 
   return (
     <>
@@ -297,12 +301,13 @@ const FilterFields = ({ onFilterFieldsChange }: FilterFieldsProps) => {
       <TouchableOpacity onPress={onOpen}>
         <View style={styles.filterIconWrapper}>
           <Ionicons name="filter" size={24} color="black" />
+          {hasFilterExcludeStatus && <View style={styles.filterBadge}/>}
         </View>
       </TouchableOpacity>
       {/* Filter Fields Modal */}
       {open && (
         <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
-          <FilterFieldsForm onFilterFieldsChange={onFilterFieldsChange} />
+          <FilterFieldsForm filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
         </MyFilterModal>
       )}
     </>
@@ -311,24 +316,23 @@ const FilterFields = ({ onFilterFieldsChange }: FilterFieldsProps) => {
 
 type FilterFieldsFormProps = {
   onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => void;
+  filterParams: TLeaveFormFilterParams;
 };
-const FilterFieldsForm = ({ onFilterFieldsChange }: FilterFieldsFormProps) => {
-  const { control, handleSubmit, reset, watch, setValue } = useForm<TLeaveFormFilterParams>({});
+const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFormProps) => {
+  const { control, handleSubmit, reset, setValue } = useForm<TLeaveFormFilterParams>({});
 
   const onFieldsReset = () => {
-    // reset()
-    console.log("watch createdAt", watch("createdAt"));
-    setValue("createdAt", undefined);
-    console.log("watch createdAt", watch("createdAt"));
-
+    reset();
     onFilterFieldsChange({});
-    console.log("fields reseted!");
   };
 
   const onFilterApply = (values: TLeaveFormFilterParams) => {
-    console.log("filter applied!", values);
     onFilterFieldsChange(values);
   };
+
+  useEffect(() => {
+    setValue("createdAt", filterParams.createdAt);
+  }, [filterParams]);
 
   return (
     <View style={styles.modalContent}>
@@ -481,14 +485,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  filterIconWrapper: {},
-  //
-  toolbar: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 4,
-    marginBottom: 20,
+  filterIconWrapper: {
+    position:'relative'
   },
+  filterBadge: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#C84851",
+  },
+  //
   flatList: {},
   itemBox: {
     borderRadius: 8,

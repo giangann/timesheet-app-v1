@@ -110,3 +110,23 @@ export function pickProperties<T extends Record<string, any>>(object: T, selecte
   }
   return filteredObject;
 }
+
+export function omitProperties<T extends Record<string, any>>(object: T, excludedKeys: (keyof T)[]): Partial<T> {
+  const filteredObject: Partial<T> = {};
+  for (const key in object) {
+    if (!excludedKeys.includes(key)) {
+      filteredObject[key] = object[key];
+    }
+  }
+  return filteredObject;
+}
+
+export function omitNullishValues<T extends Record<string, any>>(object: T): Partial<T> {
+  const filteredObject: Partial<T> = {};
+  for (const key in object) {
+    if (object[key] !== null && object[key] !== undefined) {
+      filteredObject[key] = object[key];
+    }
+  }
+  return filteredObject;
+}
