@@ -153,7 +153,7 @@ export default function LeaveForms() {
   );
 }
 
-type FilterBarProps = FilterStatusProps & FilterFieldsModalProps & { filterParams: TLeaveFormFilterParams };
+type FilterBarProps = FilterStatusProps & FilterFieldsProps & { filterParams: TLeaveFormFilterParams };
 const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: FilterBarProps) => {
   return (
     <View style={styles.filterBarContainer}>
@@ -162,7 +162,7 @@ const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: Fil
         <FilterStatus status={filterParams.status} onStatusTabPress={onStatusTabPress} />
       </ScrollView>
       {/* Filter Fields Button */}
-      <FilterFieldsModal onFilterFieldsChange={onFilterFieldsChange} />
+      <FilterFields onFilterFieldsChange={onFilterFieldsChange} />
     </View>
   );
 };
@@ -284,18 +284,43 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
   );
 };
 
-type FilterFieldsModalProps = {
-  onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => void;
-};
-const FilterFieldsModal = ({ onFilterFieldsChange }: FilterFieldsModalProps) => {
+type FilterFieldsProps = FilterFieldsFormProps;
+const FilterFields = ({ onFilterFieldsChange }: FilterFieldsProps) => {
   const [open, setOpen] = useState(false);
-  const { control, handleSubmit, reset } = useForm<TLeaveFormFilterParams>();
 
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
 
+  return (
+    <>
+      {/* Filter Fields Button */}
+      <TouchableOpacity onPress={onOpen}>
+        <View style={styles.filterIconWrapper}>
+          <Ionicons name="filter" size={24} color="black" />
+        </View>
+      </TouchableOpacity>
+      {/* Filter Fields Modal */}
+      {open && (
+        <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
+          <FilterFieldsForm onFilterFieldsChange={onFilterFieldsChange} />
+        </MyFilterModal>
+      )}
+    </>
+  );
+};
+
+type FilterFieldsFormProps = {
+  onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => void;
+};
+const FilterFieldsForm = ({ onFilterFieldsChange }: FilterFieldsFormProps) => {
+  const { control, handleSubmit, reset, watch, setValue } = useForm<TLeaveFormFilterParams>({});
+
   const onFieldsReset = () => {
-    reset();
+    // reset()
+    console.log("watch createdAt", watch("createdAt"));
+    setValue("createdAt", undefined);
+    console.log("watch createdAt", watch("createdAt"));
+
     onFilterFieldsChange({});
     console.log("fields reseted!");
   };
@@ -305,46 +330,30 @@ const FilterFieldsModal = ({ onFilterFieldsChange }: FilterFieldsModalProps) => 
     onFilterFieldsChange(values);
   };
 
-  const modalContent = () => {
-    return (
-      <View style={styles.modalContent}>
-        <View style={styles.modalFields}>
-          <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
-        </View>
-
-        <View style={styles.buttonModalContainer}>
-          <TouchableOpacity onPress={onFieldsReset} activeOpacity={0.8} style={styles.buttonItem}>
-            <View style={styles.buttonOutlined}>
-              <NunitoText type="body3" style={{ color: "#0B3A82" }}>
-                Đặt lại
-              </NunitoText>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleSubmit(onFilterApply)} activeOpacity={0.8} style={styles.buttonItem}>
-            <View style={styles.buttonContained}>
-              <NunitoText type="body3" style={{ color: "white" }}>
-                Áp dụng
-              </NunitoText>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
   return (
-    <>
-      <TouchableOpacity onPress={onOpen}>
-        <View style={styles.filterIconWrapper}>
-          <Ionicons name="filter" size={24} color="black" />
-        </View>
-      </TouchableOpacity>
-      {open && (
-        <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
-          {modalContent()}
-        </MyFilterModal>
-      )}
-    </>
+    <View style={styles.modalContent}>
+      <View style={styles.modalFields}>
+        <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+      </View>
+
+      <View style={styles.buttonModalContainer}>
+        <TouchableOpacity onPress={onFieldsReset} activeOpacity={0.8} style={styles.buttonItem}>
+          <View style={styles.buttonOutlined}>
+            <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+              Đặt lại
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSubmit(onFilterApply)} activeOpacity={0.8} style={styles.buttonItem}>
+          <View style={styles.buttonContained}>
+            <NunitoText type="body3" style={{ color: "white" }}>
+              Áp dụng
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 

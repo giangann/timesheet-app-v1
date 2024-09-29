@@ -42,7 +42,7 @@ export function FormPickDate<T extends FieldValues>({
   };
 
   const formattedDate = value ? moment(value).locale(locale).format(dateFormat) : placeholder;
-
+  console.log("value, formattedDate", value, formattedDate);
   return (
     <View style={styles.container}>
       {/* label */}
