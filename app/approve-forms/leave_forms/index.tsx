@@ -1,19 +1,24 @@
 import { fetchApproveLeaveForms } from "@/api/form";
-import { TApproveLeaveForm } from "@/api/form/types";
+import { TApproveLeaveForm, TApproveLeaveFormFilterParams } from "@/api/form/types";
+import { FormPickDate } from "@/components/FormPickDate";
+import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { omitNullishValues, omitProperties } from "@/helper/common";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import SkeletonLoader from "@/ui/SkeletonLoader";
+import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function ApproveLeaveForms() {
   const [leaveForms, setLeaveForms] = useState<TApproveLeaveForm[]>([]);
@@ -21,6 +26,7 @@ export default function ApproveLeaveForms() {
   const [pageable, setPageable] = useState<TPageable | null>(null);
   const isFirstRender = useRef(true);
   const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
+  const filterParamsRef = useRef<TApproveLeaveFormFilterParams>({});
 
   const { session } = useSession();
 
@@ -41,7 +47,7 @@ export default function ApproveLeaveForms() {
   const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const responseJson = await fetchApproveLeaveForms(session, pagiParams);
+      const responseJson = await fetchApproveLeaveForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
         const moreLeaveForms = responseJson.data.leaveForms;
         setLeaveForms((prev) => [...prev, ...moreLeaveForms]);
@@ -66,7 +72,7 @@ export default function ApproveLeaveForms() {
 
   const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
     try {
-      const responseJson = await fetchApproveLeaveForms(session, pagiParams);
+      const responseJson = await fetchApproveLeaveForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
         const overrideLeaveForms = responseJson.data.leaveForms;
         setLeaveForms(overrideLeaveForms);
@@ -91,8 +97,48 @@ export default function ApproveLeaveForms() {
       // We still want to update the callback when pagiParams changes, but not trigger it
     }, [session]) // Only depend on `session` here, or any other non-changing dependencies
   );
+
+  const reFetchListFormsWithFilter = async (pagiParams: TPagiParams, filterParams: TApproveLeaveFormFilterParams) => {
+    setIsLoading(true);
+    try {
+      // api call
+      const responseJson = await fetchApproveLeaveForms(session, pagiParams, filterParams);
+
+      if (responseJson.statusCode === 200) {
+        const formsWithFilter = responseJson.data.leaveForms;
+        setLeaveForms(formsWithFilter);
+        setPageable(responseJson.data.pageable);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onStatusTabPress = (newStatus: FORM_STATUS | null | undefined) => {
+    // update filter params
+    filterParamsRef.current = { ...filterParamsRef.current, status: newStatus };
+    // reset pagiParams:
+    pagiParamsRef.current = DEFAULT_PAGI_PARAMS;
+
+    reFetchListFormsWithFilter(pagiParamsRef.current, filterParamsRef.current);
+  };
+
+  const onFilterFieldsChange = (newFilterParamsWihoutStatus: Omit<TApproveLeaveFormFilterParams, "status">) => {
+    // update filter params
+    filterParamsRef.current = { status: filterParamsRef.current.status, ...newFilterParamsWihoutStatus };
+    // reset pagiParams:
+    pagiParamsRef.current = DEFAULT_PAGI_PARAMS;
+
+    reFetchListFormsWithFilter(pagiParamsRef.current, filterParamsRef.current);
+  };
+
   return (
     <View style={styles.container}>
+      <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} onFilterFieldsChange={onFilterFieldsChange} />
       <FlatList
         data={leaveForms}
         renderItem={({ item }) => <Item leaveForm={item} />}
@@ -105,6 +151,213 @@ export default function ApproveLeaveForms() {
     </View>
   );
 }
+
+type FilterBarProps = FilterStatusProps & FilterFieldsProps & { filterParams: TApproveLeaveFormFilterParams };
+const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: FilterBarProps) => {
+  return (
+    <View style={styles.filterBarContainer}>
+      {/* Filter Status */}
+      <ScrollView horizontal>
+        <FilterStatus status={filterParams.status} onStatusTabPress={onStatusTabPress} />
+      </ScrollView>
+      {/* Filter Fields Button */}
+      <FilterFields filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
+    </View>
+  );
+};
+
+type FilterStatusProps = {
+  onStatusTabPress: (newStatus: FORM_STATUS | null | undefined) => void;
+  status?: FORM_STATUS | null;
+};
+const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
+  const statusTabsArray = useMemo(
+    () => [
+      {
+        name: "Tất cả",
+        status: [null, undefined],
+        tabStyles: {
+          pressed: {
+            borderColor: "#0B3A82",
+            backgroundColor: "#0B3A82",
+          },
+          unpressed: {
+            borderColor: "#0B3A82",
+          },
+        },
+        textStyles: {
+          pressed: {
+            color: "white",
+          },
+          unpressed: {
+            color: "#0B3A82",
+          },
+        },
+      },
+      {
+        name: "Chờ phê duyệt",
+        status: [FORM_STATUS.WATING_APPROVE],
+        tabStyles: {
+          pressed: {
+            borderColor: "#F2A900",
+            backgroundColor: "#F2A900",
+          },
+          unpressed: {
+            borderColor: "#F2A900",
+          },
+        },
+        textStyles: {
+          pressed: {
+            color: "white",
+          },
+          unpressed: {
+            color: "#F2A900",
+          },
+        },
+      },
+      {
+        name: "Chấp thuận",
+        status: [FORM_STATUS.ACCEPTED],
+        tabStyles: {
+          pressed: {
+            borderColor: "#067D4E",
+            backgroundColor: "#067D4E",
+          },
+          unpressed: {
+            borderColor: "#067D4E",
+          },
+        },
+        textStyles: {
+          pressed: {
+            color: "white",
+          },
+          unpressed: {
+            color: "#067D4E",
+          },
+        },
+      },
+      {
+        name: "Từ chối",
+        status: [FORM_STATUS.REJECTED],
+        tabStyles: {
+          pressed: {
+            borderColor: "#C84851",
+            backgroundColor: "#C84851",
+          },
+          unpressed: {
+            borderColor: "#C84851",
+          },
+        },
+        textStyles: {
+          pressed: {
+            color: "white",
+          },
+          unpressed: {
+            color: "#C84851",
+          },
+        },
+      },
+    ],
+    []
+  );
+
+  return (
+    <View style={styles.statusTabsContainer}>
+      {statusTabsArray.map((statusTab, index) => {
+        return (
+          <TouchableOpacity onPress={() => onStatusTabPress(statusTab.status[0])} key={index}>
+            <View
+              style={[styles.statusTabItem, statusTab.status.includes(status as never) ? statusTab.tabStyles.pressed : statusTab.tabStyles.unpressed]}
+            >
+              <NunitoText
+                style={statusTab.status.includes(status as never) ? statusTab.textStyles.pressed : statusTab.textStyles.unpressed}
+                type="body2"
+              >
+                {statusTab.name}
+              </NunitoText>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
+type FilterFieldsProps = FilterFieldsFormProps;
+const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps) => {
+  const [open, setOpen] = useState(false);
+
+  const onClose = () => setOpen(false);
+  const onOpen = () => setOpen(true);
+
+  const filterFieldsExcludeStatus = omitProperties(filterParams, ["status"]);
+  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(filterFieldsExcludeStatus);
+  const hasFilterExcludeStatus = Object.keys(filterFieldsExcludeStatusAndNullishValue).length > 0;
+
+  return (
+    <>
+      {/* Filter Fields Button */}
+      <TouchableOpacity onPress={onOpen}>
+        <View style={styles.filterIconWrapper}>
+          <Ionicons name="filter" size={24} color="black" />
+          {hasFilterExcludeStatus && <View style={styles.filterBadge} />}
+        </View>
+      </TouchableOpacity>
+      {/* Filter Fields Modal */}
+      {open && (
+        <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
+          <FilterFieldsForm filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
+        </MyFilterModal>
+      )}
+    </>
+  );
+};
+
+type FilterFieldsFormProps = {
+  onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TApproveLeaveFormFilterParams, "status">) => void;
+  filterParams: TApproveLeaveFormFilterParams;
+};
+const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFormProps) => {
+  const { control, handleSubmit, reset, setValue } = useForm<TApproveLeaveFormFilterParams>({});
+
+  const onFieldsReset = () => {
+    reset();
+    onFilterFieldsChange({});
+  };
+
+  const onFilterApply = (values: TApproveLeaveFormFilterParams) => {
+    onFilterFieldsChange(values);
+  };
+
+  useEffect(() => {
+    setValue("createdAt", filterParams.createdAt);
+  }, [filterParams]);
+
+  return (
+    <View style={styles.modalContent}>
+      <View style={styles.modalFields}>
+        <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+      </View>
+
+      <View style={styles.buttonModalContainer}>
+        <TouchableOpacity onPress={onFieldsReset} activeOpacity={0.8} style={styles.buttonItem}>
+          <View style={styles.buttonOutlined}>
+            <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+              Đặt lại
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSubmit(onFilterApply)} activeOpacity={0.8} style={styles.buttonItem}>
+          <View style={styles.buttonContained}>
+            <NunitoText type="body3" style={{ color: "white" }}>
+              Áp dụng
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 type ItemProps = {
   leaveForm: TApproveLeaveForm;
@@ -195,12 +448,41 @@ const styles = StyleSheet.create({
      * => can't see all element inside scrollView
      */
   },
-  toolbar: {
+  // filter bar here:
+  filterBarContainer: {
+    marginVertical: 16,
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 4,
-    marginBottom: 20,
+    alignItems: "center",
+
+    gap: 12,
   },
+  statusTabsContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  statusTabItem: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 12,
+
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  filterIconWrapper: {
+    position: "relative",
+  },
+  filterBadge: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#C84851",
+  },
+  //
+
   flatList: {
     paddingTop: 16,
   },
@@ -208,7 +490,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
-    //
     marginBottom: 20,
   },
   itemBoxSumary: {
@@ -247,5 +528,33 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     borderBottomEndRadius: 6,
     borderBottomRightRadius: 8,
+  },
+
+  modalContent: {
+    justifyContent: "space-between",
+    gap: 24,
+  },
+  modalFields: {},
+  buttonModalContainer: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  buttonItem: {
+    flexGrow: 1,
+  },
+  buttonContained: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 44,
+    backgroundColor: "#0B3A82",
+    borderRadius: 4,
+  },
+  buttonOutlined: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 44,
+    borderColor: "#0B3A82",
+    borderWidth: 1,
+    borderRadius: 4,
   },
 });

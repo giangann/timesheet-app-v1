@@ -1,6 +1,6 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
-import { TLeaveFormFilterParams } from "./types";
+import { TApproveLeaveFormFilterParams, TLeaveFormFilterParams } from "./types";
 
 export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
@@ -25,7 +25,11 @@ export async function fetchMyLeaveForms(session: string | undefined | null, pagi
   return responseJson;
 }
 
-export async function fetchApproveLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams) {
+export async function fetchApproveLeaveForms(
+  session: string | undefined | null,
+  pagiParams?: TPagiParams,
+  filterParams?: TApproveLeaveFormFilterParams
+) {
   const token = `Bearer ${session}` ?? "xxx";
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
@@ -39,7 +43,7 @@ export async function fetchApproveLeaveForms(session: string | undefined | null,
 
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify({}),
+    body: JSON.stringify(filterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });

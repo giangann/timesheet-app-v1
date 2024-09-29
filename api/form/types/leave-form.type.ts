@@ -126,6 +126,11 @@ export type TLeaveFormFilterParams = {
   createdAt?: string;
 };
 
+export type TApproveLeaveFormFilterParams = {
+  status?: FORM_STATUS | null;
+  createdAt?: string;
+};
+
 /*
 const sampleResponse = {
   message: "Yêu cầu phê duyệt",
