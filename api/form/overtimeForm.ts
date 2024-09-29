@@ -1,6 +1,7 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import { TApproveOvertimeFormFilterParams, TOvertimeFormFilterParams } from "./types";
+import moment from "moment";
 
 export async function fetchMyOvertimeForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TOvertimeFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
@@ -14,9 +15,14 @@ export async function fetchMyOvertimeForms(session: string | undefined | null, p
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.createdAt) {
+    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  }
+
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(filterParams),
+    body: JSON.stringify(bodyFilterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
@@ -25,7 +31,11 @@ export async function fetchMyOvertimeForms(session: string | undefined | null, p
   return responseJson;
 }
 
-export async function fetchApproveOvertimeForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?:TApproveOvertimeFormFilterParams) {
+export async function fetchApproveOvertimeForms(
+  session: string | undefined | null,
+  pagiParams?: TPagiParams,
+  filterParams?: TApproveOvertimeFormFilterParams
+) {
   const token = `Bearer ${session}` ?? "xxx";
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
