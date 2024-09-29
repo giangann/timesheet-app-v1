@@ -134,6 +134,11 @@ export type TOvertimeFormCreateNoti = {
   title: string;
   type: FORM_NOTI_TYPE.OVERTIME_FORM;
 };
+
+export type TOvertimeFormFilterParams = {
+  status?: FORM_STATUS | null;
+  createdAt?: string;
+};
 /*
 const sampleResponse = {
   message: "Yêu cầu phê duyệt",
