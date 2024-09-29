@@ -11,6 +11,7 @@ import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -146,6 +147,7 @@ export default function OvertimeForms() {
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
+        ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
       <ApplyNewForm />

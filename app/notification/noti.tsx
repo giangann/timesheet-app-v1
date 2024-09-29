@@ -15,6 +15,7 @@ import { formatRelativeTime } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import SkeletonLoader from "@/ui/SkeletonLoader";
 import { useFocusEffect, useRouter } from "expo-router";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
@@ -105,6 +106,7 @@ export default function Noti() {
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        ListEmptyComponent={isFirstRender ? null : <NoData message="Không có thông báo" />}
       />
     </View>
   );

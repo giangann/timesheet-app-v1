@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { Ionicons } from "@expo/vector-icons";
 import { omitNullishValues, omitProperties } from "@/helper/common";
 import { MyFilterModal } from "@/components/MyFilterModal";
+import { NoData } from "@/ui/NoData";
 
 export default function ApproveOvertimeForms() {
   const [overtimeForms, setOvertimeForms] = useState<TApproveOvertimeForm[]>([]);
@@ -147,6 +148,7 @@ export default function ApproveOvertimeForms() {
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
     </View>
