@@ -146,6 +146,10 @@ export type TDutyFormCreateNoti = {
   title: string;
   type: FORM_NOTI_TYPE.DUTY_FORM;
 };
+export type TDutyFormFilterParams = {
+  status?: FORM_STATUS | null;
+  createdAt?: string;
+};
 /*
 const sampleResponse = {
   message: "Yêu cầu phê duyệt",
