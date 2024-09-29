@@ -14,7 +14,6 @@ export async function fetchMyLeaveForms(session: string | undefined | null, pagi
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
-  console.log('filterParams',filterParams)
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(filterParams),

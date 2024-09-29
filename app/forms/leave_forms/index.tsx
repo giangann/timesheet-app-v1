@@ -1,5 +1,7 @@
 import { fetchMyLeaveForms } from "@/api/form";
 import { TLeaveForm, TLeaveFormFilterParams } from "@/api/form/types";
+import { FormPickDate } from "@/components/FormPickDate";
+import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
@@ -14,6 +16,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LeaveForms() {
@@ -123,9 +126,19 @@ export default function LeaveForms() {
     reFetchListFormsWithFilter(pagiParamsRef.current, filterParamsRef.current);
   };
 
+  const onFilterFieldsChange = (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => {
+    console.log("onFilterFieldsChange called", newFilterParamsWihoutStatus);
+    // update filter params
+    filterParamsRef.current = { status: filterParamsRef.current.status, ...newFilterParamsWihoutStatus };
+    // reset pagiParams:
+    pagiParamsRef.current = DEFAULT_PAGI_PARAMS;
+
+    reFetchListFormsWithFilter(pagiParamsRef.current, filterParamsRef.current);
+  };
+
   return (
     <View style={styles.container}>
-      <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} />
+      <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} onFilterFieldsChange={onFilterFieldsChange} />
       <FlatList
         data={leaveForms}
         renderItem={({ item }) => <Item leaveForm={item} />}
@@ -141,7 +154,7 @@ export default function LeaveForms() {
 }
 
 type FilterBarProps = FilterStatusProps & FilterFieldsModalProps & { filterParams: TLeaveFormFilterParams };
-const FilterBar = ({ onStatusTabPress, filterParams }: FilterBarProps) => {
+const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: FilterBarProps) => {
   return (
     <View style={styles.filterBarContainer}>
       {/* Filter Status */}
@@ -149,7 +162,7 @@ const FilterBar = ({ onStatusTabPress, filterParams }: FilterBarProps) => {
         <FilterStatus status={filterParams.status} onStatusTabPress={onStatusTabPress} />
       </ScrollView>
       {/* Filter Fields Button */}
-      <FilterFieldsModal />
+      <FilterFieldsModal onFilterFieldsChange={onFilterFieldsChange} />
     </View>
   );
 };
@@ -159,8 +172,6 @@ type FilterStatusProps = {
   status?: FORM_STATUS | null;
 };
 const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
-  console.log("status", status);
-
   const statusTabsArray = useMemo(
     () => [
       {
@@ -269,49 +280,71 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
           </TouchableOpacity>
         );
       })}
-      {/* <TouchableOpacity onPress={() => onStatusTabPress(undefined)}>
-        <View style={[styles.statusTabItem, status === null || status === undefined ? { borderColor: "#0B3A82" } : { borderColor: "#0B3A82" }]}>
-          <NunitoText lightColor="#0B3A82" darkColor="#0B3A82" type="body2">
-            Tất cả
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => onStatusTabPress(FORM_STATUS.WATING_APPROVE)}>
-        <View style={[styles.statusTabItem, { borderColor: "#F2A900" }]}>
-          <NunitoText lightColor="#F2A900" darkColor="#F2A900" type="body2">
-            Chờ phê duyệt
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => onStatusTabPress(FORM_STATUS.ACCEPTED)}>
-        <View style={[styles.statusTabItem, { borderColor: "#067D4E" }]}>
-          <NunitoText lightColor="#067D4E" darkColor="#067D4E" type="body2">
-            Chấp thuận
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => onStatusTabPress(FORM_STATUS.REJECTED)}>
-        <View style={[styles.statusTabItem, { borderColor: "#C84851" }]}>
-          <NunitoText lightColor="#C84851" darkColor="#C84851" type="body2">
-            Từ chối
-          </NunitoText>
-        </View>
-      </TouchableOpacity> */}
     </View>
   );
 };
 
-type FilterFieldsModalProps = {};
-const FilterFieldsModal = ({}: FilterFieldsModalProps) => {
-  return (
-    <TouchableOpacity>
-      <View style={styles.filterIconWrapper}>
-        <Ionicons name="filter" size={24} color="black" />
+type FilterFieldsModalProps = {
+  onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TLeaveFormFilterParams, "status">) => void;
+};
+const FilterFieldsModal = ({ onFilterFieldsChange }: FilterFieldsModalProps) => {
+  const [open, setOpen] = useState(false);
+  const { control, handleSubmit, reset } = useForm<TLeaveFormFilterParams>();
+
+  const onClose = () => setOpen(false);
+  const onOpen = () => setOpen(true);
+
+  const onFieldsReset = () => {
+    reset();
+    onFilterFieldsChange({});
+    console.log("fields reseted!");
+  };
+
+  const onFilterApply = (values: TLeaveFormFilterParams) => {
+    console.log("filter applied!", values);
+    onFilterFieldsChange(values);
+  };
+
+  const modalContent = () => {
+    return (
+      <View style={styles.modalContent}>
+        <View style={styles.modalFields}>
+          <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+        </View>
+
+        <View style={styles.buttonModalContainer}>
+          <TouchableOpacity onPress={onFieldsReset} activeOpacity={0.8} style={styles.buttonItem}>
+            <View style={styles.buttonOutlined}>
+              <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+                Đặt lại
+              </NunitoText>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleSubmit(onFilterApply)} activeOpacity={0.8} style={styles.buttonItem}>
+            <View style={styles.buttonContained}>
+              <NunitoText type="body3" style={{ color: "white" }}>
+                Áp dụng
+              </NunitoText>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </TouchableOpacity>
+    );
+  };
+  return (
+    <>
+      <TouchableOpacity onPress={onOpen}>
+        <View style={styles.filterIconWrapper}>
+          <Ionicons name="filter" size={24} color="black" />
+        </View>
+      </TouchableOpacity>
+      {open && (
+        <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
+          {modalContent()}
+        </MyFilterModal>
+      )}
+    </>
   );
 };
 
@@ -513,5 +546,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5, // For Android shadow
+  },
+
+  modalContent: {
+    justifyContent: "space-between",
+    gap: 24,
+  },
+  modalFields: {},
+  buttonModalContainer: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  buttonItem: {
+    flexGrow: 1,
+  },
+  buttonContained: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 44,
+    backgroundColor: "#0B3A82",
+    borderRadius: 4,
+  },
+  buttonOutlined: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 44,
+    borderColor: "#0B3A82",
+    borderWidth: 1,
+    borderRadius: 4,
   },
 });
