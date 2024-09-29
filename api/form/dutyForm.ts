@@ -1,6 +1,6 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
-import { TDutyFormFilterParams } from "./types";
+import { TApproveDutyFormFilterParams, TDutyFormFilterParams } from "./types";
 
 export async function fetchMyDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
@@ -25,7 +25,7 @@ export async function fetchMyDutyForms(session: string | undefined | null, pagiP
   return responseJson;
 }
 
-export async function fetchApproveDutyForms(session: string | undefined | null, pagiParams?: TPagiParams) {
+export async function fetchApproveDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TApproveDutyFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
@@ -39,7 +39,7 @@ export async function fetchApproveDutyForms(session: string | undefined | null, 
 
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify({}),
+    body: JSON.stringify(filterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
