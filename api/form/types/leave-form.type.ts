@@ -120,6 +120,12 @@ export type TLeaveFormCreateNoti = {
   title: string;
   type: FORM_NOTI_TYPE.LEAVE_FORM;
 };
+
+export type TLeaveFormFilterParams = {
+  status?: FORM_STATUS | null;
+  createdAt?: string;
+};
+
 /*
 const sampleResponse = {
   message: "Yêu cầu phê duyệt",

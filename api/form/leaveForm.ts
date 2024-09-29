@@ -1,7 +1,8 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
+import { TLeaveFormFilterParams } from "./types";
 
-export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams) {
+export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
@@ -13,9 +14,10 @@ export async function fetchMyLeaveForms(session: string | undefined | null, pagi
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
+  console.log('filterParams',filterParams)
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify({}),
+    body: JSON.stringify(filterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
