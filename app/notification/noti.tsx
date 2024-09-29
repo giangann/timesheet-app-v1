@@ -106,7 +106,7 @@ export default function Noti() {
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
         ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
-        ListEmptyComponent={isFirstRender ? null : <NoData message="Không có thông báo" />}
+        ListEmptyComponent={isFirstRender.current ? null : <NoData message="Không có thông báo" />}
       />
     </View>
   );
