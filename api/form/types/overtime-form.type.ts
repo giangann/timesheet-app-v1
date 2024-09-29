@@ -139,6 +139,11 @@ export type TOvertimeFormFilterParams = {
   status?: FORM_STATUS | null;
   createdAt?: string;
 };
+
+export type TApproveOvertimeFormFilterParams = {
+  status?: FORM_STATUS | null;
+  createdAt?: string;
+};
 /*
 const sampleResponse = {
   message: "Yêu cầu phê duyệt",
