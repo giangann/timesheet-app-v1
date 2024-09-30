@@ -49,6 +49,7 @@ export type TApproveDutyForm = {
   note: string;
   reason: string | null;
   approveDate: string | null;
+  createdAt: string;
   attachFilePath: string;
   isDeleted: boolean;
   dutyTypeName: string;

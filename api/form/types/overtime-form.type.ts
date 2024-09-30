@@ -54,6 +54,7 @@ export type TApproveOvertimeForm = {
   salaryCoefficient: number;
   userName: string;
   userIdentifyCard: string;
+  createdAt:string;
   userRole: {
     id: number;
     code: ROLE_CODE;

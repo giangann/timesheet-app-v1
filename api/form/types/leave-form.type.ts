@@ -59,6 +59,7 @@ export type TApproveLeaveForm = {
   userApproveIdentifyCard: string;
   approveDate: string;
   reason: string;
+  createdAt: string;
   userApproveRole: {
     id: number;
     code: ROLE_CODE;
