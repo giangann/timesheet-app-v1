@@ -18,7 +18,7 @@ export default function TimeKeeping() {
               <View style={styles.iconBox}>
                 <Image source={SettingTeamIconImage} />
               </View>
-              <NunitoText type="body1">Chấm công hôm nay</NunitoText>
+              <NunitoText type="body1">Chấm công đơn vị hôm nay</NunitoText>
             </View>
             <View style={styles.chip}>
               <Image source={GotoDetailIconImage} />
@@ -26,7 +26,8 @@ export default function TimeKeeping() {
           </View>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/time-keepings/emp-owt")}>
+        {/* Temporary comment, until api accept ARCHIVIST choose user to export file */}
+        {/* <Pressable onPress={() => router.push("/time-keepings/emp-owt")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
@@ -38,7 +39,8 @@ export default function TimeKeeping() {
               <Image source={GotoDetailIconImage} />
             </View>
           </View>
-        </Pressable>
+        </Pressable> */}
+
         <Pressable onPress={() => router.push("/time-keepings/team-owt")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>

@@ -25,6 +25,20 @@ export default function Timesheet() {
             </View>
           </View>
         </Pressable>
+
+        <Pressable onPress={() => router.push("/timesheet/my-emp-owt")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <MaterialCommunityIcons name="calendar-month-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+              </View>
+              <NunitoText type="body1">Bảng ngoài giờ theo tháng</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+            </View>
+          </View>
+        </Pressable>
       </ScrollView>
     </View>
   );
