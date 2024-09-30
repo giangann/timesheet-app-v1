@@ -1,3 +1,4 @@
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
@@ -173,62 +174,64 @@ export default function CreateOvertimeForm() {
   );
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
+    <KeyboardAwareScrollView>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
 
-        <View style={styles.timeRangeContainer}>
-          <View style={styles.timeRangeItem}>
-            <FormPickTime
-              useControllerProps={{ control: control, name: "startTime" }}
-              label="Giờ bắt đầu"
-              placeholder="Chọn giờ"
-              required
-              leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
-            />
+          <View style={styles.timeRangeContainer}>
+            <View style={styles.timeRangeItem}>
+              <FormPickTime
+                useControllerProps={{ control: control, name: "startTime" }}
+                label="Giờ bắt đầu"
+                placeholder="Chọn giờ"
+                required
+                leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
+              />
+            </View>
+            <View style={styles.timeRangeItem}>
+              <FormPickTime
+                useControllerProps={{ control: control, name: "endTime" }}
+                label="Giờ kết thúc"
+                placeholder="Chọn giờ"
+                required
+                leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
+              />
+            </View>
           </View>
-          <View style={styles.timeRangeItem}>
-            <FormPickTime
-              useControllerProps={{ control: control, name: "endTime" }}
-              label="Giờ kết thúc"
-              placeholder="Chọn giờ"
-              required
-              leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
-            />
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
+            options={salaryCoefTypeOpts}
+            label="Loại ngoài giờ"
+            required
+            placeholder="Chọn loại ngoài giờ"
+            leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
+
+            //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
+          />
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+            options={userApproveOpts}
+            label="Lãnh đạo phê duyệt"
+            required
+            placeholder="Chọn lãnh đạo phê duyệt"
+            leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
+          />
+
+          <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
+
+          <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+        </ScrollView>
+        <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
+          <View style={styles.button}>
+            {isSubmitting && <Progress.Circle indeterminate size={14} />}
+            <NunitoText type="body3" style={{ color: "white" }}>
+              Gửi duyệt
+            </NunitoText>
           </View>
-        </View>
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
-          options={salaryCoefTypeOpts}
-          label="Loại ngoài giờ"
-          required
-          placeholder="Chọn loại ngoài giờ"
-          leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
-
-          //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
-        />
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-          options={userApproveOpts}
-          label="Lãnh đạo phê duyệt"
-          required
-          placeholder="Chọn lãnh đạo phê duyệt"
-          leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
-        />
-
-        <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
-
-        <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
-      </ScrollView>
-      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
-        <View style={styles.button}>
-          {isSubmitting && <Progress.Circle indeterminate size={14} />}
-          <NunitoText type="body3" style={{ color: "white" }}>
-            Gửi duyệt
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
 

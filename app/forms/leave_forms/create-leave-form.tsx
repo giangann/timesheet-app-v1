@@ -1,3 +1,4 @@
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDateTime } from "@/components/FormPickDateTime";
@@ -156,52 +157,54 @@ export default function CreateLeaveForm() {
   );
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <FormPickDateTime
-          useControllerProps={{ control: control, name: "startDate" }}
-          label="Thời gian bắt đầu"
-          required
-          placeholder="Chọn ngày và giờ"
-          leftIcon={<MaterialCommunityIcons name="calendar-start" size={18} color={Colors.light.inputIconNone} />}
-        />
-        <FormPickDateTime
-          useControllerProps={{ control: control, name: "endDate" }}
-          label="Thời gian kết thúc"
-          required
-          placeholder="Chọn ngày và giờ"
-          leftIcon={<MaterialCommunityIcons name="calendar-end" size={18} color={Colors.light.inputIconNone} />}
-        />
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "leaveFormTypeId" }}
-          options={leaveTypeOpts}
-          label="Loại nghỉ"
-          required
-          placeholder="Chọn loại nghỉ"
-          leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
-        />
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-          options={userApproveOpts}
-          label="Lãnh đạo phê duyệt"
-          required
-          placeholder="Chọn lãnh đạo phê duyệt"
-          leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
-        />
+    <KeyboardAwareScrollView>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <FormPickDateTime
+            useControllerProps={{ control: control, name: "startDate" }}
+            label="Thời gian bắt đầu"
+            required
+            placeholder="Chọn ngày và giờ"
+            leftIcon={<MaterialCommunityIcons name="calendar-start" size={18} color={Colors.light.inputIconNone} />}
+          />
+          <FormPickDateTime
+            useControllerProps={{ control: control, name: "endDate" }}
+            label="Thời gian kết thúc"
+            required
+            placeholder="Chọn ngày và giờ"
+            leftIcon={<MaterialCommunityIcons name="calendar-end" size={18} color={Colors.light.inputIconNone} />}
+          />
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "leaveFormTypeId" }}
+            options={leaveTypeOpts}
+            label="Loại nghỉ"
+            required
+            placeholder="Chọn loại nghỉ"
+            leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
+          />
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+            options={userApproveOpts}
+            label="Lãnh đạo phê duyệt"
+            required
+            placeholder="Chọn lãnh đạo phê duyệt"
+            leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
+          />
 
-        <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
+          <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
 
-        <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
-      </ScrollView>
-      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
-        <View style={styles.button}>
-          {isSubmitting && <Progress.Circle indeterminate size={14} />}
-          <NunitoText type="body3" style={{ color: "white" }}>
-            Gửi duyệt
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-    </View>
+          <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+        </ScrollView>
+        <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
+          <View style={styles.button}>
+            {isSubmitting && <Progress.Circle indeterminate size={14} />}
+            <NunitoText type="body3" style={{ color: "white" }}>
+              Gửi duyệt
+            </NunitoText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
 

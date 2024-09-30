@@ -1,3 +1,4 @@
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
 import { FormInput } from "@/components/FormInput";
 import { FormSelectV2 } from "@/components/FormSelectV2";
@@ -212,76 +213,78 @@ export default function CreateDutyForm() {
   );
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "dutyCalendarId" }}
-          options={dutyCalendarOpts}
-          onSelect={(opt) => {
-            getDutyCalendarDetail(opt.value as number);
-          }}
-          label="Chọn ngày trực"
-          required
-          placeholder="Chọn ngày trong danh sách"
-          leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
-        />
+    <KeyboardAwareScrollView>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "dutyCalendarId" }}
+            options={dutyCalendarOpts}
+            onSelect={(opt) => {
+              getDutyCalendarDetail(opt.value as number);
+            }}
+            label="Chọn ngày trực"
+            required
+            placeholder="Chọn ngày trong danh sách"
+            leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+          />
 
-        <View style={styles.timeContainer}>
-          <View style={styles.timeItem}>
-            <FormSelectV2
-              label="Giờ bắt đầu"
-              placeholder={selectedDutyCalendar?.startTime ?? "_ _ : _ _"}
-              useControllerProps={{ control: control2, name: "dutyTypeId" }}
-              disabled
-            />
+          <View style={styles.timeContainer}>
+            <View style={styles.timeItem}>
+              <FormSelectV2
+                label="Giờ bắt đầu"
+                placeholder={selectedDutyCalendar?.startTime ?? "_ _ : _ _"}
+                useControllerProps={{ control: control2, name: "dutyTypeId" }}
+                disabled
+              />
+            </View>
+            <View style={styles.timeItem}>
+              <FormSelectV2
+                label="Giờ kết thúc"
+                placeholder={selectedDutyCalendar?.endTime ?? "_ _ : _ _"}
+                useControllerProps={{ control: control2, name: "dutyTypeId" }}
+                disabled
+              />
+            </View>
           </View>
-          <View style={styles.timeItem}>
-            <FormSelectV2
-              label="Giờ kết thúc"
-              placeholder={selectedDutyCalendar?.endTime ?? "_ _ : _ _"}
-              useControllerProps={{ control: control2, name: "dutyTypeId" }}
-              disabled
-            />
+
+          <FormSelectV2
+            label="Loại trực"
+            placeholder={selectedDutyCalendar?.dutyType.name ?? "_ _ _ _ _"}
+            useControllerProps={{ control: control2, name: "dutyTypeId" }}
+            disabled
+          />
+          <FormSelectV2
+            label="Loại ngoài giờ"
+            placeholder={`${selectedDutyCalendar?.salaryCoefficientType.name ?? "_ _ _ _ _"} (x${
+              selectedDutyCalendar?.salaryCoefficientType.coefficient.toFixed(2) ?? "_ _ _"
+            })`}
+            useControllerProps={{ control: control2, name: "salaryCoefficientId" }}
+            disabled
+          />
+
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+            options={userApproveOpts}
+            label="Lãnh đạo phê duyệt"
+            required
+            placeholder="Chọn lãnh đạo phê duyệt"
+            leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
+          />
+
+          <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
+
+          <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+        </ScrollView>
+        <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
+          <View style={styles.button}>
+            {isSubmitting && <Progress.Circle indeterminate size={14} />}
+            <NunitoText type="body3" style={{ color: "white" }}>
+              Gửi duyệt
+            </NunitoText>
           </View>
-        </View>
-
-        <FormSelectV2
-          label="Loại trực"
-          placeholder={selectedDutyCalendar?.dutyType.name ?? "_ _ _ _ _"}
-          useControllerProps={{ control: control2, name: "dutyTypeId" }}
-          disabled
-        />
-        <FormSelectV2
-          label="Loại ngoài giờ"
-          placeholder={`${selectedDutyCalendar?.salaryCoefficientType.name ?? "_ _ _ _ _"} (x${
-            selectedDutyCalendar?.salaryCoefficientType.coefficient.toFixed(2) ?? "_ _ _"
-          })`}
-          useControllerProps={{ control: control2, name: "salaryCoefficientId" }}
-          disabled
-        />
-
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-          options={userApproveOpts}
-          label="Lãnh đạo phê duyệt"
-          required
-          placeholder="Chọn lãnh đạo phê duyệt"
-          leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
-        />
-
-        <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
-
-        <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
-      </ScrollView>
-      <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
-        <View style={styles.button}>
-          {isSubmitting && <Progress.Circle indeterminate size={14} />}
-          <NunitoText type="body3" style={{ color: "white" }}>
-            Gửi duyệt
-          </NunitoText>
-        </View>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
 
