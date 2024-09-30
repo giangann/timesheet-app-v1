@@ -47,9 +47,14 @@ export async function fetchApproveOvertimeForms(
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.createdAt) {
+    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  }
+
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(filterParams),
+    body: JSON.stringify(bodyFilterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });

@@ -1,6 +1,7 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import { TApproveLeaveFormFilterParams, TLeaveFormFilterParams } from "./types";
+import moment from "moment";
 
 export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
   const token = `Bearer ${session}` ?? "xxx";
@@ -14,9 +15,14 @@ export async function fetchMyLeaveForms(session: string | undefined | null, pagi
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.createdAt) {
+    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  }
+
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(filterParams),
+    body: JSON.stringify(bodyFilterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
@@ -41,9 +47,14 @@ export async function fetchApproveLeaveForms(
 
   const url = `${baseUrl}${endpoint}${queryString}`;
 
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.createdAt) {
+    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  }
+
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(filterParams),
+    body: JSON.stringify(bodyFilterParams),
     headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
