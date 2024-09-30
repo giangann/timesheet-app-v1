@@ -533,8 +533,8 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
+    flex: 1,
     justifyContent: "space-between",
-    gap: 24,
   },
   modalFields: {},
   buttonModalContainer: {

@@ -294,7 +294,7 @@ const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps)
   const onOpen = () => setOpen(true);
 
   const filterFieldsExcludeStatus = omitProperties(filterParams, ["status"]);
-  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(filterFieldsExcludeStatus)
+  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(filterFieldsExcludeStatus);
   const hasFilterExcludeStatus = Object.keys(filterFieldsExcludeStatusAndNullishValue).length > 0;
 
   return (
@@ -303,7 +303,7 @@ const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps)
       <TouchableOpacity onPress={onOpen}>
         <View style={styles.filterIconWrapper}>
           <Ionicons name="filter" size={24} color="black" />
-          {hasFilterExcludeStatus && <View style={styles.filterBadge}/>}
+          {hasFilterExcludeStatus && <View style={styles.filterBadge} />}
         </View>
       </TouchableOpacity>
       {/* Filter Fields Modal */}
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   filterIconWrapper: {
-    position:'relative'
+    position: "relative",
   },
   filterBadge: {
     position: "absolute",
@@ -570,8 +570,8 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
+    flex: 1,
     justifyContent: "space-between",
-    gap: 24,
   },
   modalFields: {},
   buttonModalContainer: {

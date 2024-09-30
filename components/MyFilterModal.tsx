@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   childrenContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    height: "100%",
+    flex:1,
   },
   buttonContainer: {
     flexDirection: "row",
