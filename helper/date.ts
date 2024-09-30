@@ -212,6 +212,28 @@ export const formatRelativeTime = (dateString: string) => {
   }
 };
 
+export const formatRelativeTimeWithLongText = (dateString: string) => {
+  const now = moment();
+  const date = moment(dateString);
+  const diffInMinutes = now.diff(date, "minutes");
+  const diffInHours = now.diff(date, "hours");
+  const diffInDays = now.diff(date, "days");
+
+  if (diffInMinutes < 60) {
+    // Less than an hour ago
+    return `Được tạo lúc ${diffInMinutes} phút trước`;
+  } else if (diffInHours < 24) {
+    // Less than a day ago
+    return `Được tạo vào Hôm nay lúc ${date.format("HH:mm")}`;
+  } else if (diffInDays === 1) {
+    // Yesterday
+    return `Được tạo vào Hôm qua ${date.format("HH:mm")}`;
+  } else {
+    // More than a day ago
+    return `Được tạo ngày ${date.format("DD/MM/YYYY")} lúc ${date.format("HH:mm")}`;
+  }
+};
+
 export function formatDateToLocalString(date: Date): string {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // months are zero-based
