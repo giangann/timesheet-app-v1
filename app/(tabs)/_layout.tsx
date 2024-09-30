@@ -20,25 +20,28 @@ export default function AppLayout() {
   useEffect(() => {
     async function checkIsValidSessionToken(session: string) {
       const isValidSession = await verifySessionToken(session);
-      setIsVerifying(false);
       if (!isValidSession) {
         router.replace("/auth/login");
       }
+      setIsVerifying(false); // Set verifying false only after session check.
     }
 
     if (session) {
       checkIsValidSessionToken(session);
+    } else {
+      setIsVerifying(false); // No session, stop verifying.
     }
   }, [session]);
 
-  if (!session) {
-    return <Redirect href="/auth/login" />;
-  }
-
+  // Delay any redirects or UI changes until both loading and verification are complete
   if (isLoading || isVerifying) {
     return <SkeletonLoader />;
   }
 
+  // Only redirect after checks are fully completed
+  if (!session) {
+    return <Redirect href="/auth/login" />;
+  }
   // This layout can be deferred because it's not the root layout.
   return (
     <>
