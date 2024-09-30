@@ -1,3 +1,4 @@
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { DownloadExcel } from "@/components/DownloadExcel";
 import { FormInput } from "@/components/FormInput";
 import { FormSelectV2 } from "@/components/FormSelectV2";
@@ -44,7 +45,8 @@ export default function TeamOwt() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Fields */}
         <View style={styles.monthYearContainer}>
           <View style={styles.monthYearItem}>
             <FormSelectV2 useControllerProps={{ control: control, name: "year" }} label="Năm" placeholder="Chọn năm" required options={yearOpts} />
@@ -60,8 +62,16 @@ export default function TeamOwt() {
           </View>
         </View>
         <FormInput formInputProps={{ control: control, name: "fileName" }} label="Tên file" required />
-      </ScrollView>
-      <DownloadExcel month={watch("month") ?? currMonth} year={watch("year") ?? currYear} url={url} fileName={watch("fileName")} />
+
+        {/* Download Button */}
+        <DownloadExcel
+          month={watch("month") ?? currMonth}
+          year={watch("year") ?? currYear}
+          url={url}
+          fileName={watch("fileName")}
+          buttonContainerStyles={{ position: "static", paddingHorizontal: 0, paddingTop: 24 }}
+        />
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -76,13 +86,16 @@ function getAbleYears(startYear: number, currYear: number) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    backgroundColor: "white",
   },
 
   scrollContent: {
+    paddingHorizontal: 16,
     paddingTop: 16,
-    gap: 20,
+    paddingBottom: 16,
+    gap: 12,
   },
+
   monthYearContainer: {
     flexDirection: "row",
     gap: 12,
