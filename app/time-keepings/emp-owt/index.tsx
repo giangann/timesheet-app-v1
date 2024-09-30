@@ -4,7 +4,8 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import moment from "moment";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 type TEmpOwtForm = {
   userIdentifyCard: number;
@@ -41,17 +42,13 @@ export default function EmpOwt() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Fields */}
         <FormSelectV2 useControllerProps={{ control: control, name: "userIdentifyCard" }} label="Cá nhân" placeholder="Chọn cá nhân" />
+
         <View style={styles.monthYearContainer}>
           <View style={styles.monthYearItem}>
-            <FormSelectV2
-              useControllerProps={{ control: control, name: "year" }}
-              label="Năm"
-              placeholder="Chọn năm"
-              required
-              options={yearOpts}
-            />
+            <FormSelectV2 useControllerProps={{ control: control, name: "year" }} label="Năm" placeholder="Chọn năm" required options={yearOpts} />
           </View>
           <View style={styles.monthYearItem}>
             <FormSelectV2
@@ -64,8 +61,16 @@ export default function EmpOwt() {
           </View>
         </View>
         <FormInput formInputProps={{ control: control, name: "fileName" }} label="Tên file" required />
-      </ScrollView>
-      <DownloadExcel month={watch("month") ?? currMonth} year={watch("year") ?? currYear} url={url} fileName={watch("fileName")} />
+
+        {/* Download Button */}
+        <DownloadExcel
+          month={watch("month") ?? currMonth}
+          year={watch("year") ?? currYear}
+          url={url}
+          fileName={watch("fileName")}
+          buttonContainerStyles={{ position: "static", paddingHorizontal: 0, paddingTop: 24 }}
+        />
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -81,13 +86,15 @@ function getAbleYears(startYear: number, currYear: number) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white",
+  },
+  scrollContent: {
     paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
+    gap: 12,
   },
 
-  scrollContent: {
-    paddingTop: 16,
-    gap: 20,
-  },
   monthYearContainer: {
     flexDirection: "row",
     gap: 12,

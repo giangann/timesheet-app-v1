@@ -3,7 +3,7 @@ import { MyToast } from "@/ui/MyToast";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import React, { useState } from "react";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import * as Progress from "react-native-progress";
 import { NunitoText } from "./text/NunitoText";
 
@@ -12,9 +12,10 @@ type Props = {
   year: number;
   url: string;
   fileName?: string | null;
+  buttonContainerStyles?: ViewStyle;
 };
 
-export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName }) => {
+export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName, buttonContainerStyles }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { session } = useSession();
 
@@ -97,18 +98,15 @@ export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName }) =
   };
 
   return (
-    <View>
-      {/* <NunitoText>{`T${month}/${year}`}</NunitoText> */}
-      <TouchableOpacity onPress={downloadFile} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
-        <View style={styles.button}>
-          {isSubmitting && <Progress.Circle indeterminate size={14} />}
-          <NunitoText type="body3" style={{ color: "white" }}>
-            Tải file
-          </NunitoText>
-          <NunitoText type="body2" lightColor="white" darkColor="white">{`T${month}/${year}`}</NunitoText>
-        </View>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity onPress={downloadFile} activeOpacity={0.8} style={[styles.buttonContainer, buttonContainerStyles]} disabled={isSubmitting}>
+      <View style={styles.button}>
+        {isSubmitting && <Progress.Circle indeterminate size={14} />}
+        <NunitoText type="body3" style={{ color: "white" }}>
+          Tải file
+        </NunitoText>
+        <NunitoText type="body2" lightColor="white" darkColor="white">{`T${month}/${year}`}</NunitoText>
+      </View>
+    </TouchableOpacity>
   );
 };
 
