@@ -2,7 +2,7 @@ import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
 import { memo, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { ImageStyle, Pressable, ScrollView, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { NunitoText } from "./text/NunitoText";
 
 type TOption = {
@@ -108,17 +108,14 @@ function RawFormSelectV2<T extends FieldValues>({
               </View>
             )}
 
-            {!isEmptyOpt && (
-              <ScrollView>
-                {options.map((opt, index) => (
-                  <Pressable key={index} onPress={() => onSelectOpt(opt)}>
-                    <View style={opt.value === fieldValue ? styles.optionBoxSelected : styles.optionBox}>
-                      <NunitoText type="body3">{opt.label}</NunitoText>
-                    </View>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            )}
+            {!isEmptyOpt &&
+              options.map((opt, index) => (
+                <Pressable key={index} onPress={() => onSelectOpt(opt)}>
+                  <View style={opt.value === fieldValue ? styles.optionBoxSelected : styles.optionBox}>
+                    <NunitoText type="body3">{opt.label}</NunitoText>
+                  </View>
+                </Pressable>
+              ))}
           </View>
         )}
       </View>
@@ -186,8 +183,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
 
     gap: 0,
-
-    maxHeight: 250,
   },
   emptyBox: {},
   optionBox: {
