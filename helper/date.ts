@@ -190,7 +190,9 @@ export function convertTimeToHHMM(time: string | undefined): string | undefined 
   return `${hours}:${minutes}`;
 }
 
-export const formatRelativeTime = (dateString: string) => {
+export const formatRelativeTime = (dateString: string | null | undefined): string => {
+  if (dateString === null || dateString === undefined) return "";
+
   const now = moment();
   const date = moment(dateString);
   const diffInMinutes = now.diff(date, "minutes");
@@ -212,7 +214,9 @@ export const formatRelativeTime = (dateString: string) => {
   }
 };
 
-export const formatRelativeTimeWithLongText = (dateString: string) => {
+export const formatRelativeTimeWithLongText = (dateString: string | null | undefined): string => {
+  if (dateString === null || dateString === undefined) return "";
+
   const now = moment();
   const date = moment(dateString);
   const diffInMinutes = now.diff(date, "minutes");
