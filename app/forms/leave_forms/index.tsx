@@ -514,7 +514,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: "#B0CEFF",
     borderWidth: 1,
-    //
     marginBottom: 20,
   },
   itemBoxSumary: {
