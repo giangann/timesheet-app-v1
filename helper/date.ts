@@ -215,7 +215,7 @@ export const formatRelativeTime = (dateString: string | null | undefined): strin
 };
 
 export const formatRelativeTimeWithLongText = (dateString: string | null | undefined): string => {
-  if (dateString === null || dateString === undefined) return "";
+  if (dateString === null || dateString === undefined) return "Ngày giờ không xác định";
 
   const now = moment();
   const date = moment(dateString);

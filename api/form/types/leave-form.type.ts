@@ -29,6 +29,7 @@ export type TLeaveForm = {
     code: ROLE_CODE;
   };
 
+  createdAt: string;
   approveDate: string | null;
   reason: string | null;
 };

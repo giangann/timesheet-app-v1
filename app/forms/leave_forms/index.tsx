@@ -7,6 +7,7 @@ import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { omitNullishValues, omitProperties } from "@/helper/common";
+import { formatRelativeTimeWithLongText } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
@@ -384,27 +385,34 @@ const Item: React.FC<ItemProps> = ({ leaveForm }) => {
       {/* sumary */}
       <Pressable onPress={onGoToFormDetail}>
         <View style={styles.itemBoxSumary}>
-          <View style={styles.userInfo}>
-            <AvatarByRole role={leaveForm.userApproveRole.code} />
-            <View style={{ gap: 4 }}>
-              <NunitoText type="body3">{leaveForm.userApproveName}</NunitoText>
-              <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                {leaveForm.userApproveRole.name}
-              </NunitoText>
-            </View>
-          </View>
-          <View style={styles.formInfo}>
-            <ChipStatus status={leaveForm.status} />
-            <View>
-              <View>
-                <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(leaveForm.startDate).format("DD/MM/YYYY HH:mm")}
-                </NunitoText>
-                <NunitoText type="body4" style={{ opacity: 0.675 }}>
-                  {moment(leaveForm.endDate).format("DD/MM/YYYY HH:mm")}
+          <View style={styles.infos}>
+            <View style={styles.userInfo}>
+              <AvatarByRole role={leaveForm.userApproveRole.code} />
+              <View style={{ gap: 4 }}>
+                <NunitoText type="body3">{leaveForm.userApproveName}</NunitoText>
+                <NunitoText type="body4" style={{ opacity: 0.75 }}>
+                  {leaveForm.userApproveRole.name}
                 </NunitoText>
               </View>
             </View>
+            <View style={styles.formInfo}>
+              <ChipStatus status={leaveForm.status} />
+              <View>
+                <View>
+                  <NunitoText type="body4" style={{ opacity: 0.675 }}>
+                    {moment(leaveForm.startDate).format("DD/MM/YYYY HH:mm")}
+                  </NunitoText>
+                  <NunitoText type="body4" style={{ opacity: 0.675 }}>
+                    {moment(leaveForm.endDate).format("DD/MM/YYYY HH:mm")}
+                  </NunitoText>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={styles.timestamp}>
+            <NunitoText type="body4" style={{ opacity: 0.5 }}>
+              {formatRelativeTimeWithLongText(leaveForm.createdAt)}
+            </NunitoText>
           </View>
         </View>
       </Pressable>
@@ -512,13 +520,16 @@ const styles = StyleSheet.create({
   itemBoxSumary: {
     backgroundColor: "#EFF5FF",
     paddingVertical: 16,
-    paddingHorizontal: 12,
-
-    flexDirection: "row",
-    justifyContent: "space-between",
+    paddingHorizontal: 16,
 
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+
+    gap: 16,
+  },
+  infos: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   userInfo: {
     justifyContent: "space-between",
@@ -532,6 +543,7 @@ const styles = StyleSheet.create({
   formInfo: {
     justifyContent: "space-between",
   },
+  timestamp: {},
   extraInfo: {
     padding: 16,
     gap: 10,
