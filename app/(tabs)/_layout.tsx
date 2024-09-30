@@ -31,12 +31,12 @@ export default function AppLayout() {
     }
   }, [session]);
 
-  if (isLoading || isVerifying) {
-    return <SkeletonLoader />;
-  }
-
   if (!session) {
     return <Redirect href="/auth/login" />;
+  }
+
+  if (isLoading || isVerifying) {
+    return <SkeletonLoader />;
   }
 
   // This layout can be deferred because it's not the root layout.
