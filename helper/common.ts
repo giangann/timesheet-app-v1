@@ -130,3 +130,31 @@ export function omitNullishValues<T extends Record<string, any>>(object: T): Par
   }
   return filteredObject;
 }
+export function paramsObjectToQueryString(paramsObject: Record<string, string | number | null | undefined> | null | undefined): string {
+  let prefix = "?";
+  let paramsChain = "";
+  let atLeastOneParams = false;
+
+  // handle special values
+  if (paramsObject === null || paramsObject === undefined) return "";
+  if (Object.keys(paramsObject).length === 0) return "";
+
+  //
+  Object.entries(paramsObject).forEach(([k, v]) => {
+    if (v !== null && v !== undefined) {
+      if (typeof v === "number") {
+        paramsChain += `${k}=${v.toString()}`;
+      } else if (typeof v === "string") {
+        paramsChain += `${k}=${v}`;
+      }
+      paramsChain += "&";
+      atLeastOneParams = true;
+    }
+  });
+
+  // remove last & symbol in paramsChain
+  paramsChain = paramsChain.slice(0, -1);
+
+  const queryString = prefix + paramsChain;
+  return queryString;
+}

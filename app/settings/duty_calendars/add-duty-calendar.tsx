@@ -1,5 +1,10 @@
+import { fetchHolidaysByYear } from "@/api/setting";
+import { fetchSalaryCoefTypes } from "@/api/setting/salaryCoefType";
+import { THoliday, TSalaryCoefficientType } from "@/api/setting/type";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
+import { FormSelectV2WithFullscreenModal } from "@/components/FormSelectV2WithFullscreenModal";
+import { HolidaysCalendar } from "@/components/my-rn-calendar";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
@@ -9,7 +14,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -19,21 +24,6 @@ type CreateItem = {
   startTime: string;
   endTime: string;
   salaryCoefficientTypeId: number;
-};
-type THoliday = {
-  id: number;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  name: string;
-  date: string; // YYYY-MM-DD
-  salaryCoefficientTypeId: number;
-  activeOutsideWorkingTime: boolean;
-};
-type TSalaryCoefficientType = {
-  id: number;
-  name: string;
-  coefficient: number;
 };
 type TDutyType = {
   id: number;
@@ -50,9 +40,11 @@ export default function AddDutyCalendar() {
 
   // Calculate options
   // filter holidays that fall within the next week's Monday to Sunday
-  const holidaysInRange = filterHolidaysInRange(holidays);
+  // const holidaysInRange = filterHolidaysInRange(holidays);
+  const holidaysInRange = holidays;
   // add extra Sartuday and Sunday
   const holidayOptions = holidaysToOptions(holidaysInRange);
+
   const salaryCoefficientTypeOptions = salaryCoefficientTypes.map((type) => ({
     value: type.id,
     label: type.name,
@@ -63,6 +55,18 @@ export default function AddDutyCalendar() {
   const { control, handleSubmit, watch, setValue, resetField } = useForm<CreateItem>({ defaultValues: {} });
   const { session } = useSession();
   const router = useRouter();
+
+  const onDateSelect = (dateString: string) => {
+    const isOptHoliday = holidaysInRange.some((hol) => hol.date === dateString); // check if value in holiday.id
+
+    if (isOptHoliday) {
+      const holiday = holidaysInRange.filter((hol) => hol.date === dateString)[0];
+      setValue("salaryCoefficientTypeId", holiday.salaryCoefficientTypeId);
+    }
+    if (!isOptHoliday) {
+      resetField("salaryCoefficientTypeId");
+    }
+  };
 
   const onHolidayOptSelect = (opt: TOption) => {
     // {value: string <YYYY-MM-DD> , label: string <MM/DD/YYYY - __DayOfWeekName__> }
@@ -217,6 +221,16 @@ export default function AddDutyCalendar() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
+        <FormSelectV2WithFullscreenModal
+          useControllerProps={{ control: control, name: "date" }}
+          modalChildren={<PickDateCalendar onDateSelect={onDateSelect} />}
+          options={holidayOptions}
+          onSelect={onHolidayOptSelect}
+          label="Ngày trực"
+          required
+          placeholder="Chọn ngày trong danh sách"
+          leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+        />
         <FormSelectV2
           useControllerProps={{ control: control, name: "date" }}
           options={holidayOptions}
@@ -267,6 +281,107 @@ export default function AddDutyCalendar() {
     </View>
   );
 }
+
+type PickDateCalendarProps = {
+  onDateSelect: (dateString: string) => void;
+};
+
+const currYear = moment(Date.now()).get("year");
+const INITIAL_DATE = moment(Date.now()).format("YYYY-MM-DD");
+const PickDateCalendar: React.FC<PickDateCalendarProps> = ({ onDateSelect }) => {
+  const [date, setDate] = useState<string>(INITIAL_DATE);
+  const { session } = useSession();
+  const [year, setYear] = useState(currYear);
+  const [holidays, setHolidays] = useState<THoliday[]>([]);
+  const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
+  const holidaysMap = holidaysToMap(holidays);
+  const salaryCoefficientTypesMap = salaryCoefficientTypesToMap(salaryCoefficientTypes);
+
+  const onDateChange = (newDateString: string) => {
+    setDate(newDateString);
+  };
+
+  const onSelect = useCallback(() => {
+    onDateSelect(date);
+    
+  }, [date]);
+
+  const holidayInfo = useMemo(() => {
+    const holiday = holidaysMap[date];
+    if (!holiday) return {};
+
+    const holidaySalaryCoefTypeId = holiday.salaryCoefficientTypeId;
+    const salaryCoefType = salaryCoefficientTypesMap[holidaySalaryCoefTypeId];
+
+    return { holiday, salaryCoefType };
+  }, [holidaysMap, holidays, date]);
+
+  const onFetchHolidays = async () => {
+    try {
+      const responseJson = await fetchHolidaysByYear(session, { year });
+
+      if (responseJson.statusCode === 200) {
+        setHolidays(responseJson.data.holidays);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    onFetchHolidays();
+  }, []);
+
+  const onFetchSalaryCoefTypes = async () => {
+    try {
+      const responseJson = await fetchSalaryCoefTypes(session);
+
+      if (responseJson.statusCode === 200) {
+        setSalaryCoefficientTypes(responseJson.data.salaryCoefficientTypes);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    onFetchSalaryCoefTypes();
+  }, []);
+  return (
+    <View>
+      <HolidaysCalendar holidays={holidays} onDateChange={onDateChange} />
+      <HolidayInfo holidayInfo={holidayInfo} />
+
+      <TouchableOpacity style={styles.button} onPress={onSelect}>
+        <NunitoText type="body3" style={{ color: "white" }}>
+          Chọn
+        </NunitoText>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+type HolidayInfoProps = {
+  holidayInfo: {
+    holiday?: THoliday;
+    salaryCoefType?: TSalaryCoefficientType;
+  };
+};
+const HolidayInfo: React.FC<HolidayInfoProps> = ({ holidayInfo }) => {
+  return (
+    <View>
+      {holidayInfo.holiday && <NunitoText>{holidayInfo.holiday?.name ?? ""}</NunitoText>}
+      {holidayInfo.salaryCoefType && (
+        <NunitoText>{`${holidayInfo.salaryCoefType?.name}-${holidayInfo.salaryCoefType?.coefficient.toFixed(2)}`}</NunitoText>
+      )}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -340,4 +455,25 @@ function holidaysToOptions(holidays: THoliday[]): TOption[] {
   }
 
   return holidayOptions;
+}
+type THolidaysMap = Record<string, THoliday>;
+function holidaysToMap(holidays: THoliday[]): THolidaysMap {
+  const holidaysMap: THolidaysMap = {};
+
+  for (const hol of holidays) {
+    holidaysMap[hol.date] = hol;
+  }
+
+  return holidaysMap;
+}
+
+type TSalaryCoefficientTypesMap = Record<number, TSalaryCoefficientType>;
+function salaryCoefficientTypesToMap(salaryCoefficientTypes: TSalaryCoefficientType[]): TSalaryCoefficientTypesMap {
+  const salaryCoefficientTypesMap: TSalaryCoefficientTypesMap = {};
+
+  for (const type of salaryCoefficientTypes) {
+    salaryCoefficientTypesMap[type.id] = type;
+  }
+
+  return salaryCoefficientTypesMap;
 }
