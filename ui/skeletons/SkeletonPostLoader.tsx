@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, memo } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 const ShimmeringView = (props: {
@@ -46,7 +46,7 @@ const ShimmeringView = (props: {
   );
 };
 
-const SkeletonLoader = () => {
+const RawSkeletonPostLoader = () => {
   return (
     <View style={styles.container}>
       <ShimmeringView>
@@ -117,4 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SkeletonLoader;
+export const SkeletonPostLoader = memo(RawSkeletonPostLoader);

@@ -1,5 +1,5 @@
-import SimpleSkeletonLoader from "@/ui/skeletons/SimpleSkeletonLoader";
-import React, { useState, useEffect } from "react";
+import { SkeletonRectangleLoader } from "@/ui/skeletons/SkeletonRectangleLoader";
+import React, { useEffect, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -16,5 +16,5 @@ export const Delayed: React.FC<Props> = ({ children, waitBeforeShow = 500 }) => 
     return () => clearTimeout(timer);
   }, [waitBeforeShow]);
 
-  return isShown ? <>{children}</> : <SimpleSkeletonLoader />;
+  return isShown ? <>{children}</> : <SkeletonRectangleLoader />;
 };

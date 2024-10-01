@@ -13,7 +13,7 @@ import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -147,7 +147,9 @@ export default function LeaveForms() {
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : <View style={{ height: 80 }} />}
+        ListFooterComponent={
+          (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : <View style={{ height: 80 }} />
+        }
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />

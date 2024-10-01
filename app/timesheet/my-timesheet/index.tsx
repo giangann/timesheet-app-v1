@@ -1,13 +1,12 @@
 import { fetchDutyFormDetail, fetchLeaveFormDetail, fetchOvertimeFormDetail } from "@/api/form";
 import { TDutyFormDetail, TLeaveFormDetail, TOvertimeFormDetail } from "@/api/form/types";
-import { MonthTimesheetList } from "@/api/timesheet/type";
 import { BasicCalendar } from "@/components/my-rn-calendar/BasicCalendar";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { TIMESHEET_FORM_TYPE, TIMESHEET_FORM_TYPE_COLOR, WORKING_TYPE, WORKING_TYPE_COLOR, WORKING_TYPE_NULL_COLOR } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { SkeletonPostLoader } from "@/ui/skeletons";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import moment from "moment";
@@ -113,7 +112,7 @@ export default function MyTimeSheet() {
           <MarkedSymbolNote />
         </View>
         <View style={styles.formsWrapper}>
-          {isFetching && <SkeletonLoader />}
+          {isFetching && <SkeletonPostLoader />}
           {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
           {otForm && !isFetching && <OTFormInfo otForm={otForm} />}
           {dutyForm && !isFetching && <DutyFormInfo dutyForm={dutyForm} />}

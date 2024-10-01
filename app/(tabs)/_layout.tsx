@@ -2,7 +2,7 @@ import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Octicons from "@expo/vector-icons/Octicons";
@@ -35,7 +35,7 @@ export default function AppLayout() {
 
   // Delay any redirects or UI changes until both loading and verification are complete
   if (isLoading || isVerifying) {
-    return <SkeletonLoader />;
+    return <SkeletonRectangleLoader overrideContainerStyles={{ height: "auto", flex: 1 }} />;
   }
 
   // Only redirect after checks are fully completed

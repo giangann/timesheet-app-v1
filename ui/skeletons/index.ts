@@ -1,1 +1,2 @@
-export * from "./SimpleSkeletonLoader";
+export * from "./SkeletonRectangleLoader";
+export * from "./SkeletonPostLoader";

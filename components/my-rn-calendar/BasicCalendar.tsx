@@ -9,7 +9,7 @@ import {
 } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { SkeletonPostLoader } from "@/ui/skeletons";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -67,7 +67,7 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
 
   return (
     <View>
-      {isFetchingMonthData && <SkeletonLoader />}
+      {isFetchingMonthData && <SkeletonPostLoader />}
       {!isFetchingMonthData && (
         <Calendar
           onMonthChange={(date) => {console.log(date.month)}}

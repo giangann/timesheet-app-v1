@@ -1,26 +1,26 @@
 import { fetchApproveOvertimeForms } from "@/api/form";
 import { TApproveOvertimeForm, TApproveOvertimeFormFilterParams } from "@/api/form/types";
+import { FormPickDate } from "@/components/FormPickDate";
+import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { omitNullishValues, omitProperties } from "@/helper/common";
+import { formatRelativeTimeWithLongText } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
 import { MyToast } from "@/ui/MyToast";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { NoData } from "@/ui/NoData";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
+import { Ionicons } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import Entypo from "@expo/vector-icons/Entypo";
-import { FormPickDate } from "@/components/FormPickDate";
 import { useForm } from "react-hook-form";
-import { Ionicons } from "@expo/vector-icons";
-import { omitNullishValues, omitProperties } from "@/helper/common";
-import { MyFilterModal } from "@/components/MyFilterModal";
-import { NoData } from "@/ui/NoData";
-import { formatRelativeTimeWithLongText } from "@/helper/date";
+import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function ApproveOvertimeForms() {
   const [overtimeForms, setOvertimeForms] = useState<TApproveOvertimeForm[]>([]);
@@ -148,7 +148,7 @@ export default function ApproveOvertimeForms() {
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : null}
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />

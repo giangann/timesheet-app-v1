@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import React, { useRef, useEffect, memo } from "react";
+import { View, StyleSheet, Animated, ViewStyle } from "react-native";
 
 const ShimmeringView = () => {
   const translateX = useRef(new Animated.Value(-100)).current;
@@ -35,9 +35,13 @@ const ShimmeringView = () => {
   );
 };
 
-const SimpleSkeletonLoader = () => {
+type Props = {
+  height?: number;
+  overrideContainerStyles?: ViewStyle;
+};
+const RawSkeletonRectangleLoader: React.FC<Props> = ({ height, overrideContainerStyles }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, height ? { height: height } : {}, overrideContainerStyles ?? {}]}>
       <ShimmeringView />
     </View>
   );
@@ -61,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimpleSkeletonLoader;
+export const SkeletonRectangleLoader = memo(RawSkeletonRectangleLoader) as typeof RawSkeletonRectangleLoader;

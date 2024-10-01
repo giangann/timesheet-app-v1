@@ -7,8 +7,7 @@ import {
   FORM_NOTI_NAME,
   FORM_NOTI_TYPE,
   FORM_STATUS_NAME,
-  NOTI_STATUS,
-  ROLE_CODE,
+  NOTI_STATUS
 } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { formatRelativeTime } from "@/helper/date";
@@ -16,7 +15,7 @@ import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
-import SkeletonLoader from "@/ui/SkeletonLoader";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -105,7 +104,7 @@ export default function Noti() {
         keyExtractor={(_item) => _item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonLoader /> : null}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader height={300} /> : null}
         ListEmptyComponent={isLoading ? null : <NoData message="Không có thông báo" />}
       />
     </View>
