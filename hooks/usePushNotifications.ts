@@ -9,6 +9,8 @@ import { Platform } from "react-native";
 export interface PushNotificationState {
   expoPushToken?: Notifications.ExpoPushToken;
   notification?: Notifications.Notification;
+  error?: string[];
+  status?: string[];
 }
 
 export const usePushNotifications = (): PushNotificationState => {
@@ -24,6 +26,13 @@ export const usePushNotifications = (): PushNotificationState => {
 
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
 
+  const [error, setError] = useState<string[]>([]);
+
+  const [status, setStatus] = useState<string[]>([]);
+
+  const addStatus = (newStatus: string) => setStatus((prev) => [...prev, newStatus]);
+  const addError = (newError: string) => setError((prev) => [...prev, newError]);
+
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
@@ -34,10 +43,12 @@ export const usePushNotifications = (): PushNotificationState => {
       let finalStatus = existingStatus;
 
       if (existingStatus !== "granted") {
+        addStatus(`Not granted, now status = ${existingStatus}. Start request permission`)
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
+        addError(`Failed to get push token for push notification, now status = ${finalStatus}`);
         alert("Failed to get push token for push notification");
         return;
       }
@@ -46,6 +57,7 @@ export const usePushNotifications = (): PushNotificationState => {
         projectId: Constants.expoConfig?.extra?.eas.projectId,
       });
     } else {
+      addError("Must be using a physical device for Push notifications");
       alert("Must be using a physical device for Push notifications");
     }
 
@@ -62,9 +74,17 @@ export const usePushNotifications = (): PushNotificationState => {
   }
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token);
-    });
+    addStatus("useEffect run, prepare get token...");
+
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        setExpoPushToken(token);
+        addStatus(`Received Token Object: TokenObj = ${token}, token = ${token?.data}`);
+      })
+      .catch((error) => {
+        if (error instanceof Error) addError(`${error.name}${error.message}`);
+        else addError(`Unknown Error, StringFy = ${JSON.stringify(error)}`);
+      });
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
@@ -85,5 +105,7 @@ export const usePushNotifications = (): PushNotificationState => {
   return {
     expoPushToken,
     notification,
+    error,
+    status,
   };
 };
