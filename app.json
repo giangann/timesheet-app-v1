@@ -20,12 +20,12 @@
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#FF0000"
       },
-      "notification": {
-        "icon": "./assets/logo.png",
-        "color": "#FF0000"
-      },
       "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.giangann229.timesheetappv1"
+    },
+    "notification": {
+      "icon": "./assets/images/logo.png",
+      "color": "#FF0000"
     },
     "web": {
       "bundler": "metro",
