@@ -4,7 +4,7 @@
     "slug": "timesheet-app-v1",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,12 +17,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#FF0000"
       },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
+      "notification": {
+        "icon": "./assets/logo.png",
+        "color": "#FF0000"
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.giangann229.timesheetappv1"
     },
     "web": {
