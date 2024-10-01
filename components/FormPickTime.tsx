@@ -2,7 +2,7 @@ import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import moment from "moment";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { NunitoText } from "./text/NunitoText";
@@ -17,7 +17,7 @@ type FormPickTimeProps<T extends FieldValues> = {
   locale?: string;
 };
 
-export function FormPickTime<T extends FieldValues>({
+function RawFormPickTime<T extends FieldValues>({
   useControllerProps,
   label,
   required,
@@ -75,6 +75,8 @@ export function FormPickTime<T extends FieldValues>({
     </View>
   );
 }
+
+export const FormPickTime = memo(RawFormPickTime) as typeof RawFormPickTime;
 
 /**
  * -------------------------------------------
