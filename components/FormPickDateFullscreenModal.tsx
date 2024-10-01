@@ -7,6 +7,7 @@ import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle, Touchabl
 import { Calendar, CalendarProps, DateData } from "react-native-calendars";
 import { MyModalFullscreen } from "./MyModalFullscreen";
 import { NunitoText } from "./text/NunitoText";
+import { Delayed } from "./Delayed";
 
 type TOption = {
   label: string;
@@ -105,7 +106,9 @@ function RawFormPickDateFullscreenModal<T extends FieldValues>({
         </Pressable>
         {openModal && (
           <MyModalFullscreen onClose={onToggleOpenModal}>
-            <Calendar onDayPress={onDayPressHandler} {...rnCalendarProps} />
+            <Delayed>
+              <Calendar onDayPress={onDayPressHandler} {...rnCalendarProps} />
+            </Delayed>
             {renderDateInfo && renderDateInfo(dateString)}
             <TouchableOpacity style={styles.button} onPress={onDaySelect}>
               <NunitoText type="body3" style={{ color: "white" }}>
