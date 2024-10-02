@@ -1,10 +1,11 @@
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import * as Progress from "react-native-progress";
+import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
+import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/form/types";
 import { FormInput } from "@/components/FormInput";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
@@ -16,6 +17,8 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as Progress from "react-native-progress";
 
 type CreateItemForm = {
   dutyCalendarId: number;
@@ -25,31 +28,9 @@ type CreateItemForm = {
   note?: string | null;
 };
 
-type TDutyCalendar = {
-  dutyFormId: number;
-  date: string; // YYYY-MM-DD
-  dutyType: string;
-  dayOfWeek: string;
-};
 type TUserApprove = {
   identifyCard: number;
   name: string;
-};
-
-type TDutyCalendarDetail = {
-  id: number;
-  startTime: string;
-  endTime: string;
-  date: string;
-  dutyType: {
-    id: number;
-    name: string;
-  };
-  salaryCoefficientType: {
-    id: number;
-    name: string;
-    coefficient: number;
-  };
 };
 
 type TExtraForm = {
@@ -83,25 +64,18 @@ export default function CreateDutyForm() {
   }));
   const userApproveOpts = userApproves.map((user) => ({ value: user.identifyCard, label: user.name }));
 
-  const getDutyCalendarDetail = useCallback(async (calendarId: number) => {
-    const token = `Bearer ${session}` ?? "xxx";
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = `/duty-calendars/${calendarId}`;
-    const url = `${baseUrl}${endpoint}`;
+  const getDutyCalendarDetail = useCallback(
+    async (calendarId: number) => {
+      const responseJson = await fetchDutyCalendarDetail(session, calendarId);
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-
-    if (responseJson.statusCode === 200) {
-      setSelectedDutyCalendar(responseJson.data.dutyCalendar);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  }, []);
+      if (responseJson.statusCode === 200) {
+        setSelectedDutyCalendar(responseJson.data.dutyCalendar);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    },
+    [session]
+  );
 
   const onCreate = async (value: CreateItemForm) => {
     try {
@@ -157,20 +131,13 @@ export default function CreateDutyForm() {
     }
   };
 
-  const fetchDutyTypes = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+  const fetchDutyCalendars = async () => {
+    const calendarFilterParams: TDutyCalendarFilterParams = {
+      startDate: "2024-05-07",
+      endDate: "2024-12-30",
+    };
+    const responseJson = await fetchListDutyCalendarByDateRange(session, calendarFilterParams);
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/duty-calendars/get-calendar";
-    const queryString = "?startDate=2024-05-07&endDate=2024-12-30";
-    const url = `${baseUrl}${endpoint}${queryString}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
       const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
       setDutyCalendars(dutyCalendarsSorted);
@@ -181,23 +148,12 @@ export default function CreateDutyForm() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchDutyTypes();
+      fetchDutyCalendars();
     }, [])
   );
 
   const fetchUserApproves = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/users/list-user-by-role?role=TEAM_DIRECTOR";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
+    const responseJson = await fetchListUserByRole(session, ROLE_CODE.TEAM_DIRECTOR);
 
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);
