@@ -1,18 +1,20 @@
 import { fetchListDutyCalendarByDateRange } from "@/api/form";
 import { TDutyCalendar, TDutyCalendarFilterParams } from "@/api/form/types";
+import { fetchAllTeams, fetchListUserOfTeam } from "@/api/team";
+import { TTeam, TTeamUser } from "@/api/team/type";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelectContext, FormSelectContextProps, FormSelectFullscreenModal } from "@/components/FormSelectFullscreenModal";
-import { FormSelectV2WithFullscreenModal } from "@/components/FormSelectV2WithFullscreenModal";
+import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
+import { sortByDate } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
 import { FontAwesome } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
 import moment from "moment";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
@@ -20,13 +22,12 @@ import * as Progress from "react-native-progress";
 type CreateItemForm = {
   dutyCalendarId: number;
   userIdentifyCard: string;
-  userApproveIdentifyCard: number;
+  userApproveIdentifyCard: string;
   attachFile?: File | null;
   note?: string | null;
 };
 
 export default function CreateDutyForm() {
-  const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
   const { session, userInfo } = useSession();
 
   const {
@@ -37,40 +38,23 @@ export default function CreateDutyForm() {
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
 
-  const dutyCalendarOpts = dutyCalendars.map((calendar) => ({
-    value: calendar.dutyFormId,
-    label: `${moment(calendar.date).format("DD/MM/YYYY")} - (${getDayOfWeekNameInVietnamese(calendar.date)})`,
-  }));
-
   const onCreate = async (fieldValues: CreateItemForm) => {
     console.log("fieldValues", fieldValues);
   };
-
-  const fetchDutyCalendars = async () => {
-    const calendarFilterParams: TDutyCalendarFilterParams = {
-      startDate: "2024-01-01",
-      endDate: "2024-12-30",
-    };
-    const responseJson = await fetchListDutyCalendarByDateRange(session, calendarFilterParams);
-
-    if (responseJson.statusCode === 200) {
-      const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
-      setDutyCalendars(dutyCalendarsSorted);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchDutyCalendars();
-    }, [])
-  );
 
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
+          {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
+            <FormSelectFullscreenModal
+              label="Nhân viên"
+              placeholder="Chọn nhân viên (bỏ trống để tự tạo đơn cho bản thân)"
+              useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+              modalChildren={<SelectUserModalChildren />}
+              leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+            />
+          )}
           <FormSelectFullscreenModal
             useControllerProps={{ control: control, name: "dutyCalendarId" }}
             modalChildren={<SelectDutyCalendarModalChildren />}
@@ -111,17 +95,21 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
 
   const fetchDutyCalendars = useCallback(
     async (fieldValues: TFilterFields) => {
-      const calendarFilterParams: TDutyCalendarFilterParams = {
-        startDate: moment(fieldValues.startDate).format("YYYY-MM-DD"),
-        endDate: moment(fieldValues.endDate).format("YYYY-MM-DD"),
-      };
-      const responseJson = await fetchListDutyCalendarByDateRange(session, calendarFilterParams);
+      try {
+        const calendarFilterParams: TDutyCalendarFilterParams = {
+          startDate: moment(fieldValues.startDate).format("YYYY-MM-DD"),
+          endDate: moment(fieldValues.endDate).format("YYYY-MM-DD"),
+        };
+        const responseJson = await fetchListDutyCalendarByDateRange(session, calendarFilterParams);
 
-      if (responseJson.statusCode === 200) {
-        const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
-        setDutyCalendars(dutyCalendarsSorted);
-      } else {
-        MyToast.error(responseJson.error);
+        if (responseJson.statusCode === 200) {
+          const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
+          setDutyCalendars(dutyCalendarsSorted);
+        } else {
+          MyToast.error(responseJson.error);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
       }
     },
     [session]
@@ -164,6 +152,86 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
   );
 };
 
+type SelectUserModalChildrenProps = {};
+type TSearchFields = {
+  teamId: string | undefined;
+};
+type TSelectOption = {
+  value: number;
+  label: string;
+};
+const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({}) => {
+  const { session } = useSession();
+  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<CreateItemForm, "userIdentifyCard">>;
+  const [teams, setTeams] = useState<TTeam[]>([]);
+  const [teamUsers, setTeamUsers] = useState<TTeamUser[]>([]);
+
+  const teamSelectOpts: TSelectOption[] = useMemo(() => teams.map((team) => ({ value: team.id, label: team.name })), [teams]);
+
+  const { control, handleSubmit } = useForm<TSearchFields>();
+
+  const onFetchAllTeams = useCallback(async () => {
+    try {
+      const responseJson = await fetchAllTeams(session);
+      if (responseJson.statusCode === 200) {
+        setTeams(responseJson.data.teams);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    onFetchAllTeams();
+  }, []);
+
+  const onFetchListUserOfTeam = useCallback(
+    async (teamId: number) => {
+      try {
+        const responseJson = await fetchListUserOfTeam(session, teamId);
+        if (responseJson.statusCode === 200) {
+          setTeamUsers(responseJson.data.users);
+        } else {
+          MyToast.error(responseJson.error);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session]
+  );
+
+  return (
+    <View>
+      <ScrollView>
+        <FormSelectV2
+          useControllerProps={{ control: control, name: "teamId" }}
+          options={teamSelectOpts}
+          onSelect={({ value }) => onFetchListUserOfTeam(value as number)}
+          label="Phòng ban"
+          placeholder="Chọn phòng ban"
+        />
+
+        <NunitoText>List Users</NunitoText>
+        <View style={{ gap: 4 }}>
+          {teamUsers.map((user) => (
+            <View key={user.identifyCard} style={{ paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: "black" }}>
+              <TouchableOpacity onPress={() => onSelectOption(user.identifyCard, `${user.name} - ${user.roleName}`)}>
+                <NunitoText>
+                  <NunitoText style={{ color: "black" }}>
+                    {user.name}-{user.roleName}
+                  </NunitoText>
+                </NunitoText>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
 function getDefaultDateRange(): TFilterFields {
   // Calculate next week's Monday and Sunday
   const nextWeekMonday = moment().startOf("isoWeek").add(7, "days").format("YYYY-MM-DD");
