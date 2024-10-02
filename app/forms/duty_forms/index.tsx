@@ -147,7 +147,9 @@ export default function DutyForms() {
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : <View style={{ height: 80 }} />}
+        ListFooterComponent={
+          (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : <View style={{ height: 80 }} />
+        }
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
@@ -454,7 +456,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
 const ApplyNewForm = () => {
   const router = useRouter();
   return (
-    <TouchableOpacity onPress={() => router.push("/forms/duty_forms/create-duty-form")} activeOpacity={0.8} style={styles.buttonContainer}>
+    <TouchableOpacity onPress={() => router.push("/forms/duty_forms/create-duty-form-v2")} activeOpacity={0.8} style={styles.buttonContainer}>
       <View style={styles.button}>
         <NunitoText type="body3" style={{ color: "white" }}>
           Tạo đơn mới
