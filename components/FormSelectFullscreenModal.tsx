@@ -1,22 +1,34 @@
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
-import { memo, useState } from "react";
+import { createContext, memo, useState } from "react";
 import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { MyModalFullscreen } from "./MyModalFullscreen";
 import { NunitoText } from "./text/NunitoText";
+import { FieldValues, Path, PathValue, UseControllerProps, useController } from "react-hook-form";
 
-
-type Props = {
+export type FormSelectContextProps<T extends FieldValues> = {
+  onSelectOption: (value: PathValue<T, Path<T>>, label: string) => void;
+  fieldValue: PathValue<T, Path<T>>;
+};
+export const FormSelectContext = createContext<FormSelectContextProps<any>>({
+  onSelectOption: () => {},
+  fieldValue: "", // or provide an appropriate default value based on your use case
+});
+type Props<T extends FieldValues> = {
+  modalChildren?: React.ReactNode;
   label?: string;
   placeholder?: string;
   required?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-
   disabled?: boolean;
-  modalChildren?: React.ReactNode;
+  onSelect?: (newValue: PathValue<T, Path<T>>) => void;
+} & {
+  useControllerProps: UseControllerProps<T>;
 };
-function RawFormSelectFullscreenModal({
+function RawFormSelectFullscreenModal<T extends FieldValues>({
+  useControllerProps,
+  onSelect,
   modalChildren,
   label,
   placeholder,
@@ -24,50 +36,70 @@ function RawFormSelectFullscreenModal({
   disabled,
   leftIcon = <Entypo name="list" size={18} color={Colors.light.inputIconNone} />,
   rightIcon,
-}: Props) {
+}: Props<T>) {
   const [openModal, setOpenModal] = useState(false);
+  const { field } = useController(useControllerProps);
+  const { value: fieldValue, onChange } = field;
+  const [labelOfSelectedValue, setLabelOfSelectedValue] = useState<string>(placeholder ?? "Chọn");
+
   const onToggleOpenModal = () => setOpenModal(!openModal);
 
+  let showChooseValueBoxStyle: ViewStyle = {};
+  if (disabled) showChooseValueBoxStyle = styles.showChooseValueBoxDisabled;
+  if (!disabled && !openModal) showChooseValueBoxStyle = styles.showChooseValueBox;
+  if (!disabled && openModal) showChooseValueBoxStyle = styles.showChooseValueBoxFocus;
+
+  const onSelectOption = (value: PathValue<T, Path<T>>, label: string) => {
+    // call onSelect callback props
+    onSelect?.(value);
+
+    // update field value
+    onChange(value);
+
+    // update label
+    setLabelOfSelectedValue(label);
+
+    // close modal
+    setOpenModal(false);
+  };
+
   return (
-    <View style={styles.container}>
-      {/* label */}
-      <View style={styles.labelWrapper}>
-        {label && (
-          <NunitoText type="body2" style={{ marginRight: 6 }}>
-            {label}
-          </NunitoText>
-        )}
-        {required && (
-          <NunitoText type="body1" style={{ color: "red" }}>
-            *
-          </NunitoText>
-        )}
-      </View>
+    <FormSelectContext.Provider value={{ onSelectOption, fieldValue }}>
+      <View style={styles.container}>
+        {/* label */}
+        <View style={styles.labelWrapper}>
+          {label && (
+            <NunitoText type="body2" style={{ marginRight: 6 }}>
+              {label}
+            </NunitoText>
+          )}
+          {required && (
+            <NunitoText type="body1" style={{ color: "red" }}>
+              *
+            </NunitoText>
+          )}
+        </View>
 
-      <View>
-        {/* select button*/}
-        <Pressable onPress={onToggleOpenModal} disabled={disabled}>
-          <View style={showChooseValueBoxBaseStyles}>
-            <View style={styles.valueBoxLeft}>
-              {/* left icon */}
-              {leftIcon}
+        <View>
+          {/* select button*/}
+          <Pressable onPress={onToggleOpenModal} disabled={disabled}>
+            <View style={showChooseValueBoxStyle}>
+              <View style={styles.valueBoxLeft}>
+                {/* left icon */}
+                {leftIcon}
 
-              {/* label display */}
-              {/* {!labelDisplay && (
-                <NunitoText type="body3" style={{ opacity: 0.5 }}>
-                  {placeholder}
-                </NunitoText>
-              )}
-              {labelDisplay && <NunitoText type="body3">{labelDisplay}</NunitoText>} */}
+                {/* label display */}
+                <NunitoText type="body3">{labelOfSelectedValue}</NunitoText>
+              </View>
+
+              {/* right icon */}
+              {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />}
             </View>
-
-            {/* right icon */}
-            {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />}
-          </View>
-        </Pressable>
-        {openModal && <MyModalFullscreen onClose={onToggleOpenModal}>{modalChildren}</MyModalFullscreen>}
+          </Pressable>
+          {openModal && <MyModalFullscreen onClose={onToggleOpenModal}>{modalChildren}</MyModalFullscreen>}
+        </View>
       </View>
-    </View>
+    </FormSelectContext.Provider>
   );
 }
 export const FormSelectFullscreenModal = memo(RawFormSelectFullscreenModal) as typeof RawFormSelectFullscreenModal;
@@ -94,6 +126,23 @@ const styles = StyleSheet.create({
     alignContent: "flex-start",
     alignItems: "center",
   },
+  showChooseValueBox: {
+    ...showChooseValueBoxBaseStyles,
+    borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
+  },
+  showChooseValueBoxDisabled: {
+    ...showChooseValueBoxBaseStyles,
+    borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
+    backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
+  },
+  showChooseValueBoxFocus: {
+    ...showChooseValueBoxBaseStyles,
+
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderColor: `#000000`,
+  },
+
   valueBoxLeft: {
     flexDirection: "row",
     justifyContent: "flex-start",
