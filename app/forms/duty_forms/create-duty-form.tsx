@@ -1,7 +1,9 @@
 import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
 import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/form/types";
 import { FormInput } from "@/components/FormInput";
+import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelectV2 } from "@/components/FormSelectV2";
+import { FormSelectV2WithFullscreenModal } from "@/components/FormSelectV2WithFullscreenModal";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
@@ -14,7 +16,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -172,12 +174,13 @@ export default function CreateDutyForm() {
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <FormSelectV2
+          <FormSelectV2WithFullscreenModal
             useControllerProps={{ control: control, name: "dutyCalendarId" }}
             options={dutyCalendarOpts}
             onSelect={(opt) => {
               getDutyCalendarDetail(opt.value as number);
             }}
+            modalChildren={<SelectDutyCalendarModalChildren />}
             label="Chọn ngày trực"
             required
             placeholder="Chọn ngày trong danh sách"
@@ -244,6 +247,62 @@ export default function CreateDutyForm() {
   );
 }
 
+type SelectDutyCalendarModalChildrenProps = {};
+type TFilterFields = {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+};
+const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenProps> = () => {
+  const defaultFieldValues: TFilterFields = getDefaultDateRange();
+
+  const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
+  const { session } = useSession();
+
+  const { handleSubmit, control } = useForm<TFilterFields>({ defaultValues: defaultFieldValues });
+
+  const onApplyFilter = async (fieldValues: TFilterFields) => {
+    fetchDutyCalendars(fieldValues);
+  };
+
+  const fetchDutyCalendars = useCallback(
+    async (fieldValues: TFilterFields) => {
+      const calendarFilterParams: TDutyCalendarFilterParams = {
+        startDate: moment(fieldValues.startDate).format("YYYY-MM-DD"),
+        endDate: moment(fieldValues.endDate).format("YYYY-MM-DD"),
+      };
+      const responseJson = await fetchListDutyCalendarByDateRange(session, calendarFilterParams);
+
+      if (responseJson.statusCode === 200) {
+        const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
+        setDutyCalendars(dutyCalendarsSorted);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    },
+    [session]
+  );
+
+  useEffect(() => {
+    fetchDutyCalendars(defaultFieldValues);
+  }, []);
+
+  return (
+    <View>
+      <ScrollView>
+        <FormPickDate useControllerProps={{ control: control, name: "startDate" }} />
+        <FormPickDate useControllerProps={{ control: control, name: "endDate" }} />
+        <TouchableOpacity style={styles.button} onPress={handleSubmit(onApplyFilter)}>
+          <NunitoText type="body3" style={{ color: "white" }}>
+            Chọn
+          </NunitoText>
+        </TouchableOpacity>
+
+        <NunitoText style={{ color: "black" }}>{JSON.stringify(dutyCalendars)}</NunitoText>
+      </ScrollView>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -292,4 +351,14 @@ function filterDutyCalendarsInRange(dutyCalendars: TDutyCalendar[]): TDutyCalend
   const dateRange = { start: nextWeekMonday, end: nextWeekSunday };
   const dutyCalendarsInRange = dutyCalendars.filter((hol) => hol.date >= dateRange.start && hol.date <= dateRange.end);
   return dutyCalendarsInRange;
+}
+
+function getDefaultDateRange(): TFilterFields {
+  // Calculate next week's Monday and Sunday
+  const nextWeekMonday = moment().startOf("isoWeek").add(7, "days").format("YYYY-MM-DD");
+  const nextWeekSunday = moment().startOf("isoWeek").add(13, "days").format("YYYY-MM-DD");
+
+  const dateRange: TFilterFields = { startDate: new Date(nextWeekMonday), endDate: new Date(nextWeekSunday) };
+
+  return dateRange;
 }
