@@ -103,11 +103,7 @@ function RawFormSelectV2WithFullscreenModal<T extends FieldValues>({
             {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />}
           </View>
         </Pressable>
-        {openModal && (
-          <MyModalFullscreen onClose={onToggleOpenModal}>
-            {modalChildren}
-          </MyModalFullscreen>
-        )}
+        {openModal && <MyModalFullscreen onClose={onToggleOpenModal}>{modalChildren}</MyModalFullscreen>}
       </View>
     </View>
   );

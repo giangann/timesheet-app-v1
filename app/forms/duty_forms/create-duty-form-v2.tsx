@@ -1,5 +1,6 @@
 import { fetchListDutyCalendarByDateRange } from "@/api/form";
 import { TDutyCalendar, TDutyCalendarFilterParams } from "@/api/form/types";
+import { FormSelectFullscreenModal } from "@/components/FormSelectFullscreenModal";
 import { FormSelectV2WithFullscreenModal } from "@/components/FormSelectV2WithFullscreenModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
@@ -69,11 +70,7 @@ export default function CreateDutyForm() {
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <FormSelectV2WithFullscreenModal
-            useControllerProps={{ control: control, name: "dutyCalendarId" }}
-            options={dutyCalendarOpts}
-            leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
-          />
+          <FormSelectFullscreenModal leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />} />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
           <View style={styles.button}>
