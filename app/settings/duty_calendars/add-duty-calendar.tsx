@@ -105,7 +105,7 @@ export default function AddDutyCalendar() {
       const bodyData: CreateItem = {
         ...data,
         startTime: moment(data.startTime).format("HH:mm:ss"),
-        endTime: moment(data.startTime).format("HH:mm:ss"),
+        endTime: moment(data.endTime).format("HH:mm:ss"),
       };
       console.log("bodyData", bodyData);
 
