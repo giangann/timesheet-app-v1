@@ -1,5 +1,5 @@
-import { fetchListDutyCalendarByDateRange } from "@/api/form";
-import { TDutyCalendar, TDutyCalendarFilterParams } from "@/api/form/types";
+import { createDutyForm, fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
+import { TDutyCalendar, TDutyCalendarFilterParams, TDutyFormCreate, TUserApprove } from "@/api/form/types";
 import { fetchAllTeams, fetchListUserOfTeam } from "@/api/team";
 import { TTeam, TTeamUser } from "@/api/team/type";
 import { FormPickDate } from "@/components/FormPickDate";
@@ -9,9 +9,11 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { sortByDate } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,28 +21,82 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
 
-type CreateItemForm = {
-  dutyCalendarId: number;
-  userIdentifyCard: string;
-  userApproveIdentifyCard: string;
-  attachFile?: File | null;
-  note?: string | null;
-};
-
 export default function CreateDutyForm() {
+  const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
+  const [selectedCalendarInfo, setSelectedCalendarInfo] = useState<TDutyCalendar | null>(null);
   const { session, userInfo } = useSession();
-
+  const router = useRouter();
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<CreateItemForm>({
+  } = useForm<TDutyFormCreate>({
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
 
-  const onCreate = async (fieldValues: CreateItemForm) => {
-    console.log("fieldValues", fieldValues);
+  const userApproveOpts = useMemo(() => userApproves.map((user) => ({ value: user.identifyCard, label: user.name })), [userApproves]);
+
+  const onCalendarSelect = async (calendarId: TDutyFormCreate["dutyCalendarId"]) => {
+    try {
+      const responseJson = await fetchDutyCalendarDetail(session, calendarId);
+
+      if (responseJson.statusCode === 200) {
+        setSelectedCalendarInfo(responseJson.data.dutyCalendar);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
   };
+
+  const onCreate = async (fieldValues: TDutyFormCreate) => {
+    try {
+      const requiredValues = pickProperties(fieldValues, ["dutyCalendarId", "userApproveIdentifyCard", "userApproveIdentifyCard"]);
+      if (hasNullishValue(requiredValues)) {
+        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+        return;
+      }
+
+      const formData = new FormData();
+      Object.entries(fieldValues).forEach(([k, v]) => {
+        if (v !== null && v !== undefined) {
+          if (typeof v === "number") formData.append(k, v.toString());
+          else if (v instanceof Date) {
+            const formattedDate = v.toISOString().slice(0, 19); // 'yyyy-MM-ddTHH:mm:ss'<=>(2024-09-11T23:25:00) if dont slice the format be like: '2024-09-11T23:25:00.000Z'
+            formData.append(k, formattedDate);
+          } else formData.append(k, v as File);
+        }
+      });
+
+      const responseJson = await createDutyForm(session, formData);
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+        router.back();
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  };
+
+  const fetchUserApproves = async () => {
+    const responseJson = await fetchListUserByRole(session, ROLE_CODE.TEAM_DIRECTOR);
+
+    if (responseJson.statusCode === 200) {
+      setUserApproves(responseJson.data.users);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserApproves();
+    }, [])
+  );
 
   return (
     <KeyboardAwareScrollView>
@@ -48,17 +104,27 @@ export default function CreateDutyForm() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
             <FormSelectFullscreenModal
-              label="Nhân viên"
-              placeholder="Chọn nhân viên (bỏ trống để tự tạo đơn cho bản thân)"
               useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
               modalChildren={<SelectUserModalChildren />}
+              label="Nhân viên"
+              placeholder="Chọn nhân viên (bỏ trống để tự tạo đơn cho bản thân)"
               leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
             />
           )}
-          <FormSelectFullscreenModal
+          <FormSelectFullscreenModal<TDutyFormCreate, "dutyCalendarId">
             useControllerProps={{ control: control, name: "dutyCalendarId" }}
             modalChildren={<SelectDutyCalendarModalChildren />}
+            onSelect={onCalendarSelect} // Now onSelect will infer correctly
             leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+          />
+          <NunitoText>{JSON.stringify(selectedCalendarInfo)}</NunitoText>
+          <FormSelectV2
+            useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+            options={userApproveOpts}
+            label="Lãnh đạo phê duyệt"
+            required
+            placeholder="Chọn lãnh đạo phê duyệt"
+            leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
           />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
@@ -87,7 +153,7 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
 
   const { handleSubmit, control } = useForm<TFilterFields>({ defaultValues: defaultFieldValues });
 
-  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<CreateItemForm, "dutyCalendarId">>;
+  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "dutyCalendarId">>;
 
   const onApplyFilter = async (fieldValues: TFilterFields) => {
     fetchDutyCalendars(fieldValues);
@@ -162,7 +228,7 @@ type TSelectOption = {
 };
 const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({}) => {
   const { session } = useSession();
-  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<CreateItemForm, "userIdentifyCard">>;
+  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "userIdentifyCard">>;
   const [teams, setTeams] = useState<TTeam[]>([]);
   const [teamUsers, setTeamUsers] = useState<TTeamUser[]>([]);
 

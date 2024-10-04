@@ -127,7 +127,13 @@ export type TDutyFormDetail = {
     roleCode: ROLE_CODE;
   }[];
 };
-
+export type TDutyFormCreate = {
+  dutyCalendarId: number;
+  userIdentifyCard: string;
+  userApproveIdentifyCard: string;
+  attachFile?: File | null;
+  note?: string | null;
+};
 export type TDutyFormCreateNoti = {
   message: string;
   obj: {

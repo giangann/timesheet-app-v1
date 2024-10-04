@@ -14,7 +14,7 @@ export const FormSelectContext = createContext<FormSelectContextProps<any>>({
   onSelectOption: () => {},
   fieldValue: "", // or provide an appropriate default value based on your use case
 });
-type Props<T extends FieldValues> = {
+type Props<T extends FieldValues, K extends keyof T> = {
   modalChildren?: React.ReactNode;
   label?: string;
   placeholder?: string;
@@ -22,11 +22,11 @@ type Props<T extends FieldValues> = {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   disabled?: boolean;
-  onSelect?: (newValue: PathValue<T, Path<T>>) => void;
+  onSelect?: (newValue: T[K]) => void; // This ensures the newValue matches the field type
 } & {
   useControllerProps: UseControllerProps<T>;
 };
-function RawFormSelectFullscreenModal<T extends FieldValues>({
+function RawFormSelectFullscreenModal<T extends FieldValues, K extends keyof T>({
   useControllerProps,
   onSelect,
   modalChildren,
@@ -36,7 +36,7 @@ function RawFormSelectFullscreenModal<T extends FieldValues>({
   disabled,
   leftIcon = <Entypo name="list" size={18} color={Colors.light.inputIconNone} />,
   rightIcon,
-}: Props<T>) {
+}: Props<T, K>) {
   const [openModal, setOpenModal] = useState(false);
   const { field } = useController(useControllerProps);
   const { value: fieldValue, onChange } = field;
