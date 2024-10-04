@@ -5,6 +5,7 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
+import { getDayOfWeekShortNameInVietnamese, isWeekend } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -85,16 +86,40 @@ export default function AddDutyCalendar() {
   const renderHolidayInfo = useCallback(
     (dateString: string): React.ReactNode => {
       const holiday = holidaysMap[dateString];
-      if (!holiday) return null;
-
-      const holidaySalaryCoefTypeId = holiday.salaryCoefficientTypeId;
+      const isDateWeekend = isWeekend(dateString);
+      const holidaySalaryCoefTypeId = holiday?.salaryCoefficientTypeId;
       const holidaySalaryCoefType = salaryCoefTypesMap[holidaySalaryCoefTypeId];
 
       return (
-        <View>
-          {holiday && <NunitoText>{holiday?.name ?? ""}</NunitoText>}
-          {holidaySalaryCoefType && <NunitoText>{`${holidaySalaryCoefType?.name}-${holidaySalaryCoefType?.coefficient.toFixed(2)}`}</NunitoText>}
-        </View>
+        <>
+          {/* 1 */}
+          <View style={styles.holidayInfo}>
+            <NunitoText lightColor="black" darkColor="black" type="body2">{`${moment(dateString).format(
+              "DD/MM/YYYY"
+            )} (${getDayOfWeekShortNameInVietnamese(dateString)})`}</NunitoText>
+            {!holiday ? (
+              isDateWeekend ? (
+                <NunitoText lightColor="black" darkColor="black" type="body2">
+                  Ngày cuối tuần
+                </NunitoText>
+              ) : (
+                <NunitoText lightColor="black" darkColor="black" type="body2">
+                  Ngày thường
+                </NunitoText>
+              )
+            ) : null}
+            {!holiday && <NunitoText lightColor="black" darkColor="black">{`__`}</NunitoText>}
+            {holiday && (
+              <>
+                <NunitoText lightColor="black" darkColor="black">{`${holiday.name}`}</NunitoText>
+                <NunitoText lightColor="black" darkColor="black" type="body3">{`${
+                  holidaySalaryCoefType?.name
+                } (x${holidaySalaryCoefType?.coefficient.toFixed(2)})`}</NunitoText>
+              </>
+            )}
+          </View>
+         
+        </>
       );
     },
     [holidaysMap, salaryCoefTypesMap]
@@ -295,6 +320,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+  },
+  holidayInfo: {
+    gap: 8,
+
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "black",
   },
 });
 

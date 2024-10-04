@@ -3,7 +3,7 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import moment from "moment";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle, TouchableOpacity } from "react-native";
+import { ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle, TouchableOpacity, ScrollView } from "react-native";
 import { Calendar, CalendarProps, DateData } from "react-native-calendars";
 import { MyModalFullscreen } from "./MyModalFullscreen";
 import { NunitoText } from "./text/NunitoText";
@@ -30,6 +30,8 @@ type Props<T extends FieldValues> = {
 };
 
 const INITIAL_DATE = moment(Date.now()).format("YYYY-MM-DD");
+const DEFAULT_SELECTED_COLOR = "#00adf5";
+
 function RawFormPickDateFullscreenModal<T extends FieldValues>({
   label,
   placeholder,
@@ -43,11 +45,11 @@ function RawFormPickDateFullscreenModal<T extends FieldValues>({
   rnCalendarProps,
   renderDateInfo,
 }: Props<T>) {
-  const [openModal, setOpenModal] = useState(false);
-  const [dateString, setDateString] = useState<string>(INITIAL_DATE);
-
   const { field } = useController(useControllerProps);
   const { value: fieldValue, onChange } = field;
+  const [openModal, setOpenModal] = useState(false);
+
+  const [dateString, setDateString] = useState<string>(fieldValue ?? INITIAL_DATE);
 
   const labelDisplay = useMemo(() => (fieldValue ? moment(fieldValue).format("DD/MM/YYYY") : null), [fieldValue]);
 
@@ -55,6 +57,19 @@ function RawFormPickDateFullscreenModal<T extends FieldValues>({
   if (disabled) showChooseValueBoxStyle = styles.showChooseValueBoxDisabled;
   if (!disabled && !openModal) showChooseValueBoxStyle = styles.showChooseValueBox;
   if (!disabled && openModal) showChooseValueBoxStyle = styles.showChooseValueBoxFocus;
+
+  const mergedMarkedDates = useMemo(() => {
+    const parentMarkedDates = rnCalendarProps?.markedDates || {};
+    return {
+      ...parentMarkedDates,
+      [dateString]: {
+        ...(parentMarkedDates[dateString] || {}), // Keep parent's marked state if it exists
+        selected: true, // Highlight the selected date
+        selectedColor: DEFAULT_SELECTED_COLOR, // Apply background color for selected date
+        marked: parentMarkedDates[dateString]?.marked || false, // Preserve marked if present from parent
+      },
+    };
+  }, [rnCalendarProps, dateString]);
 
   const onToggleOpenModal = useCallback(() => setOpenModal(!openModal), [openModal]);
 
@@ -105,16 +120,20 @@ function RawFormPickDateFullscreenModal<T extends FieldValues>({
           </View>
         </Pressable>
         {openModal && (
-          <MyModalFullscreen onClose={onToggleOpenModal}>
-            <Delayed>
-              <Calendar onDayPress={onDayPressHandler} {...rnCalendarProps} />
-            </Delayed>
-            {renderDateInfo && renderDateInfo(dateString)}
-            <TouchableOpacity style={styles.button} onPress={onDaySelect}>
-              <NunitoText type="body3" style={{ color: "white" }}>
-                Chọn
-              </NunitoText>
-            </TouchableOpacity>
+          <MyModalFullscreen title={placeholder} onClose={onToggleOpenModal}>
+            <View style={styles.modalChildren}>
+              <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Delayed>
+                  <Calendar onDayPress={onDayPressHandler} {...rnCalendarProps} markedDates={mergedMarkedDates} current={dateString} />
+                </Delayed>
+                {renderDateInfo && renderDateInfo(dateString)}
+              </ScrollView>
+              <TouchableOpacity style={styles.button} onPress={onDaySelect}>
+                <NunitoText type="body3" style={{ color: "white" }}>
+                  Chọn
+                </NunitoText>
+              </TouchableOpacity>
+            </View>
           </MyModalFullscreen>
         )}
       </View>
@@ -176,5 +195,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  modalChildren: {
+    position: "relative",
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+    gap: 20,
   },
 });

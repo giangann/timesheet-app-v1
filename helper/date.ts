@@ -248,3 +248,12 @@ export function formatDateToLocalString(date: Date): string {
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
+
+export function isWeekend(dateString: string): boolean {
+  const date = moment(dateString, "YYYY-MM-DD");
+
+  // Check if the day is Saturday (6) or Sunday (0)
+  const dayOfWeek = date.day();
+
+  return dayOfWeek === 6 || dayOfWeek === 0;
+}
