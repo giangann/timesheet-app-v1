@@ -9,9 +9,10 @@ type Props = {
   children?: React.ReactNode;
   modalProps?: ModalProps;
   modalContainerStyles?: ViewStyle;
+  modalChildrenContainerStyles?: ViewStyle;
 };
 
-export function MyModalFullscreen({ title, onClose, children, modalProps, modalContainerStyles }: Props) {
+export function MyModalFullscreen({ title, onClose, children, modalProps, modalContainerStyles, modalChildrenContainerStyles }: Props) {
   return (
     <Modal {...modalProps} transparent={true} animationType="slide">
       <View style={styles.modalContainer}>
@@ -25,7 +26,7 @@ export function MyModalFullscreen({ title, onClose, children, modalProps, modalC
           </View>
         </View>
         {/* Content - Children */}
-        <View style={styles.childrenContainer}>{children}</View>
+        <View style={[styles.childrenContainer, modalChildrenContainerStyles]}>{children}</View>
       </View>
     </Modal>
   );

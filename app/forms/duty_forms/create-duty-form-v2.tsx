@@ -1,12 +1,12 @@
 import { createDutyForm, fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
-import { TDutyCalendar, TDutyCalendarFilterParams, TDutyFormCreate, TUserApprove } from "@/api/form/types";
+import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams, TDutyFormCreate, TUserApprove } from "@/api/form/types";
 import { fetchAllTeams, fetchListUserOfTeam } from "@/api/team";
 import { TTeam, TTeamUser } from "@/api/team/type";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelectContext, FormSelectContextProps, FormSelectFullscreenModal } from "@/components/FormSelectFullscreenModal";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import { NunitoText } from "@/components/text/NunitoText";
-import { Colors } from "@/constants/Colors";
+import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
@@ -17,13 +17,13 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Progress from "react-native-progress";
 
 export default function CreateDutyForm() {
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
-  const [selectedCalendarInfo, setSelectedCalendarInfo] = useState<TDutyCalendar | null>(null);
+  const [selectedCalendarInfo, setSelectedCalendarInfo] = useState<TDutyCalendarDetail | null>(null);
   const { session, userInfo } = useSession();
   const router = useRouter();
   const {
@@ -115,9 +115,12 @@ export default function CreateDutyForm() {
             useControllerProps={{ control: control, name: "dutyCalendarId" }}
             modalChildren={<SelectDutyCalendarModalChildren />}
             onSelect={onCalendarSelect} // Now onSelect will infer correctly
+            label={"Lịch trực"}
+            placeholder={"Chọn lịch trực"}
             leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
+            modalChildrenContainerStyles={{ paddingHorizontal: 0, paddingVertical: 0 }}
           />
-          <NunitoText>{JSON.stringify(selectedCalendarInfo)}</NunitoText>
+          <DutyCalendarInfo selectedDutyCalendar={selectedCalendarInfo} />
           <FormSelectV2
             useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
             options={userApproveOpts}
@@ -181,39 +184,62 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
     [session]
   );
 
-  const onOptionPress = (calendarId: number, label: string) => {
-    onSelectOption(calendarId, label);
-  };
-
   useEffect(() => {
     fetchDutyCalendars(defaultFieldValues);
   }, []);
 
   return (
-    <View>
-      <ScrollView>
-        <FormPickDate useControllerProps={{ control: control, name: "startDate" }} />
-        <FormPickDate useControllerProps={{ control: control, name: "endDate" }} />
-        <TouchableOpacity style={styles.button} onPress={handleSubmit(onApplyFilter)}>
-          <NunitoText type="body3" style={{ color: "white" }}>
-            Chọn
+    <View style={{ gap: 24 }}>
+      {/* Filter Box */}
+      <View style={styles.calendarFilterBox}>
+        <NunitoText lightColor="black" darkColor="black" type="body2">
+          Tìm kiếm trong khoảng thời gian
+        </NunitoText>
+        <View style={styles.dateRangeContainer}>
+          <View style={styles.dateRangeItem}>
+            <FormPickDate useControllerProps={{ control: control, name: "startDate" }} />
+          </View>
+          <View style={styles.dateRangeItem}>
+            <FormPickDate useControllerProps={{ control: control, name: "endDate" }} />
+          </View>
+        </View>
+        <TouchableOpacity style={styles.buttonOutlined} onPress={handleSubmit(onApplyFilter)}>
+          <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+            Tìm lịch trực
           </NunitoText>
         </TouchableOpacity>
+      </View>
 
-        <View style={{ gap: 4 }}>
-          {dutyCalendars.map((cal) => (
-            <View key={cal.dutyFormId} style={{ paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: "black" }}>
-              <TouchableOpacity onPress={() => onOptionPress(cal.dutyFormId, `${cal.date} - ${cal.dutyType}`)}>
-                <NunitoText>
-                  <NunitoText style={{ color: "black" }}>
-                    {cal.dutyFormId}-{cal.date}
-                  </NunitoText>
-                </NunitoText>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+      {/* List Options */}
+      <FlatList
+        contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
+        data={dutyCalendars}
+        renderItem={({ item }) => <CalendarItem calendar={item} onSelectOption={onSelectOption} />}
+        ListFooterComponent={<View style={{ height: 20 }} />}
+      />
+      {/* <TouchableOpacity style={styles.button} onPress={handleSubmit(onApplyFilter)}>
+        <NunitoText type="body3" style={{ color: "white" }}>
+          Chọn
+        </NunitoText>
+      </TouchableOpacity> */}
+    </View>
+  );
+};
+type CalendarItemProps = {
+  calendar: TDutyCalendar;
+  onSelectOption: (value: number, label: string) => void;
+};
+const CalendarItem: React.FC<CalendarItemProps> = ({ calendar, onSelectOption }) => {
+  return (
+    <View key={calendar.dutyFormId} style={styles.calendarItemBox}>
+      <TouchableOpacity onPress={() => onSelectOption(calendar.dutyFormId, `${calendar.date} - ${calendar.dutyType}`)}>
+        <NunitoText lightColor="black" darkColor="black" type="body2">
+          {moment(calendar.date).format("DD/MM/YYYY")}
+        </NunitoText>
+        <NunitoText lightColor="black" darkColor="black" type="body2">
+          {calendar.dutyType}
+        </NunitoText>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -298,6 +324,27 @@ const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({}) => 
     </View>
   );
 };
+type DutyCalendarInfoProps = {
+  selectedDutyCalendar: TDutyCalendarDetail | null;
+};
+export const DutyCalendarInfo: React.FC<DutyCalendarInfoProps> = ({ selectedDutyCalendar }) => {
+  return (
+    <>
+      {selectedDutyCalendar && (
+        <View style={styles.calendarInfoBox}>
+          <NunitoText type="body2">{selectedDutyCalendar.dutyType.name}</NunitoText>
+          <View style={styles.calendarInfo}>
+            <NunitoText type="body3">{`${
+              selectedDutyCalendar.salaryCoefficientType.name
+            } (x${selectedDutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}</NunitoText>
+            <NunitoText type="body3">{`${selectedDutyCalendar.startTime} - ${selectedDutyCalendar.endTime}`}</NunitoText>
+          </View>
+        </View>
+      )}
+    </>
+  );
+};
+
 function getDefaultDateRange(): TFilterFields {
   // Calculate next week's Monday and Sunday
   const nextWeekMonday = moment().startOf("isoWeek").add(7, "days").format("YYYY-MM-DD");
@@ -319,14 +366,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
   },
-  timeContainer: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  timeItem: {
-    flexBasis: 1,
-    flexGrow: 1,
-  },
   buttonContainer: {
     position: "absolute",
     bottom: 0,
@@ -334,6 +373,18 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 16,
     backgroundColor: "white", // Optional: To give the button a distinct background
+  },
+  buttonOutlined: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+
+    borderColor: "#0B3A82",
+    borderWidth: 1,
+    height: 44,
+    borderRadius: 4,
+
+    gap: 8,
   },
   button: {
     flexDirection: "row",
@@ -345,5 +396,40 @@ const styles = StyleSheet.create({
     borderRadius: 4,
 
     gap: 8,
+  },
+  calendarFilterBox: {
+    backgroundColor: "#EFF5FF",
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+  dateRangeContainer: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  dateRangeItem: {
+    flexGrow: 1,
+  },
+  filteredCalendarsScrollContent: {
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+  calendarItemBox: {
+    borderWidth: 1,
+    borderColor: `#000000${OPACITY_TO_HEX["50"]}`,
+    borderRadius: 4,
+
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  calendarInfoBox: {
+    backgroundColor: "#EFF5FF",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  calendarInfo: {
+    gap: 4,
   },
 });

@@ -16,13 +16,14 @@ export const FormSelectContext = createContext<FormSelectContextProps<any>>({
 });
 type Props<T extends FieldValues, K extends keyof T> = {
   modalChildren?: React.ReactNode;
+  modalChildrenContainerStyles?: ViewStyle;
+  onSelect?: (newValue: T[K]) => void; // This ensures the newValue matches the field type
   label?: string;
   placeholder?: string;
   required?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   disabled?: boolean;
-  onSelect?: (newValue: T[K]) => void; // This ensures the newValue matches the field type
 } & {
   useControllerProps: UseControllerProps<T>;
 };
@@ -30,6 +31,7 @@ function RawFormSelectFullscreenModal<T extends FieldValues, K extends keyof T>(
   useControllerProps,
   onSelect,
   modalChildren,
+  modalChildrenContainerStyles,
   label,
   placeholder,
   required,
@@ -40,7 +42,7 @@ function RawFormSelectFullscreenModal<T extends FieldValues, K extends keyof T>(
   const [openModal, setOpenModal] = useState(false);
   const { field } = useController(useControllerProps);
   const { value: fieldValue, onChange } = field;
-  const [labelOfSelectedValue, setLabelOfSelectedValue] = useState<string>(placeholder ?? "Chọn");
+  const [labelOfSelectedValue, setLabelOfSelectedValue] = useState<string | null>(null);
 
   const onToggleOpenModal = () => setOpenModal(!openModal);
 
@@ -89,14 +91,25 @@ function RawFormSelectFullscreenModal<T extends FieldValues, K extends keyof T>(
                 {leftIcon}
 
                 {/* label display */}
-                <NunitoText type="body3">{labelOfSelectedValue}</NunitoText>
+                {!labelOfSelectedValue && (
+                  <NunitoText type="body3" style={{ color: `#000000${OPACITY_TO_HEX["50"]}` }}>
+                    {placeholder ?? "Chọn"}
+                  </NunitoText>
+                )}
+                <NunitoText type="body3" style={{ color: "#000000" }}>
+                  {labelOfSelectedValue}
+                </NunitoText>
               </View>
 
               {/* right icon */}
               {rightIcon ?? <Entypo name={openModal ? "chevron-up" : "chevron-down"} size={18} color={Colors.light.inputIconNone} />}
             </View>
           </Pressable>
-          {openModal && <MyModalFullscreen onClose={onToggleOpenModal}>{modalChildren}</MyModalFullscreen>}
+          {openModal && (
+            <MyModalFullscreen onClose={onToggleOpenModal} title={placeholder} modalChildrenContainerStyles={modalChildrenContainerStyles}>
+              {modalChildren}
+            </MyModalFullscreen>
+          )}
         </View>
       </View>
     </FormSelectContext.Provider>
