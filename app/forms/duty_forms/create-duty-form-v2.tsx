@@ -12,6 +12,7 @@ import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { sortByDate } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
@@ -216,6 +217,7 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
         data={dutyCalendars}
         renderItem={({ item }) => <CalendarItem calendar={item} onSelectOption={onSelectOption} />}
         ListFooterComponent={<View style={{ height: 20 }} />}
+        ListEmptyComponent={<NoData message="Không có lịch trực" />}
       />
       {/* <TouchableOpacity style={styles.button} onPress={handleSubmit(onApplyFilter)}>
         <NunitoText type="body3" style={{ color: "white" }}>
