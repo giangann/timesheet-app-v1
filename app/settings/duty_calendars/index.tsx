@@ -1,4 +1,5 @@
 import { fetchListDutyCalendarByDateRange } from "@/api/setting";
+import { TDutyCalendar } from "@/api/setting/type";
 import FormPickDateRange from "@/components/FormPickDateRange";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -9,15 +10,9 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 
-type TDutyCalendar = {
-  dutyFormId: number;
-  date: string; // YYYY-MM-DD
-  dutyType: string;
-  dayOfWeek: string;
-};
 export default function DutyCalendarList() {
   const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
   const { session } = useSession();
@@ -41,9 +36,11 @@ export default function DutyCalendarList() {
   return (
     <View style={styles.container}>
       <ToolBar />
-      <ScrollView contentContainerStyle={styles.listBox}>
-        <List dutyCalendars={dutyCalendars} />
-      </ScrollView>
+      <FlatList
+        data={dutyCalendars}
+        renderItem={({ item }) => <Item calendar={item} />}
+        keyExtractor={(item) => item.dutyFormId.toString()}
+      />
     </View>
   );
 }
@@ -70,21 +67,12 @@ const ToolBar = () => {
   );
 };
 
-type ListProps = {
-  dutyCalendars: TDutyCalendar[];
-};
-const List: React.FC<ListProps> = ({ dutyCalendars }) => {
-  return (
-    <>
-      {dutyCalendars.map((dutyCalendar) => (
-        <Item key={dutyCalendar.dutyFormId} {...dutyCalendar} />
-      ))}
-    </>
-  );
-};
 
-type ItemProps = TDutyCalendar;
-const Item: React.FC<ItemProps> = ({ dutyFormId, date, dutyType, dayOfWeek }) => {
+type ItemProps = {
+  calendar: TDutyCalendar
+};
+const Item: React.FC<ItemProps> = ({ calendar }) => {
+  const { date, dutyType } = calendar
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
@@ -130,10 +118,6 @@ const styles = StyleSheet.create({
     gap: 4,
     flexDirection: "row",
   },
-  listBox: {
-    paddingBottom: 16,
-    gap: 20 * UNIT_DIMENSION,
-  },
   itemBox: {
     backgroundColor: `#0B3A82${OPACITY_TO_HEX["15"]}`,
     paddingHorizontal: 16 * UNIT_DIMENSION,
@@ -143,6 +127,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "flex-start",
+
+    marginBottom: 20,
   },
   itemBoxLeft: {
     flexBasis: "60%",
