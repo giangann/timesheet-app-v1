@@ -15,6 +15,8 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { formatDateToLocalString } from "@/helper/date";
+import { fetchListUserByRole } from "@/api/form";
+import { ROLE_CODE } from "@/constants/Misc";
 
 type CreateItemForm = {
   startDate: string | Date;
@@ -37,7 +39,7 @@ export default function CreateLeaveForm() {
   const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
 
-  const { session } = useSession();
+  const { session, userInfo } = useSession();
   const router = useRouter();
 
   const {
@@ -124,18 +126,7 @@ export default function CreateLeaveForm() {
   };
 
   const fetchUserApproves = async () => {
-    const token = `Bearer ${session}`;
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/users/list-user-by-role?role=TEAM_DIRECTOR";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
+    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });
 
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);

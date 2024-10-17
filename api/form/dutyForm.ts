@@ -84,24 +84,6 @@ export async function fetchDutyFormDetail(session: string, formId: number) {
   return responseJson;
 }
 
-export async function fetchListUserByRole(session: string | null | undefined, roleCode: ROLE_CODE) {
-  const token = `Bearer ${session}`;
-
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/users/list-user-by-role";
-  const queryString = `?role=${roleCode}`;
-  const url = `${baseUrl}${endpoint}${queryString}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json", Authorization: token },
-    credentials: "include",
-  });
-  const responseJson = await response.json();
-
-  return responseJson;
-}
-
 export async function createDutyForm(session: string | null | undefined, bodyFormData: FormData) {
   const token = `Bearer ${session}`;
 

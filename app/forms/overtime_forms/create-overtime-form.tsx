@@ -17,6 +17,8 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { fetchListUserByRole } from "@/api/form";
+import { ROLE_CODE } from "@/constants/Misc";
 
 type CreateItemForm = {
   date: Date | null;
@@ -51,7 +53,7 @@ export default function CreateOvertimeForm() {
   const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
 
-  const { session } = useSession();
+  const { session, userInfo } = useSession();
   const router = useRouter();
   const {
     control,
@@ -147,18 +149,7 @@ export default function CreateOvertimeForm() {
   );
 
   const fetchUserApproves = async () => {
-    const token = `Bearer ${session}`;
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/users/list-user-by-role?role=TEAM_DIRECTOR";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
+    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });
 
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);
@@ -207,7 +198,7 @@ export default function CreateOvertimeForm() {
             placeholder="Chọn loại ngoài giờ"
             leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
 
-            //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
+          //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
           />
           <FormSelectV2
             useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}

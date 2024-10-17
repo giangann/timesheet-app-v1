@@ -86,7 +86,7 @@ export default function CreateDutyForm() {
   };
 
   const fetchUserApproves = async () => {
-    const responseJson = await fetchListUserByRole(session, ROLE_CODE.TEAM_DIRECTOR);
+    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });
 
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);

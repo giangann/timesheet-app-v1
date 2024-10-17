@@ -13,4 +13,10 @@ export type TUserInfo = {
   phone: string;
   roleCode: ROLE_CODE;
   roleName: string;
+  team: {
+    id: number,
+    name: string,
+    code: string | null,
+    hotline: string | null
+  }
 };
