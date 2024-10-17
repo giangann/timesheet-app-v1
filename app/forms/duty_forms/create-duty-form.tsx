@@ -1,5 +1,7 @@
-import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
-import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/form/types";
+import { fetchListUserByRole } from "@/api/form";
+import {  } from "@/api/form/types";
+import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange } from "@/api/setting";
+import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/setting/type";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelectV2 } from "@/components/FormSelectV2";
@@ -155,7 +157,7 @@ export default function CreateDutyForm() {
   );
 
   const fetchUserApproves = async () => {
-    const responseJson = await fetchListUserByRole(session, ROLE_CODE.TEAM_DIRECTOR);
+    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });
 
     if (responseJson.statusCode === 200) {
       setUserApproves(responseJson.data.users);
