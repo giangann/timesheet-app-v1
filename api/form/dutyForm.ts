@@ -9,7 +9,7 @@ import { paramsObjectToQueryString } from "@/helper/common";
  * DUTY FORMS
  */
 export async function fetchMyDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/duty-forms/filter/user";
@@ -41,7 +41,7 @@ export async function fetchApproveDutyForms(
   pagiParams?: TPagiParams,
   filterParams?: TApproveDutyFormFilterParams
 ) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/duty-forms/filter/user-approve";
@@ -69,7 +69,7 @@ export async function fetchApproveDutyForms(
 }
 
 export async function fetchDutyFormDetail(session: string, formId: number) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/duty-forms/${formId}`;
@@ -86,7 +86,7 @@ export async function fetchDutyFormDetail(session: string, formId: number) {
 }
 
 export async function fetchListUserByRole(session: string | null | undefined, roleCode: ROLE_CODE) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/users/list-user-by-role";
@@ -104,7 +104,7 @@ export async function fetchListUserByRole(session: string | null | undefined, ro
 }
 
 export async function createDutyForm(session: string | null | undefined, bodyFormData: FormData) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/duty-forms";
@@ -129,7 +129,7 @@ export async function createDutyForm(session: string | null | undefined, bodyFor
  * DUTY CALENDARS
  */
 export async function fetchListDutyCalendarByDateRange(session: string | null | undefined, filterParams?: TDutyCalendarFilterParams) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/duty-calendars/get-calendar";
@@ -150,7 +150,7 @@ export async function fetchListDutyCalendarByDateRange(session: string | null | 
 }
 
 export async function fetchDutyCalendarDetail(session: string | null | undefined, calendarId: number) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/duty-calendars/${calendarId}`;

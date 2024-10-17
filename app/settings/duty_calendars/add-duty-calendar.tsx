@@ -134,7 +134,7 @@ export default function AddDutyCalendar() {
       };
       console.log("bodyData", bodyData);
 
-      const token = `Bearer ${session}` ?? "xxx";
+      const token = `Bearer ${session}`;
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = "/duty-calendars";
       const url = `${baseUrl}${endpoint}`;
@@ -160,7 +160,7 @@ export default function AddDutyCalendar() {
   }, []);
 
   const fetchHolidays = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const queryString = `?year=2024&sort=date,asc`;
@@ -188,7 +188,7 @@ export default function AddDutyCalendar() {
   );
 
   const fetchSalaryCoefTypes = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";
@@ -215,7 +215,7 @@ export default function AddDutyCalendar() {
   );
 
   const fetchDutyTypes = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/duty-types/all";

@@ -4,7 +4,7 @@ import { TApproveOvertimeFormFilterParams, TOvertimeFormFilterParams } from "./t
 import moment from "moment";
 
 export async function fetchMyOvertimeForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TOvertimeFormFilterParams) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/overtime-forms/filter/user";
@@ -36,7 +36,7 @@ export async function fetchApproveOvertimeForms(
   pagiParams?: TPagiParams,
   filterParams?: TApproveOvertimeFormFilterParams
 ) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/overtime-forms/filter/user-approve";
@@ -64,7 +64,7 @@ export async function fetchApproveOvertimeForms(
 }
 
 export async function fetchOvertimeFormDetail(session: string, formId: number) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/overtime-forms/${formId}`;

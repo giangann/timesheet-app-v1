@@ -1,7 +1,7 @@
 import moment from "moment";
 
 export const fetchTodayTimeKeeping = async (session: string | undefined | null) => {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
   const date = moment(Date.now()).format("YYYY-MM-DD");
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/timekeeping";

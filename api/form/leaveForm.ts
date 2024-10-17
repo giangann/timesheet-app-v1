@@ -4,7 +4,7 @@ import { TApproveLeaveFormFilterParams, TLeaveFormFilterParams } from "./types";
 import moment from "moment";
 
 export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/leave-forms/filter/user";
@@ -36,7 +36,7 @@ export async function fetchApproveLeaveForms(
   pagiParams?: TPagiParams,
   filterParams?: TApproveLeaveFormFilterParams
 ) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/leave-forms/filter/user-approve";
@@ -64,7 +64,7 @@ export async function fetchApproveLeaveForms(
 }
 
 export async function fetchLeaveFormDetail(session: string, formId: number) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/leave-forms/${formId}`;

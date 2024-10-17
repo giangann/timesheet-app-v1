@@ -1,7 +1,7 @@
 import { TChangePassword } from "./types";
 
 export async function fetchUserProfile(session: string) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/users/profile`;
@@ -18,7 +18,7 @@ export async function fetchUserProfile(session: string) {
 }
 
 export async function changePassword(session: string | null | undefined, bodyData: TChangePassword) {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = `/auth/change-password`;

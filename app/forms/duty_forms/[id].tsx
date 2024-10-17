@@ -66,7 +66,7 @@ export default function DetailForm() {
   const local = useLocalSearchParams();
   const formId = local.id;
   const fetchDutyFormDetail = async (formId: string) => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = `/duty-forms/${formId}`;

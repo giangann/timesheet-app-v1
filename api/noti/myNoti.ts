@@ -2,7 +2,7 @@ import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 
 export const fetchMyNotis = async (session: string | undefined | null, pagiParams?: TPagiParams) => {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/notifications";
 
@@ -23,7 +23,7 @@ export const fetchMyNotis = async (session: string | undefined | null, pagiParam
 };
 
 export const readNoti = async (session: string | undefined | null, notiId: number) => {
-  const token = `Bearer ${session}` ?? "xxx";
+  const token = `Bearer ${session}`;
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/notifications";
   const pathParams = `/${notiId}`;

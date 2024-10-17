@@ -43,7 +43,7 @@ export default function CreateHoliday() {
   }));
 
   const fetchSalaryCoefTypes = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";
@@ -73,7 +73,7 @@ export default function CreateHoliday() {
     const bodyData: CreateItem = { ...data, date: moment(data.date).format("YYYY-MM-DD") };
     console.log("data form", bodyData);
 
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/holidays";
     const url = `${baseUrl}${endpoint}`;

@@ -1,6 +1,6 @@
 
 export async function fetchSalaryCoefTypes(session: string | undefined | null) {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";

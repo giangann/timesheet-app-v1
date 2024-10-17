@@ -92,7 +92,7 @@ export default function CreateOvertimeForm() {
         }
       });
 
-      const token = `Bearer ${session}` ?? "xxx";
+      const token = `Bearer ${session}`;
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = "/overtime-forms";
       const url = `${baseUrl}${endpoint}`;
@@ -120,7 +120,7 @@ export default function CreateOvertimeForm() {
   };
 
   const fetchSalaryCoefTypes = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/salary-coefficient-types";
@@ -147,7 +147,7 @@ export default function CreateOvertimeForm() {
   );
 
   const fetchUserApproves = async () => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = "/users/list-user-by-role?role=TEAM_DIRECTOR";

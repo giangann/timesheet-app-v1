@@ -22,7 +22,7 @@ export const DownloadExcel: React.FC<Props> = ({ month, year, url, fileName, but
   const downloadFile = async () => {
     try {
       setIsSubmitting(true);
-      const token = `Bearer ${session}` ?? "xxx";
+      const token = `Bearer ${session}`;
 
       const response = await fetch(url, {
         method: "GET",

@@ -28,7 +28,7 @@ export default function DetailForm() {
         overtimeFormId: parseInt(formId),
         reason: "ok",
       };
-      const token = `Bearer ${session}` ?? "xxx";
+      const token = `Bearer ${session}`;
 
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = `/overtime-forms/approve`;
@@ -64,7 +64,7 @@ export default function DetailForm() {
         overtimeFormId: parseInt(formId),
         reason: "ok",
       };
-      const token = `Bearer ${session}` ?? "xxx";
+      const token = `Bearer ${session}`;
 
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
       const endpoint = `/overtime-forms/approve`;
@@ -95,7 +95,7 @@ export default function DetailForm() {
   }, [formId, form]);
 
   const fetchOvertimeFormDetail = async (formId: string) => {
-    const token = `Bearer ${session}` ?? "xxx";
+    const token = `Bearer ${session}`;
 
     const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
     const endpoint = `/overtime-forms/${formId}`;
