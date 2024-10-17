@@ -1,3 +1,4 @@
+import { fetchDutyTypes } from "@/api/setting";
 import FormPickDateRange from "@/components/FormPickDateRange";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -22,22 +23,8 @@ export default function DutyCalendarList() {
   const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
   const { session } = useSession();
 
-  const router = useRouter();
-
-  const fetchDutyTypes = async () => {
-    const token = `Bearer ${session}`;
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/duty-calendars/get-calendar";
-    const queryString = "?startDate=2024-05-07&endDate=2024-12-30";
-    const url = `${baseUrl}${endpoint}${queryString}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
+  const onFetchDutyTypes = async () => {
+    const responseJson = await fetchDutyTypes(session, { startDate: '2024-01-01', endDate: '2025-12-30' });
     if (responseJson.statusCode === 200) {
       const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
       setDutyCalendars(dutyCalendarsSorted);
@@ -48,7 +35,7 @@ export default function DutyCalendarList() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchDutyTypes();
+      onFetchDutyTypes();
     }, [])
   );
 
@@ -72,7 +59,7 @@ const ToolBar = () => {
 
       {/* Right: Filter and Create */}
       <View style={styles.toolbarRight}>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => { }}>
           <Image source={FilterIconImage} />
         </Pressable>
         <Pressable onPress={() => router.push("/settings/duty_calendars/add-duty-calendar")}>

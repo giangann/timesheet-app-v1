@@ -17,3 +17,8 @@ export type TSalaryCoefficientType = {
   name: string;
   coefficient: number;
 };
+
+export type TDutyTypeFilterParams = {
+  startDate: string,
+  endDate: string
+}
