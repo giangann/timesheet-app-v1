@@ -1,4 +1,4 @@
-import { fetchDutyTypes } from "@/api/setting";
+import { fetchListDutyCalendarByDateRange } from "@/api/setting";
 import FormPickDateRange from "@/components/FormPickDateRange";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -9,9 +9,8 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
-const FilterIconImage = require("@/assets/images/filter-icon.png");
 
 type TDutyCalendar = {
   dutyFormId: number;
@@ -23,8 +22,8 @@ export default function DutyCalendarList() {
   const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
   const { session } = useSession();
 
-  const onFetchDutyTypes = async () => {
-    const responseJson = await fetchDutyTypes(session, { startDate: '2024-01-01', endDate: '2025-12-30' });
+  const onFetchDutyCalendars = async () => {
+    const responseJson = await fetchListDutyCalendarByDateRange(session, { startDate: '2024-01-01', endDate: '2025-12-30' });
     if (responseJson.statusCode === 200) {
       const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
       setDutyCalendars(dutyCalendarsSorted);
@@ -35,7 +34,7 @@ export default function DutyCalendarList() {
 
   useFocusEffect(
     useCallback(() => {
-      onFetchDutyTypes();
+      onFetchDutyCalendars();
     }, [])
   );
 
@@ -54,14 +53,15 @@ const ToolBar = () => {
     <View style={styles.toolbar}>
       {/* Left: PickDateRange */}
       <View>
-        <FormPickDateRange />
+        <TouchableOpacity>
+          <View style={styles.dateRangeFilter}>
+            <NunitoText type="body3" style={{ color: "#0B3A82" }}>01/01/2024 - 30/12/2025</NunitoText>
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Right: Filter and Create */}
       <View style={styles.toolbarRight}>
-        <Pressable onPress={() => { }}>
-          <Image source={FilterIconImage} />
-        </Pressable>
         <Pressable onPress={() => router.push("/settings/duty_calendars/add-duty-calendar")}>
           <Image source={AddNewIconImage} />
         </Pressable>
@@ -118,7 +118,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20 * UNIT_DIMENSION,
   },
-  toolbarRight: {
+  dateRangeFilter: {
+    borderWidth: 1,
+    borderColor: "#0B3A82",
+    borderRadius: 12,
+
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  }
+  , toolbarRight: {
     gap: 4,
     flexDirection: "row",
   },

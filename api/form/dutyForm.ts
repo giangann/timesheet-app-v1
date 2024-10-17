@@ -1,8 +1,7 @@
 import { DEFAULT_PAGI_PARAMS, ROLE_CODE } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
-import { TApproveDutyFormFilterParams, TDutyCalendarFilterParams, TDutyFormCreate, TDutyFormFilterParams } from "./types";
 import moment from "moment";
-import { paramsObjectToQueryString } from "@/helper/common";
+import { TApproveDutyFormFilterParams, TDutyFormFilterParams } from "./types";
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -119,50 +118,6 @@ export async function createDutyForm(session: string | null | undefined, bodyFor
     body: bodyFormData,
     credentials: "include",
   });
-  const responseJson = await response.json();
-
-  return responseJson;
-}
-
-///////////////////////////////////////////////////////////////////////////
-/**
- * DUTY CALENDARS
- */
-export async function fetchListDutyCalendarByDateRange(session: string | null | undefined, filterParams?: TDutyCalendarFilterParams) {
-  const token = `Bearer ${session}`;
-
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/duty-calendars/get-calendar";
-
-  const queryString = paramsObjectToQueryString(filterParams);
-  // const queryString = "?startDate=2024-05-07&endDate=2024-12-30";
-  const url = `${baseUrl}${endpoint}${queryString}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json", Authorization: token },
-    credentials: "include",
-  });
-
-  const responseJson = await response.json();
-
-  return responseJson;
-}
-
-export async function fetchDutyCalendarDetail(session: string | null | undefined, calendarId: number) {
-  const token = `Bearer ${session}`;
-
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = `/duty-calendars/${calendarId}`;
-
-  const url = `${baseUrl}${endpoint}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json", Authorization: token },
-    credentials: "include",
-  });
-
   const responseJson = await response.json();
 
   return responseJson;

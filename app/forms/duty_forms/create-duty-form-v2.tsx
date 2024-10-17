@@ -1,5 +1,7 @@
-import { createDutyForm, fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange, fetchListUserByRole } from "@/api/form";
-import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams, TDutyFormCreate, TUserApprove } from "@/api/form/types";
+import { createDutyForm, fetchListUserByRole } from "@/api/form";
+import { TDutyFormCreate, TUserApprove } from "@/api/form/types";
+import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange } from "@/api/setting";
+import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/setting/type";
 import { fetchAllTeams, fetchListUserOfTeam } from "@/api/team";
 import { TTeam, TTeamUser } from "@/api/team/type";
 import { FormPickDate } from "@/components/FormPickDate";
@@ -146,8 +148,8 @@ export default function CreateDutyForm() {
 
 type SelectDutyCalendarModalChildrenProps = {};
 type TFilterFields = {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+  startDate: Date;
+  endDate: Date;
 };
 const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenProps> = () => {
   const defaultFieldValues: TFilterFields = getDefaultDateRange();
@@ -254,7 +256,7 @@ type TSelectOption = {
   value: number;
   label: string;
 };
-const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({}) => {
+const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({ }) => {
   const { session } = useSession();
   const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "userIdentifyCard">>;
   const [teams, setTeams] = useState<TTeam[]>([]);
@@ -336,9 +338,8 @@ export const DutyCalendarInfo: React.FC<DutyCalendarInfoProps> = ({ selectedDuty
         <View style={styles.calendarInfoBox}>
           <NunitoText type="body2">{selectedDutyCalendar.dutyType.name}</NunitoText>
           <View style={styles.calendarInfo}>
-            <NunitoText type="body3">{`${
-              selectedDutyCalendar.salaryCoefficientType.name
-            } (x${selectedDutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}</NunitoText>
+            <NunitoText type="body3">{`${selectedDutyCalendar.salaryCoefficientType.name
+              } (x${selectedDutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}</NunitoText>
             <NunitoText type="body3">{`${selectedDutyCalendar.startTime} - ${selectedDutyCalendar.endTime}`}</NunitoText>
           </View>
         </View>
