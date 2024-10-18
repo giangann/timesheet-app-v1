@@ -125,7 +125,7 @@ export default function AppLayout() {
                 <Ionicons name="calendar" size={18} color={color} />
               </View>
             ),
-            title: "Bảng chấm công",
+            title: "Quản lý công - cá nhân",
           }}
         />
 
@@ -144,7 +144,7 @@ export default function AppLayout() {
                 <Ionicons name="today" size={18} color={color} />
               </View>
             ),
-            title: "Chấm công",
+            title: "Quản lý công - đơn vị",
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/timeKeeping",
           }}
         />

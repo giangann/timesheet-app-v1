@@ -26,6 +26,20 @@ export default function TimeKeeping() {
           </View>
         </Pressable>
 
+        <Pressable onPress={() => router.push("/time-keepings/team-owt")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <Image source={SettingTeamIconImage} />
+              </View>
+              <NunitoText type="body1">Bảng ngoài giờ đơn vị theo tháng (excel)</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Image source={GotoDetailIconImage} />
+            </View>
+          </View>
+        </Pressable>
+
         {/* Temporary comment, until api accept ARCHIVIST choose user to export file */}
         {/* <Pressable onPress={() => router.push("/time-keepings/emp-owt")}>
           <View style={styles.itemBox}>
@@ -41,19 +55,20 @@ export default function TimeKeeping() {
           </View>
         </Pressable> */}
 
-        <Pressable onPress={() => router.push("/time-keepings/team-owt")}>
+        <Pressable onPress={() => router.push("/time-keepings/team-timesheet")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
                 <Image source={SettingTeamIconImage} />
               </View>
-              <NunitoText type="body1">Ngoài giờ đơn vị</NunitoText>
+              <NunitoText type="body1">Bảng chấm công đơn vị theo tháng (excel)</NunitoText>
             </View>
             <View style={styles.chip}>
               <Image source={GotoDetailIconImage} />
             </View>
           </View>
         </Pressable>
+
       </ScrollView>
     </View>
   );

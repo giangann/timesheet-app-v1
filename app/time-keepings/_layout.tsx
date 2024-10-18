@@ -20,6 +20,7 @@ export default function TimeKeepingLayout() {
       <Stack.Screen name="today-time-keeping/index" options={{ title: "Chấm công hôm nay" }} />
       <Stack.Screen name="team-owt/index" options={{ title: "Ngoài giờ đơn vị" }} />
       <Stack.Screen name="emp-owt/index" options={{ title: "Ngoài giờ cá nhân" }} />
+      <Stack.Screen name="team-timesheet/index" options={{ title: "Bảng chấm công đơn vị" }} />
     </Stack>
   );
 }
