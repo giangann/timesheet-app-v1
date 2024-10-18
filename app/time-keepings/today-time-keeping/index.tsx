@@ -11,6 +11,7 @@ import { useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 
 type TWorkingType = {
   id: number;
@@ -39,6 +40,7 @@ export default function TodayTimeKeeping() {
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const disabledUpdate = editTimeKeepingMembers.length <= 0 || isSaving;
   const [isSelectAll, setIsSelectAll] = useState(false);
   const { session } = useSession();
@@ -176,12 +178,18 @@ export default function TodayTimeKeeping() {
   );
 
   const fetchTodayTk = async () => {
-    const responseJson = await fetchTodayTimeKeeping(session);
-    if (responseJson.statusCode === 200) {
-      setMemberList(responseJson.data.timeKeeping.users);
-    } else {
-      MyToast.error(responseJson.error);
+    setIsLoading(true)
+    try {
+      const responseJson = await fetchTodayTimeKeeping(session);
+      if (responseJson.statusCode === 200) {
+        setMemberList(responseJson.data.timeKeeping.users);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message)
     }
+    setIsLoading(false)
   };
 
   useFocusEffect(
@@ -238,11 +246,14 @@ export default function TodayTimeKeeping() {
       )}
 
       {/* member list */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {memberList.map((member, index) => (
-          <MemberItem key={index} updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} isSelectAll={isSelectAll} />
-        ))}
-      </ScrollView>
+      {isLoading && <SkeletonRectangleLoader />}
+      {!isLoading &&
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {memberList.map((member, index) => (
+            <MemberItem key={index} updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} isSelectAll={isSelectAll} />
+          ))}
+        </ScrollView>
+      }
 
       {/* action bar */}
       {isEdit && (
