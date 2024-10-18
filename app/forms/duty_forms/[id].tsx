@@ -112,7 +112,7 @@ export default function DetailForm() {
             />
 
             <Item title="Ghi chú" content={form.note} />
-            <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.code})`} />
+            <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.name})`} />
 
             {/* Attach Image */}
             <AttachImageFile path={form?.attachFile?.url} />
