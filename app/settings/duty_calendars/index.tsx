@@ -9,6 +9,8 @@ import { useSession } from "@/contexts/ctx";
 import { omitNullishValues } from "@/helper/common";
 import { getDayOfWeekShortNameInVietnamese, sortByDate } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { useFocusEffect, useRouter } from "expo-router";
@@ -20,6 +22,8 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function DutyCalendarList() {
   const [dutyCalendars, setDutyCalendars] = useState<TDutyCalendar[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
+
   const { session } = useSession();
   const filterParamsRef = useRef<TDutyCalendarFilterParams>(getDefaultDateRangeString())
 
@@ -32,6 +36,7 @@ export default function DutyCalendarList() {
   };
 
   const reFetchListCalendarWithFilter = async (fitlerParams: TDutyCalendarFilterParams) => {
+    setIsLoading(true)
     try {
       const responseJson = await fetchListDutyCalendarByDateRange(session, fitlerParams);
       if (responseJson.statusCode === 200) {
@@ -42,16 +47,25 @@ export default function DutyCalendarList() {
       }
     } catch (error: any) {
       MyToast.error(error.message);
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const onFetchDutyCalendars = async () => {
-    const responseJson = await fetchListDutyCalendarByDateRange(session, filterParamsRef.current);
-    if (responseJson.statusCode === 200) {
-      const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
-      setDutyCalendars(dutyCalendarsSorted);
-    } else {
-      MyToast.error(responseJson.error);
+    setIsLoading(true)
+    try {
+      const responseJson = await fetchListDutyCalendarByDateRange(session, filterParamsRef.current);
+      if (responseJson.statusCode === 200) {
+        const dutyCalendarsSorted = sortByDate<TDutyCalendar>(responseJson.data.dutyCalendar, "ASC");
+        setDutyCalendars(dutyCalendarsSorted);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message)
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -64,11 +78,15 @@ export default function DutyCalendarList() {
   return (
     <View style={styles.container}>
       <ToolBar filterParams={filterParamsRef.current} onFilterFieldsChange={onFilterFieldsChange} />
-      <FlatList
-        data={dutyCalendars}
-        renderItem={({ item }) => <Item calendar={item} />}
-        keyExtractor={(item) => item.dutyFormId.toString()}
-      />
+      {isLoading && <SkeletonRectangleLoader />}
+      {!isLoading &&
+        <FlatList
+          data={dutyCalendars}
+          renderItem={({ item }) => <Item calendar={item} />}
+          keyExtractor={(item) => item.dutyFormId.toString()}
+          ListEmptyComponent={<NoData />}
+        />
+      }
     </View>
   );
 }
@@ -256,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20 * UNIT_DIMENSION,
-    alignItems:'flex-start'
+    alignItems: 'flex-start'
   },
   dateRangeFilter: {
     borderWidth: 1,
@@ -269,7 +287,7 @@ const styles = StyleSheet.create({
   toolbarRight: {
     gap: 8,
     flexDirection: "row",
-    alignItems:'center'
+    alignItems: 'center'
   },
   itemBox: {
     backgroundColor: `#0B3A82${OPACITY_TO_HEX["15"]}`,
