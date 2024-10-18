@@ -25,8 +25,8 @@ export type TDutyCalendar = {
   dayOfWeek: string;
 };
 export type TDutyCalendarFilterParams = {
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 };
 export type TDutyCalendarDetail = {
   id: number;

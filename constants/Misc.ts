@@ -68,66 +68,8 @@ export const DEFAULT_PAGI_PARAMS: TPagiParams = {
   page: 0,
   size: 5,
 };
-//
 
-// const SAMPLE_RESPONSE_JSON = {
-//   data: {
-//     user: {
-//       address: "No add",
-//       email: "dmc@gmail.com",
-//       identifyCard: "000000001111",
-//       name: "Đặng Minh Chính",
-//       phone: "00000000000",
-//       roleCode: "TEAM_DIRECTOR",
-//       roleName: "Lãnh đạo phòng",
-//     },
-//   },
-//   status: "OK",
-//   statusCode: 200,
-//   timestamp: "2024-09-08T11:57:19.672520792",
-// };
-
-/**
- * 3. Api bảng chấm công
- * params:{
- *    month: string, (YYYY-MM)
- *    userIdentifyCard: string
- * }
- *
- * response trả về data có độ dài từ ngày đầu của tháng đến ngày hiện tại
- * VD: hôm nay: 13/09/2024 => data.timesheet.length = 13
- */
-// export type MonthTimesheet = {
-//   date: string; // (YYYY-MM-DD)
-//   workingTypeId: number | null; // 1 || 2 || null
-//   leaveFormId: number | null; // one of those: 1706:1702:1703:1708:1707:1705:1704:1803:1804:1802:1952:1953:1954 or null
-//   overtimeFormId: number | null; // one of those: 2:102 or null
-//   dutyFormId: number | null; // one of those: 254:304:352:353 or null
-// };
-// export type MonthTimesheetList = MonthTimesheet[];
-// 1. Leave
-// 1706:1702:1703:1708:1707:1705:1704:1803:1804:1802:1952:1953:1954
-
-// 2. OT
-// 2:102
-
-// 3. Duty
-// 254:304:352:353
-
-/**
-1-Cả công; 
-2-Nửa  công; 
-null-Không
-
-WK_TYPE: border color
-WkType 1: #067D4E
-WkType 2: #FF9C01
-WkType null: #F31121
-
-HAS_FORM: dot
-Has Leave Form: #AF32D0
-Has Duty/OT Form: #0B67CC
-*/
-
-export const _mockExcelDownloadLink =
-  "https://drive.usercontent.google.com/download?id=14XTWaLyXSwQHFLfvcE6NOAPs_397okz5&export=download&authuser=0&confirm=t&uuid=fd8dddb5-1899-4831-94a4-95a9b9cd1c35&at=AN_67v162qd6Nz2J5xwMQEZXu8hf:1727430176186";
+export const DEFAULT_DATE_RANGE_DUTY_CALENDAR = {
+  startDate: '2020-01-01',
+  endDate: '2030-12-31'
+}
