@@ -163,6 +163,23 @@ export type TApproveDutyFormFilterParams = {
   createdAt?: string;
 };
 
+export type TDutySuggestedUser = {
+  name: string,
+  id: number,
+  teamName: string,
+  roleName: string,
+  roleCode: string,
+  teamCode: string | null,
+  numOnDuty: number,
+  identifyCard: string,
+}
+
+export type TDutySuggestedUserFilterParams = {
+  startDate: string,
+  endDate: string,
+  date: string,
+  sort?: string
+}
 
 /*
 const sampleResponse = {

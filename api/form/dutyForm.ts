@@ -1,7 +1,8 @@
 import { DEFAULT_PAGI_PARAMS, ROLE_CODE } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import moment from "moment";
-import { TApproveDutyFormFilterParams, TDutyFormFilterParams } from "./types";
+import { TApproveDutyFormFilterParams, TDutyFormFilterParams, TDutySuggestedUserFilterParams } from "./types";
+import { paramsObjectToQueryString } from "@/helper/common";
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -98,6 +99,25 @@ export async function createDutyForm(session: string | null | undefined, bodyFor
       Authorization: token,
     }, // do not set content-type for formData, let browser do it automatically
     body: bodyFormData,
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
+export async function fetchDutySuggestedUsers(session: string | null | undefined, pagiParams: TPagiParams, filterParams: TDutySuggestedUserFilterParams) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/duty-forms/suggest-users";
+  const queryString = paramsObjectToQueryString({ ...filterParams, ...pagiParams })
+
+  const url = `${baseUrl}${endpoint}${queryString}`
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json", Authorization: token },
     credentials: "include",
   });
   const responseJson = await response.json();

@@ -23,6 +23,10 @@ export type TDutyCalendar = {
   date: string; // YYYY-MM-DD
   dutyType: string;
   dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  salaryCoefficientName: string;
+  salaryCoefficient: number
 };
 export type TDutyCalendarFilterParams = {
   startDate?: string;

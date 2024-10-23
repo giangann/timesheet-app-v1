@@ -1,9 +1,7 @@
-import { createDutyForm, fetchListUserByRole } from "@/api/form";
-import { TDutyFormCreate, TUserApprove } from "@/api/form/types";
+import { createDutyForm, fetchDutySuggestedUsers, fetchListUserByRole } from "@/api/form";
+import { TDutyFormCreate, TDutySuggestedUser, TDutySuggestedUserFilterParams, TUserApprove } from "@/api/form/types";
 import { fetchDutyCalendarDetail, fetchListDutyCalendarByDateRange } from "@/api/setting";
 import { TDutyCalendar, TDutyCalendarDetail, TDutyCalendarFilterParams } from "@/api/setting/type";
-import { fetchAllTeams, fetchListUserOfTeam } from "@/api/team";
-import { TTeam, TTeamUser } from "@/api/team/type";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormSelectContext, FormSelectContextProps, FormSelectFullscreenModal } from "@/components/FormSelectFullscreenModal";
@@ -11,16 +9,17 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
-import { ROLE_CODE } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
-import { sortByDate } from "@/helper/date";
+import { getDayOfWeekShortNameInVietnamese, sortByDate } from "@/helper/date";
+import { TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -35,6 +34,8 @@ export default function CreateDutyForm() {
     control,
     handleSubmit,
     formState: { isSubmitting },
+    resetField,
+    reset
   } = useForm<TDutyFormCreate>({
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
@@ -47,6 +48,8 @@ export default function CreateDutyForm() {
 
       if (responseJson.statusCode === 200) {
         setSelectedCalendarInfo(responseJson.data.dutyCalendar);
+
+        reset({ userIdentifyCard: undefined })
       } else {
         MyToast.error(responseJson.error);
       }
@@ -115,15 +118,18 @@ export default function CreateDutyForm() {
             placeholder={"Chọn lịch trực"}
             leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
             modalChildrenContainerStyles={{ paddingHorizontal: 0, paddingVertical: 0 }}
+            required
           />
           <DutyCalendarInfo selectedDutyCalendar={selectedCalendarInfo} />
 
           {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
             <FormSelectFullscreenModal
+              disabled={!Boolean(selectedCalendarInfo)}
               useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-              modalChildren={<SelectUserModalChildren />}
+              modalChildren={<SelectUserModalChildren calendarDate={selectedCalendarInfo?.date} />}
+              modalChildrenContainerStyles={{ paddingHorizontal: 0, paddingVertical: 0 }}
               label="Nhân viên"
-              placeholder="Chọn nhân viên (bỏ trống để tự tạo đơn cho bản thân)"
+              placeholder="Chọn nhân viên (bỏ trống để tạo cho mình)"
               leftIcon={<FontAwesome name="list-alt" size={18} color={Colors.light.inputIconNone} />}
             />
           )}
@@ -141,6 +147,7 @@ export default function CreateDutyForm() {
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
 
         </ScrollView>
+
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
           <View style={styles.button}>
             {isSubmitting && <Progress.Circle indeterminate size={14} />}
@@ -167,7 +174,7 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
 
   const { handleSubmit, control } = useForm<TFilterFields>({ defaultValues: defaultFieldValues });
 
-  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "dutyCalendarId">>;
+  const { onSelectOption } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "dutyCalendarId">>;
 
   const onApplyFilter = async (fieldValues: TFilterFields) => {
     fetchDutyCalendars(fieldValues);
@@ -200,7 +207,7 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
   }, []);
 
   return (
-    <View style={{ gap: 24 }}>
+    <View style={styles.modalContent}>
       {/* Filter Box */}
       <View style={styles.calendarFilterBox}>
         <NunitoText lightColor="black" darkColor="black" type="body2">
@@ -223,17 +230,11 @@ const SelectDutyCalendarModalChildren: React.FC<SelectDutyCalendarModalChildrenP
 
       {/* List Options */}
       <FlatList
-        contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 20, gap: 10, paddingVertical: 24 }}
         data={dutyCalendars}
         renderItem={({ item }) => <CalendarItem calendar={item} onSelectOption={onSelectOption} />}
-        ListFooterComponent={<View style={{ height: 20 }} />}
         ListEmptyComponent={<NoData message="Không có lịch trực" />}
       />
-      {/* <TouchableOpacity style={styles.button} onPress={handleSubmit(onApplyFilter)}>
-        <NunitoText type="body3" style={{ color: "white" }}>
-          Chọn
-        </NunitoText>
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -243,60 +244,46 @@ type CalendarItemProps = {
 };
 const CalendarItem: React.FC<CalendarItemProps> = ({ calendar, onSelectOption }) => {
   return (
-    <View key={calendar.dutyFormId} style={styles.calendarItemBox}>
-      <TouchableOpacity onPress={() => onSelectOption(calendar.dutyFormId, `${calendar.date} - ${calendar.dutyType}`)}>
+    <TouchableOpacity onPress={() => onSelectOption(calendar.dutyFormId, `${calendar.date} - ${calendar.dutyType}`)}>
+      <View key={calendar.dutyFormId} style={styles.calendarItemBox}>
         <NunitoText lightColor="black" darkColor="black" type="body2">
-          {moment(calendar.date).format("DD/MM/YYYY")}
+          {`${moment(calendar.date).format("DD/MM/YYYY")} (${getDayOfWeekShortNameInVietnamese(calendar.date)})`}
         </NunitoText>
-        <NunitoText lightColor="black" darkColor="black" type="body2">
-          {calendar.dutyType}
-        </NunitoText>
-      </TouchableOpacity>
-    </View>
+
+        <View style={{ gap: 4 }}>
+          <NunitoText lightColor="black" darkColor="black" type="body2">
+            {calendar.dutyType}
+          </NunitoText>
+          <NunitoText lightColor="black" darkColor="black" type="body3">
+            {`${calendar.salaryCoefficientName} (${calendar.salaryCoefficient.toFixed(2)})`}
+          </NunitoText>
+          <NunitoText lightColor="black" darkColor="black" type="body3">
+            {`${calendar.startTime} - ${calendar.endTime}`}
+          </NunitoText>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
-type SelectUserModalChildrenProps = {};
-type TSearchFields = {
-  teamId: string | undefined;
+type SelectUserModalChildrenProps = {
+  calendarDate: string | undefined
 };
-type TSelectOption = {
-  value: number;
-  label: string;
-};
-const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({ }) => {
+
+const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({ calendarDate }) => {
   const { session } = useSession();
-  const { onSelectOption, fieldValue } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "userIdentifyCard">>;
-  const [teams, setTeams] = useState<TTeam[]>([]);
-  const [teamUsers, setTeamUsers] = useState<TTeamUser[]>([]);
+  const [dutySuggestedUsers, setDutySuggestedUsers] = useState<TDutySuggestedUser[]>([]);
+  const pagiParamsRef = useRef<TPagiParams>({ size: 100, page: 0 })
+  const filterParamsRef = useRef<TDutySuggestedUserFilterParams>({ date: calendarDate ?? moment(Date.now()).format('YYYY-MM-DD'), startDate: '2024-01-01', endDate: '2024-12-30', sort: 'numOnDuty,asc' })
+  const { onSelectOption } = useContext(FormSelectContext) as FormSelectContextProps<Pick<TDutyFormCreate, "userIdentifyCard">>;
 
-  const teamSelectOpts: TSelectOption[] = useMemo(() => teams.map((team) => ({ value: team.id, label: team.name })), [teams]);
 
-  const { control, handleSubmit } = useForm<TSearchFields>();
-
-  const onFetchAllTeams = useCallback(async () => {
-    try {
-      const responseJson = await fetchAllTeams(session);
-      if (responseJson.statusCode === 200) {
-        setTeams(responseJson.data.teams);
-      } else {
-        MyToast.error(responseJson.error);
-      }
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    onFetchAllTeams();
-  }, []);
-
-  const onFetchListUserOfTeam = useCallback(
-    async (teamId: number) => {
+  const onFetchDutySuggestedUsers = useCallback(
+    async (pagiParams: TPagiParams, filterParams: TDutySuggestedUserFilterParams) => {
       try {
-        const responseJson = await fetchListUserOfTeam(session, teamId);
+        const responseJson = await fetchDutySuggestedUsers(session, pagiParams, filterParams);
         if (responseJson.statusCode === 200) {
-          setTeamUsers(responseJson.data.users);
+          setDutySuggestedUsers(responseJson.data.users);
         } else {
           MyToast.error(responseJson.error);
         }
@@ -307,35 +294,101 @@ const SelectUserModalChildren: React.FC<SelectUserModalChildrenProps> = ({ }) =>
     [session]
   );
 
-  return (
-    <View>
-      <ScrollView>
-        <FormSelectV2
-          useControllerProps={{ control: control, name: "teamId" }}
-          options={teamSelectOpts}
-          onSelect={({ value }) => onFetchListUserOfTeam(value as number)}
-          label="Phòng ban"
-          placeholder="Chọn phòng ban"
-        />
+  const onFilterParamsChange = (newFilterParams: TDutySuggestedUserFilterParams) => {
+    filterParamsRef.current = { ...newFilterParams }
+    onFetchDutySuggestedUsers(pagiParamsRef.current, filterParamsRef.current)
+  }
 
-        <NunitoText>List Users</NunitoText>
-        <View style={{ gap: 4 }}>
-          {teamUsers.map((user) => (
-            <View key={user.identifyCard} style={{ paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: "black" }}>
-              <TouchableOpacity onPress={() => onSelectOption(user.identifyCard, `${user.name} - ${user.roleName}`)}>
-                <NunitoText>
-                  <NunitoText style={{ color: "black" }}>
-                    {user.name}-{user.roleName}
-                  </NunitoText>
-                </NunitoText>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+  useEffect(() => {
+    onFetchDutySuggestedUsers(pagiParamsRef.current, filterParamsRef.current)
+  }, [])
+
+  return (
+    <View style={styles.modalContent}>
+      {/* Sorting container */}
+      <FilterForm calendarDate={calendarDate} onFilterParamsChange={onFilterParamsChange} filterParams={filterParamsRef.current} />
+
+      {/* User list */}
+      <FlatList
+        // ListHeaderComponent={<FilterForm calendarDate={calendarDate} onFilterParamsChange={onFilterParamsChange} filterParams={filterParamsRef.current} />}
+        data={dutySuggestedUsers}
+        renderItem={({ item }) => <SuggestedUserItem user={item} onSelectOption={onSelectOption} />}
+        ListEmptyComponent={<NoData />}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 24, gap: 10 }}
+      />
     </View>
   );
 };
+
+// props: onFetchSuggestedUser
+type FilterFormProps = {
+  onFilterParamsChange: (newFilterParams: TDutySuggestedUserFilterParams) => void,
+  filterParams: TDutySuggestedUserFilterParams
+} & SelectUserModalChildrenProps
+type TDutySuggestedUserFilterFormFields = {
+  date: string,
+  startDate: Date,
+  endDate: Date,
+  sort?: string,
+}
+const FilterForm: React.FC<FilterFormProps> = ({ calendarDate, onFilterParamsChange, filterParams }) => {
+  const { control, handleSubmit, getValues } = useForm<TDutySuggestedUserFilterFormFields>({ defaultValues: { date: calendarDate, startDate: new Date(filterParams.startDate), endDate: new Date(filterParams.endDate), sort: filterParams.sort } });
+
+  const onSubmit = (fieldValues: TDutySuggestedUserFilterFormFields) => {
+    const newParams: TDutySuggestedUserFilterParams = {
+      startDate: moment(fieldValues.startDate).format('YYYY-MM-DD'),
+      endDate: moment(fieldValues.endDate).format('YYYY-MM-DD'),
+      date: moment(fieldValues.date).format('YYYY-MM-DD'),
+      sort: fieldValues.sort
+    }
+    onFilterParamsChange(newParams)
+  }
+  return (
+    <View style={styles.sortingContainer}>
+      {/* Sorting container */}
+      <View>
+        <NunitoText type="body2">Sắp xếp theo số lần trực tăng dần trong khoảng thời gian</NunitoText>
+        <View style={styles.dateRangeContainer}>
+          <View style={styles.dateRangeItem}>
+            <FormPickDate useControllerProps={{ control: control, name: 'startDate' }} />
+          </View>
+          <View style={styles.dateRangeItem}>
+            <FormPickDate useControllerProps={{ control: control, name: 'endDate' }} />
+          </View>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.buttonOutlined} onPress={handleSubmit(onSubmit)}>
+        <NunitoText type="body3" style={{ color: "#0B3A82" }}>
+          Thống kê
+        </NunitoText>
+      </TouchableOpacity>
+
+    </View>
+
+  )
+}
+
+type SuggestedUserItemProps = {
+  user: TDutySuggestedUser,
+  onSelectOption: (value: string, label: string) => void
+}
+const SuggestedUserItem: React.FC<SuggestedUserItemProps> = ({ user, onSelectOption }) => {
+  return (
+    <TouchableOpacity key={user.identifyCard} onPress={() => onSelectOption(user.identifyCard, `${user.name} (${user.roleName})`)}>
+
+      <View style={styles.suggestedUserItem}>
+        <NunitoText type="body2" style={{ color: 'black' }}>{user.name}</NunitoText>
+        <View style={{ gap: 4 }}>
+          <NunitoText type="body3">Chức vụ: {user.roleName}</NunitoText>
+          <NunitoText type="body3">Phòng: {user.teamName}</NunitoText>
+          <NunitoText type="body2">Số lần trực: {user.numOnDuty}</NunitoText>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
+}
+
 type DutyCalendarInfoProps = {
   selectedDutyCalendar: TDutyCalendarDetail | null;
 };
@@ -433,6 +486,8 @@ const styles = StyleSheet.create({
 
     paddingHorizontal: 12,
     paddingVertical: 8,
+
+    gap: 8
   },
   calendarInfoBox: {
     backgroundColor: "#EFF5FF",
@@ -442,5 +497,27 @@ const styles = StyleSheet.create({
   },
   calendarInfo: {
     gap: 4,
+  },
+
+  // 
+  modalContent: {
+    flex: 1
+  },
+  sortingContainer: {
+    backgroundColor: `#EFF5FF`,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+    gap: 20,
+  },
+  suggestedUserItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: `#000000${OPACITY_TO_HEX['50']}`,
+    marginBottom: 0
   },
 });
