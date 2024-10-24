@@ -1,7 +1,9 @@
+import { registerExponentPushToken } from "@/api/push-noti";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -15,6 +17,7 @@ export default function AppLayout() {
   const colorScheme = useColorScheme();
   const [isVerifying, setIsVerifying] = useState(true);
   const { session, isLoading, verifySessionToken, userInfo } = useSession();
+  const { expoPushToken } = usePushNotifications();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,6 +35,12 @@ export default function AppLayout() {
       setIsVerifying(false); // No session, stop verifying.
     }
   }, [session]);
+
+  useEffect(() => {
+    if (userInfo && expoPushToken) {
+      registerExponentPushToken(session, { userIdentifyCard: userInfo.identifyCard, expoPushToken: expoPushToken.data });
+    }
+  }, [session, userInfo, expoPushToken]);
 
   // Delay any redirects or UI changes until both loading and verification are complete
   if (isLoading || isVerifying) {
