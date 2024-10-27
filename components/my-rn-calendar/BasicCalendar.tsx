@@ -1,12 +1,6 @@
-import { fetchMonthData } from "@/api/timesheet/monthData";
+import { fetchMonthData } from "@/api/timesheet";
 import { MonthTimesheet, MonthTimesheetList, TMonthTimesheetListParams } from "@/api/timesheet/type";
-import {
-  TIMESHEET_FORM_TYPE,
-  TIMESHEET_FORM_TYPE_COLOR,
-  WORKING_TYPE,
-  WORKING_TYPE_COLOR,
-  WORKING_TYPE_NULL_COLOR
-} from "@/constants/Misc";
+import { TIMESHEET_FORM_TYPE, TIMESHEET_FORM_TYPE_COLOR, WORKING_TYPE, WORKING_TYPE_COLOR, WORKING_TYPE_NULL_COLOR } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import { SkeletonPostLoader } from "@/ui/skeletons";
@@ -33,7 +27,7 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
     if (!timesheetDate) return;
 
     //
-    console.log(timesheetDate.dutyFormId)
+    console.log(timesheetDate.dutyFormId);
     onFetchForms(timesheetDate.leaveFormId, timesheetDate.overtimeFormId, timesheetDate.dutyFormId);
 
     //
@@ -70,7 +64,9 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
       {isFetchingMonthData && <SkeletonPostLoader />}
       {!isFetchingMonthData && (
         <Calendar
-          onMonthChange={(date) => {console.log(date.month)}}
+          onMonthChange={(date) => {
+            console.log(date.month);
+          }}
           current={selectedDate}
           initialDate={selectedDate}
           dayComponent={({ date, state }) => {
@@ -86,9 +82,13 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
 
             const dateToday = moment(Date.now()).get("date");
             const monthToday = moment(Date.now()).get("month") + 1;
-            const isDayOfDateGreaterThanDateToday = (date?.day ?? 0) >= dateToday; // 14
-            const isMonthOfDateGreaterThanMonthToday = (date?.month ?? 0) > monthToday; // 10
-            const isFuture = isDayOfDateGreaterThanDateToday || isMonthOfDateGreaterThanMonthToday;
+            const yearToday = moment(Date.now()).get("year");
+            const dayOfDate = date?.day ?? 0;
+            const monthOfDate = date?.month ?? 0;
+            const yearOfDate = date?.year ?? 0;
+
+            const isFuture =
+              yearOfDate === yearToday ? (monthOfDate === monthToday ? dayOfDate > dateToday : monthOfDate > monthToday) : yearOfDate > yearToday;
 
             // declare style for wkType
             let dateBorderColor: string | undefined;
