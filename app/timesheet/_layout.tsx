@@ -19,7 +19,6 @@ export default function TimeSheetLayout() {
     >
       <Stack.Screen name="my-timesheet/index" options={{ title: "Bảng chấm công của tôi" }} />
       <Stack.Screen name="my-emp-owt/index" options={{ title: "Bảng ngoài giờ của tôi" }} />
-      <Stack.Screen name="push-noti-test/index" options={{ title: "Test push noti screen" }} />
     </Stack>
   );
 }
