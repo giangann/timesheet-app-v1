@@ -15,6 +15,8 @@ export default function FormLayout() {
             {props.children}
           </NunitoText>
         ),
+        headerLeft: (props) => <NunitoText>{props.label}</NunitoText>,
+        headerBackVisible: true,
       }}
     >
       <Stack.Screen name="leave_forms/index" options={{ title: "Đơn xin nghỉ" }} />
