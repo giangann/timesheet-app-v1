@@ -7,7 +7,7 @@ import { MyToast } from "@/ui/MyToast";
 import { MaterialIcons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
-import { router, useNavigation } from "expo-router";
+import { Link, router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -25,7 +25,7 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 
-const LoginBanner = require("@/assets/images/banner-login.png");
+const LoginBanner = require("@/assets/images/banner-login-v2.png");
 
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
@@ -70,12 +70,22 @@ const Login = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={styles.container}>
-              <View style={styles.logoWrapper}>
-                <Image source={LoginBanner} style={{ opacity: 0.5 }} />
+              <View style={{ gap: 8 }}>
+                <View style={styles.appInfo}>
+                  <NunitoText type="heading2" style={{ textAlign: "center", color: "#0B3A82", textTransform: "uppercase" }}>
+                    Trung tâm CNTT - Cơ yếu
+                  </NunitoText>
+                  <NunitoText type="heading3" style={{ textAlign: "center", color: "#0B3A82", textTransform: "uppercase" }}>
+                    Phần mềm chấm công
+                  </NunitoText>
+                </View>
+                <View style={styles.logoWrapper}>
+                  <Image source={LoginBanner} style={styles.logo} />
+                </View>
               </View>
 
               <View style={styles.formWrapper}>
-                <NunitoText style={{ textAlign: "center" }}>Đăng nhập</NunitoText>
+                <NunitoText style={{ textAlign: "center", color: "#0B3A82" }}>Đăng nhập</NunitoText>
 
                 <View style={styles.fieldWrapper}>
                   {/* Input_1 - Identify Card */}
@@ -109,6 +119,10 @@ const Login = () => {
                     </NunitoText>
                   </View>
                 </TouchableOpacity>
+                {/* <TouchableOpacity onPress={()=>navigation.navigate()}>
+                  <NunitoText>to home</NunitoText>
+                </TouchableOpacity> */}
+                <Link href={'/(tabs)'}>to home</Link>
               </View>
             </View>
           </ScrollView>
@@ -126,9 +140,20 @@ const styles = StyleSheet.create({
     gap: 24,
     // flex: 1,
   },
+  appInfo: {
+    marginTop: 32,
+  },
+
   logoWrapper: {
     alignItems: "center",
-    marginTop: 32,
+    // marginTop: 32,
+  },
+  logo: {
+    maxHeight: 200,
+    height: 150,
+    width: "50%",
+
+    borderRadius: 4,
   },
   formWrapper: {
     gap: 12,

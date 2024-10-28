@@ -6,7 +6,7 @@ import { UNIT_FONTSIZE } from "@/constants/Misc";
 export type NunitoTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: "default" | "heading3" | "subtitle1" | "subtitle2" | "body1" | "body2" | "body3" | "body4" | "caption";
+  type?: "default" | "heading2" | "heading3" | "subtitle1" | "subtitle2" | "body1" | "body2" | "body3" | "body4" | "caption";
 };
 
 export function NunitoText({ style, lightColor = "black", darkColor = "black", type = "default", ...rest }: NunitoTextProps) {
@@ -17,7 +17,8 @@ export function NunitoText({ style, lightColor = "black", darkColor = "black", t
       style={[
         { color },
         type === "default" ? styles.subtitle1 : undefined,
-        type === "heading3" ? styles.subtitle1 : undefined,
+        type === "heading2" ? styles.heading2 : undefined,
+        type === "heading3" ? styles.heading3 : undefined,
         type === "subtitle1" ? styles.subtitle1 : undefined,
         type === "subtitle2" ? styles.subtitle2 : undefined,
         type === "body1" ? styles.body1 : undefined,
@@ -40,6 +41,11 @@ const styles = StyleSheet.create({
   default: {
     ...fontStyles,
     fontSize: 16 * UNIT_FONTSIZE,
+  },
+  heading2: {
+    ...fontStyles,
+    fontSize: 20 * UNIT_FONTSIZE,
+    fontWeight: 700,
   },
   heading3: {
     ...fontStyles,
