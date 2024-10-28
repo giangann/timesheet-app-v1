@@ -44,7 +44,8 @@ export default function HomeScreen() {
 
       if (responseJson.statusCode === 200) {
         setHomeData(responseJson.data.profile);
-      } else MyToast.error(responseJson.error);
+      }
+      // } else MyToast.error(responseJson.error);
     } catch (error: any) {
       MyToast.error(error?.message);
     }
