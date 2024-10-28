@@ -7,7 +7,7 @@ import { MyToast } from "@/ui/MyToast";
 import { MaterialIcons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
-import { Link, router, useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -119,10 +119,6 @@ const Login = () => {
                     </NunitoText>
                   </View>
                 </TouchableOpacity>
-                {/* <TouchableOpacity onPress={()=>navigation.navigate()}>
-                  <NunitoText>to home</NunitoText>
-                </TouchableOpacity> */}
-                <Link href={'/(tabs)'}>to home</Link>
               </View>
             </View>
           </ScrollView>
