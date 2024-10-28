@@ -51,13 +51,13 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
     }
   };
 
-  // useEffect(() => {
-  //   const userIdentifyCard = userInfo?.identifyCard ?? "";
-  //   const currMonth = moment(INITIAL_DATE).get("month") + 1;
-  //   const currYear = moment(INITIAL_DATE).get("year");
+  useEffect(() => {
+    const userIdentifyCard = userInfo?.identifyCard ?? "";
+    const currMonth = moment(INITIAL_DATE).get("month") + 1;
+    const currYear = moment(INITIAL_DATE).get("year");
 
-  //   onFetchMonthData({ userIdentifyCard, month: currMonth, year: currYear });
-  // }, []);
+    onFetchMonthData({ userIdentifyCard, month: currMonth, year: currYear });
+  }, []);
 
   return (
     <View>
@@ -66,8 +66,6 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
         <Calendar
           onMonthChange={(date) => {
             console.log(date.month);
-
-            onFetchMonthData({ userIdentifyCard: userInfo?.identifyCard ?? "", month: date.month, year: date.year });
           }}
           current={selectedDate}
           initialDate={selectedDate}
