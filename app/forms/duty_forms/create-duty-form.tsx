@@ -34,8 +34,6 @@ export default function CreateDutyForm() {
     control,
     handleSubmit,
     formState: { isSubmitting },
-    resetField,
-    reset
   } = useForm<TDutyFormCreate>({
     defaultValues: { userIdentifyCard: userInfo?.identifyCard },
   });
@@ -48,8 +46,6 @@ export default function CreateDutyForm() {
 
       if (responseJson.statusCode === 200) {
         setSelectedCalendarInfo(responseJson.data.dutyCalendar);
-
-        reset({ userIdentifyCard: undefined })
       } else {
         MyToast.error(responseJson.error);
       }
@@ -125,7 +121,7 @@ export default function CreateDutyForm() {
           {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
             <FormSelectFullscreenModal
               disabled={!Boolean(selectedCalendarInfo)}
-              useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+              useControllerProps={{ control: control, name: "userIdentifyCard" }}
               modalChildren={<SelectUserModalChildren calendarDate={selectedCalendarInfo?.date} />}
               modalChildrenContainerStyles={{ paddingHorizontal: 0, paddingVertical: 0 }}
               label="Nhân viên"
