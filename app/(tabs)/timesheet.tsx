@@ -29,7 +29,7 @@ export default function Timesheet() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <MaterialCommunityIcons name="calendar-month-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+                <MaterialCommunityIcons name="microsoft-excel" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Bảng ngoài giờ cá nhân theo tháng (excel)</NunitoText>
             </View>

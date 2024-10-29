@@ -3,7 +3,9 @@ import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-
+import Entypo from "@expo/vector-icons/Entypo";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 const SettingTeamIconImage = require("@/assets/images/setting-team.png");
 const SettingOvertimeTypeIconImage = require("@/assets/images/setting-overtimetype.png");
 const SettingLeaveTypeIconImage = require("@/assets/images/setting-leavetype.png");
@@ -21,12 +23,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <MaterialIcons name="groups" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt phòng ban</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -35,12 +37,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingOvertimeTypeIconImage} />
+                <MaterialCommunityIcons name="clipboard-text-clock-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt loại ngoài giờ</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -49,12 +51,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingLeaveTypeIconImage} />
+                <MaterialCommunityIcons name="clipboard-text-off-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt loại nghỉ</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -63,12 +65,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingHolidayIconImage} />
+                <MaterialCommunityIcons name="beach" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt ngày nghỉ lễ</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -77,12 +79,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingHolidayIconImage} />
+                <MaterialCommunityIcons name="clipboard-text-play-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
-              <NunitoText type="body1">Cài đặt trực</NunitoText>
+              <NunitoText type="body1">Cài đặt loại trực</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -90,12 +92,12 @@ export default function Settings() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingHolidayIconImage} />
+                <MaterialCommunityIcons name="calendar-weekend" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt lịch trực</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>

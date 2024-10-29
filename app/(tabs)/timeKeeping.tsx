@@ -1,11 +1,11 @@
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
+import Entypo from "@expo/vector-icons/Entypo";
+import Feather from "@expo/vector-icons/Feather";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-
-const SettingTeamIconImage = require("@/assets/images/setting-team.png");
-const GotoDetailIconImage = require("@/assets/images/gotodetail.png");
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export default function TimeKeeping() {
   const router = useRouter();
@@ -16,12 +16,12 @@ export default function TimeKeeping() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <Feather name="check-circle" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Chấm công đơn vị hôm nay</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -30,12 +30,12 @@ export default function TimeKeeping() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <MaterialCommunityIcons name="google-spreadsheet" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Bảng ngoài giờ đơn vị theo tháng (excel)</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
@@ -59,16 +59,15 @@ export default function TimeKeeping() {
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
-                <Image source={SettingTeamIconImage} />
+                <MaterialCommunityIcons name="table-check" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Bảng chấm công đơn vị theo tháng (excel)</NunitoText>
             </View>
             <View style={styles.chip}>
-              <Image source={GotoDetailIconImage} />
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
         </Pressable>
-
       </ScrollView>
     </View>
   );
