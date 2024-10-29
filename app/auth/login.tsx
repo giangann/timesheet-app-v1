@@ -25,7 +25,7 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 
-const LoginBanner = require("@/assets/images/banner-login-v2.png");
+const LoginBanner = require("@/assets/images/logo-vptw.png");
 
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 24,
-    // flex: 1,
   },
   appInfo: {
     marginTop: 32,
@@ -142,14 +141,10 @@ const styles = StyleSheet.create({
 
   logoWrapper: {
     alignItems: "center",
-    // marginTop: 32,
   },
   logo: {
-    maxHeight: 200,
-    height: 150,
-    width: "50%",
-
-    borderRadius: 4,
+    height: 200,
+    resizeMode: "contain",
   },
   formWrapper: {
     gap: 12,

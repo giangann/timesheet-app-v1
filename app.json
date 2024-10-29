@@ -4,11 +4,11 @@
     "slug": "timesheet-app-v1",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/images/logo-vptw-300.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/logo-vptw-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.png",
+        "foregroundImage": "./assets/images/logo-vptw-300.png",
         "backgroundColor": "#FF0000"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
@@ -25,7 +25,7 @@
       "googleServicesFile": "./google-services.json"
     },
     "notification": {
-      "icon": "./assets/images/logo.png",
+      "icon": "./assets/images/logo-vptw-300.png",
       "color": "#FF0000"
     },
     "web": {
