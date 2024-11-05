@@ -73,7 +73,7 @@ const Login = () => {
               <View style={{ gap: 8 }}>
                 <View style={styles.appInfo}>
                   <NunitoText type="heading2" style={{ textAlign: "center", color: "#0B3A82", textTransform: "uppercase" }}>
-                    Trung tâm CNTT - Cơ yếu
+                    Văn phòng trung ương đảng
                   </NunitoText>
                   <NunitoText type="heading3" style={{ textAlign: "center", color: "#0B3A82", textTransform: "uppercase" }}>
                     Phần mềm chấm công

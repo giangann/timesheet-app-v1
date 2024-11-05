@@ -200,7 +200,7 @@ export default function DetailForm() {
           modalProps={{ animationType: "slide", transparent: true }}
         >
           <View>
-            <NunitoText type="body3">Từ chối đơn xin nghỉ?</NunitoText>
+            <NunitoText type="body3">Từ chối đơn trực?</NunitoText>
           </View>
         </MyModal>
       )}
@@ -213,7 +213,7 @@ export default function DetailForm() {
           modalProps={{ animationType: "slide", transparent: true }}
         >
           <View>
-            <NunitoText type="body3">Chấp Thuận đơn xin nghỉ?</NunitoText>
+            <NunitoText type="body3">Chấp Thuận đơn trực?</NunitoText>
           </View>
         </MyModal>
       )}

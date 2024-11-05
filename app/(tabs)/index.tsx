@@ -101,10 +101,10 @@ export default function HomeScreen() {
                 <NunitoText type="body2">{homeData?.haveTimeKeepingToday ? "Đã được chấm công" : "Chưa được chấm công"}</NunitoText>
                 <View style={styles.wdTime}>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    SA: {convertTimeToHHMM(homeData?.workingDayStartTime) ?? "08:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    SA: {convertTimeToHHMM(homeData?.workingDayStartTime) ?? "08:00"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    CH: {convertTimeToHHMM(homeData?.workingDayEndTime) ?? "17:30"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    CH: {convertTimeToHHMM(homeData?.workingDayEndTime) ?? "17:00"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                 </View>
               </View>
