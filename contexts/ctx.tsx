@@ -1,4 +1,5 @@
-import { TCredentials, TUserInfo, loginByCredentials, verifyToken } from "@/api/auth";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { TCredentials, TUserInfo, loginByCredentials, logout, verifyToken } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
 import { createContext, useContext, type PropsWithChildren } from "react";
 
@@ -33,6 +34,7 @@ export function useSession() {
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const [[_, userInfo], setUserInfo] = useStorageState("user");
+  const { expoPushToken } = usePushNotifications();
 
   const signIn = async (credentials: TCredentials) => {
     const responseJson = await loginByCredentials(credentials);
@@ -47,6 +49,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const signOut = () => {
     setSession(null);
     setUserInfo(null);
+
+    logout(session, { expoGoToken: expoPushToken?.data });
   };
 
   const verifySessionToken = async (token: string) => {

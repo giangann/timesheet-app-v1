@@ -31,3 +31,22 @@ export const verifyToken = async (token: string) => {
   const responseJson = await response.json();
   return responseJson;
 };
+
+export const logout = async (session: string | null | undefined, bodyData: { expoGoToken?: string }) => {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/auth/logout";
+  const url = `${baseUrl}${endpoint}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: token },
+    body: JSON.stringify(bodyData),
+    credentials: "include",
+  });
+
+  const responseJson = await response.json();
+
+  return responseJson;
+};
