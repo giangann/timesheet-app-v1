@@ -6,6 +6,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Button } from "react-native-paper";
 
 export default function Settings() {
   const router = useRouter();
@@ -13,6 +14,9 @@ export default function Settings() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listBox}>
+        <Button icon="camera" mode="contained" onPress={() => console.log("Pressed")}>
+          Press me
+        </Button>
         <Pressable onPress={() => router.push("/forms/leave_forms")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
