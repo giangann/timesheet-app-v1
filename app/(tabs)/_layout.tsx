@@ -3,6 +3,7 @@ import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useHasRegisterEPTInCurrentLoginSession } from "@/hooks/useHasRegisterEPTInCurrentLoginSession";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,6 +19,7 @@ export default function AppLayout() {
   const [isVerifying, setIsVerifying] = useState(true);
   const { session, isLoading, verifySessionToken, userInfo } = useSession();
   const { expoPushToken } = usePushNotifications();
+  const { hasRegister, markHasRegister } = useHasRegisterEPTInCurrentLoginSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -37,10 +39,13 @@ export default function AppLayout() {
   }, [session]);
 
   useEffect(() => {
-    if (userInfo && expoPushToken) {
-      registerExponentPushToken(session, { userIdentifyCard: userInfo.identifyCard, expoPushToken: expoPushToken.data });
-    }
-  }, [session, userInfo, expoPushToken]);
+    if (!userInfo || !expoPushToken) return;
+    if (hasRegister === null) return;
+    if (hasRegister === true) return;
+
+    registerExponentPushToken(session, { userIdentifyCard: userInfo.identifyCard, expoPushToken: expoPushToken.data });
+    markHasRegister(true);
+  }, [session, userInfo, expoPushToken, hasRegister]);
 
   // Delay any redirects or UI changes until both loading and verification are complete
   if (isLoading || isVerifying) {

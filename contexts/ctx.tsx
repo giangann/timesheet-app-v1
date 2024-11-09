@@ -2,6 +2,7 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { TCredentials, TUserInfo, loginByCredentials, logout, verifyToken } from "@/api/auth";
 import { useStorageState } from "@/hooks/useStorageState";
 import { createContext, useContext, type PropsWithChildren } from "react";
+import { useHasRegisterEPTInCurrentLoginSession } from "@/hooks/useHasRegisterEPTInCurrentLoginSession";
 
 const AuthContext = createContext<{
   signIn: (credentials: TCredentials) => Promise<void>;
@@ -34,6 +35,7 @@ export function useSession() {
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const [[_, userInfo], setUserInfo] = useStorageState("user");
+  const { markHasRegister } = useHasRegisterEPTInCurrentLoginSession();
   const { expoPushToken } = usePushNotifications();
 
   const signIn = async (credentials: TCredentials) => {
@@ -49,7 +51,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const signOut = () => {
     setSession(null);
     setUserInfo(null);
-
+    markHasRegister(false)
+    
     logout(session, { expoGoToken: expoPushToken?.data });
   };
 

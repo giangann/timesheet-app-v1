@@ -1,18 +1,18 @@
+import { changePassword, fetchUserProfile } from "@/api/user";
+import { TChangePassword, TUserProfile } from "@/api/user/types";
+import { FormInput } from "@/components/FormInput";
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { AvatarByRole } from "@/ui/AvatarByRole";
-import { View, StyleSheet, Pressable, ScrollView } from "react-native";
+import { MyToast } from "@/ui/MyToast";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { MyModal } from "@/components/MyModal";
-import { TChangePassword, TUserProfile } from "@/api/user/types";
-import { changePassword, fetchUserProfile } from "@/api/user";
-import { MyToast } from "@/ui/MyToast";
-import { FormInput } from "@/components/FormInput";
 import { useForm } from "react-hook-form";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 export default function MyProfile() {
   const [profileData, setProfileData] = useState<TUserProfile | null>(null);
   const [openChangePwModal, setOpenChangePwModal] = useState(false);
@@ -61,8 +61,9 @@ export default function MyProfile() {
   useFocusEffect(
     useCallback(() => {
       onFetchProfileData();
-    }, [])
+    }, [session])
   );
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
