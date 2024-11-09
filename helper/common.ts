@@ -1,3 +1,4 @@
+import { TTeamUserSort } from "@/api/setting/type";
 import { ROLE_CODE } from "@/constants/Misc";
 
 export function hasNullishValue(obj: Record<string, any>): boolean {
@@ -157,4 +158,40 @@ export function paramsObjectToQueryString(paramsObject: Record<string, string | 
 
   const queryString = prefix + paramsChain;
   return queryString;
+}
+
+/**
+ * Generates a summary string for a list of team users.
+ *
+ * @param {TTeamUserSort[]} users - The array of team users to summarize.
+ * @returns {string} A formatted string displaying the first two user names followed by the count of remaining users.
+ *                   If the list is empty, returns "No users available".
+ *
+ * @example
+ * const users: TTeamUserSort[] = [
+ *   { name: "Hoàng Phương Nhung", ... },
+ *   { name: "Trần Thị Hiền", ... },
+ *   { name: "Nguyễn Văn An", ... },
+ *   { name: "Phạm Quốc Bảo", ... },
+ *   { name: "Lê Thị Hoa", ... }
+ * ];
+ * getUserSummaryString(users);
+ * // Returns: "Hoàng Phương Nhung, Trần Thị Hiền và 3 người khác"
+ */
+export function getUserSummaryString(users: TTeamUserSort[]): string {
+  if (users.length === 0) {
+    return "No users available";
+  }
+
+  const displayedUsers = users
+    .slice(0, 2)
+    .map((user) => user.name)
+    .filter(Boolean);
+  const remainingCount = users.length - displayedUsers.length;
+
+  if (remainingCount > 0) {
+    return `${displayedUsers.join(", ")} và ${remainingCount} người khác`;
+  } else {
+    return displayedUsers.join(", ");
+  }
 }

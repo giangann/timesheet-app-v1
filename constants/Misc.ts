@@ -1,3 +1,4 @@
+import { TDutyType } from "@/api/setting/type";
 import { TPagiParams } from "@/types";
 
 export const UNIT_DIMENSION = 1;
@@ -70,6 +71,205 @@ export const DEFAULT_PAGI_PARAMS: TPagiParams = {
 };
 
 export const DEFAULT_DATE_RANGE_DUTY_CALENDAR = {
-  startDate: '2020-01-01',
-  endDate: '2030-12-31'
-}
+  startDate: "2020-01-01",
+  endDate: "2030-12-31",
+};
+
+export const _mockDutyTypes: TDutyType[] = [
+  {
+    dutyTypeName: "Trực kĩ thuật",
+    teams: [
+      {
+        id: 153,
+        name: "Hỗ trợ kỹ thuật",
+        code: null,
+        hotline: null,
+        users: [
+          {
+            name: "Nguyễn Văn Tùng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001079008881",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Hà Đăng Dũng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001071006550",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Lê Thế Đạt",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001078002960",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Cao Cường",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001081019700",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Văn Sinh",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "030082001030",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    dutyTypeName: "Trực cơ yếu",
+    teams: [
+      {
+        id: 1,
+        name: "cơ yếu",
+        code: null,
+        hotline: null,
+        users: [
+          {
+            name: "Nguyễn Mạnh Hùng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "035072001862",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Nguyễn Văn Hải",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001073006920",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Trần Thị Tuyết Nhung",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "036179000875",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Vũ Ngọc Bằng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "030078000695",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Văn Quý",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "035083006087",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Đức Thắng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "027085000118",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Công Đạt",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "040088004704",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Phạm Ngọc Thắng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "035086000010",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+        ],
+      },
+      {
+        id: 153,
+        name: "Hỗ trợ kỹ thuật",
+        code: null,
+        hotline: null,
+        users: [
+          {
+            name: "Nguyễn Văn Tùng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001079008881",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Hà Đăng Dũng",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001071006550",
+            roleName: "Lãnh đạo phòng",
+            roleCode: ROLE_CODE.TEAM_DIRECTOR,
+          },
+          {
+            name: "Lê Thế Đạt",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001078002960",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Cao Cường",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "001081019700",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+          {
+            name: "Nguyễn Văn Sinh",
+            email: null,
+            address: null,
+            phone: null,
+            identifyCard: "030082001030",
+            roleName: "Chuyên viên",
+            roleCode: ROLE_CODE.SPECIALIST,
+          },
+        ],
+      },
+    ],
+  },
+];

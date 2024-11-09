@@ -52,11 +52,11 @@ export type TDutyCalendarDetail = {
 };
 
 export type TTeamUserSort = {
-  address: string;
-  email: string;
+  address: string | null;
+  email: string | null;
   identifyCard: string;
   name: string;
-  phone: string;
+  phone: string | null;
   roleCode: ROLE_CODE;
   roleName: string;
 };
