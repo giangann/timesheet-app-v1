@@ -1,3 +1,6 @@
+import { ROLE_CODE } from "@/constants/Misc";
+import { TTeam } from "../team/type";
+
 export type THoliday = {
   id: number;
   isDeleted: boolean;
@@ -26,7 +29,7 @@ export type TDutyCalendar = {
   startTime: string;
   endTime: string;
   salaryCoefficientName: string;
-  salaryCoefficient: number
+  salaryCoefficient: number;
 };
 export type TDutyCalendarFilterParams = {
   startDate?: string;
@@ -46,4 +49,19 @@ export type TDutyCalendarDetail = {
     name: string;
     coefficient: number;
   };
+};
+
+export type TTeamUserSort = {
+  address: string;
+  email: string;
+  identifyCard: string;
+  name: string;
+  phone: string;
+  roleCode: ROLE_CODE;
+  roleName: string;
+};
+
+export type TDutyType = {
+  dutyTypeName: string;
+  teams: (TTeam & { users: TTeamUserSort[] })[];
 };
