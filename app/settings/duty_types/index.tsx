@@ -1,4 +1,5 @@
-import { fetchDutyTypes } from "@/api/setting";
+import { Button, Menu, Divider, PaperProvider } from "react-native-paper";
+import { fetchDutyTypes, softDeleteDutyType } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -10,10 +11,13 @@ import { NoData } from "@/ui/NoData";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
+import { FlatList, Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { TouchableOpacity } from "react-native";
+import { MyModal } from "@/components/MyModal";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
+
+const DEFAULT_DUTY_TYPE_ID = -1;
 
 export default function DutyTypeList() {
   const [dutyTypes, setDutyTypes] = useState<TDutyType[]>([]);
@@ -39,9 +43,9 @@ export default function DutyTypeList() {
       <ToolBar />
       <FlatList
         data={dutyTypes}
-        renderItem={({ item }) => <DutyTypeItem dutyType={item} />}
+        renderItem={({ item }) => <DutyTypeItem dutyType={item} refetchList={onFetchDutyTypes} />}
         ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
-        contentContainerStyle={{ gap: 20, paddingBottom: 32 }}
+        contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
       />
     </View>
   );
@@ -60,10 +64,18 @@ const ToolBar = () => {
   );
 };
 
-type DutyTypeItemProps = { dutyType: TDutyType };
-const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType }) => {
-  const [openMenu, setOpenMenu] = useState(false);
+type DutyTypeItemProps = { dutyType: TDutyType; refetchList: Function };
+const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType, refetchList }) => {
   const { dutyTypeName, teams } = dutyType;
+  const [visible, setVisible] = React.useState(false);
+  const [openDelModal, setOpenDelModal] = React.useState(false);
+  const { session } = useSession();
+  const router = useRouter();
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+  const openCfModal = () => setOpenDelModal(true);
+  const closeCfModal = () => setOpenDelModal(false);
 
   // caculate by add totalUsers in each team of teams
   const numTotalUserOfDutyType = useMemo(() => {
@@ -71,6 +83,39 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType }) => {
     teams.forEach((team) => (res += team.users.length));
     return res;
   }, [dutyType]);
+
+  // detail dutyType handler
+  const onViewDetail = useCallback(() => {
+    router.navigate({
+      pathname: "/settings/duty_types/[id]",
+      params: { id: DEFAULT_DUTY_TYPE_ID },
+    });
+
+    closeMenu();
+  }, []);
+
+  // delete dutyType handler
+  const onDelete = useCallback(async () => {
+    try {
+      const responseJson = await softDeleteDutyType(session, DEFAULT_DUTY_TYPE_ID);
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Xóa thành công");
+      } else {
+        MyToast.error(responseJson?.message ?? responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      closeMenu();
+      refetchList();
+    }
+  }, [session]);
+
+  // press delete item of menu handler
+  const onPressDelete = useCallback(() => {
+    closeMenu();
+    openCfModal();
+  }, []);
 
   return (
     <View style={styles.dutyTypeItemBox}>
@@ -103,13 +148,25 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType }) => {
         </View>
       </View>
 
-      {/* Press ThreeDot icon to open Menu*/}
-      <TouchableOpacity onPress={() => {}} style={styles.iconThreeDots}>
-        <Entypo name="dots-three-vertical" size={18} color="black" />
-      </TouchableOpacity>
-
       {/* Menu */}
-      
+      <View style={styles.iconThreeDotsAbsBox}>
+        <Menu
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={openMenu} style={styles.iconThreeDotsBtn}>
+              <Entypo name="dots-three-vertical" size={18} color="black" />
+            </TouchableHighlight>
+          }
+        >
+          <Menu.Item onPress={onViewDetail} title="Chi tiết" />
+          <Divider />
+          <Menu.Item onPress={onPressDelete} title="Xóa" />
+        </Menu>
+      </View>
+
+      {/* Delete confirm modal */}
+      {openDelModal && <MyModal title="Xác nhận xóa" cb={onDelete} onClose={closeCfModal} />}
     </View>
   );
 };
@@ -117,6 +174,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingHorizontal: 0,
     paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
@@ -128,6 +186,7 @@ const styles = StyleSheet.create({
      */
   },
   toolbar: {
+    paddingHorizontal: 16,
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 4,
@@ -140,10 +199,14 @@ const styles = StyleSheet.create({
     backgroundColor: `#0B3A82${OPACITY_TO_HEX["15"]}`,
     borderRadius: 8,
   },
-  iconThreeDots: {
+  iconThreeDotsAbsBox: {
     position: "absolute",
-    right: 8,
-    top: 9,
+    right: 0,
+    top: 0,
+  },
+  iconThreeDotsBtn: {
+    padding: 12,
+    borderRadius: 20,
   },
   dutyTypeItemContainer: {
     flexDirection: "column",
