@@ -17,8 +17,6 @@ import { MyModal } from "@/components/MyModal";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
-const DEFAULT_DUTY_TYPE_ID = -1;
-
 export default function DutyTypeList() {
   const [dutyTypes, setDutyTypes] = useState<TDutyType[]>([]);
   const { session } = useSession();
@@ -88,16 +86,16 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType, refetchList }) =>
   const onViewDetail = useCallback(() => {
     router.navigate({
       pathname: "/settings/duty_types/[id]",
-      params: { id: DEFAULT_DUTY_TYPE_ID },
+      params: { id: dutyType.id },
     });
 
     closeMenu();
-  }, []);
+  }, [dutyType]);
 
   // delete dutyType handler
   const onDelete = useCallback(async () => {
     try {
-      const responseJson = await softDeleteDutyType(session, DEFAULT_DUTY_TYPE_ID);
+      const responseJson = await softDeleteDutyType(session, dutyType.id);
       if (responseJson.statusCode === 200) {
         MyToast.success("Xóa thành công");
       } else {
@@ -109,7 +107,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType, refetchList }) =>
       closeMenu();
       refetchList();
     }
-  }, [session]);
+  }, [session, dutyType]);
 
   // press delete item of menu handler
   const onPressDelete = useCallback(() => {

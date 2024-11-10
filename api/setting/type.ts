@@ -63,6 +63,7 @@ export type TTeamUserSort = {
 };
 
 export type TDutyType = {
+  id: number;
   dutyTypeName: string;
   teams: (TTeam & { users: TTeamUserSort[] })[];
 };
