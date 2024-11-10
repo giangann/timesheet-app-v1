@@ -1,21 +1,21 @@
 import { createDutyType, fetchAllTeamWithUsers } from "@/api/setting";
 import { TDutyTypeCreate, TTeamUserSort } from "@/api/setting/type";
-import { TTeamUser } from "@/api/team/type";
 import { FormInput } from "@/components/FormInput";
 import { CustomListAccordionWithCheckbox, CustomListItemWithCheckbox } from "@/components/accordion";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
+import { arrayObjectToMap, combineMaps, getMapKeysBySpecifyValue, getMapValues } from "@/helper/map";
+import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { List, Checkbox } from "react-native-paper";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { List } from "react-native-paper";
 
 type CreateItem = {
   dutyTypeName: string | undefined;
-  userIds: number[];
 };
 type TTeam = {
   id: number;
@@ -25,31 +25,45 @@ type TTeam = {
 
 export default function AddDutyType() {
   const [teamsWithUsers, setTeamsWithUsers] = useState<(TTeam & { users: TTeamUserSort[] })[]>([]);
-  const { control, handleSubmit } = useForm<CreateItem>({ defaultValues: { userIds: [] } });
+  const { control, handleSubmit } = useForm<CreateItem>();
   const { session } = useSession();
   const router = useRouter();
 
+  const maps = useMemo(() => {
+    const temps: Map<string, boolean>[] = [];
+    teamsWithUsers.forEach((team) => {
+      const map = arrayObjectToMap(team.users, "id", false);
+      temps.push(map);
+    });
+
+    return temps;
+  }, [teamsWithUsers]);
+
+  const map1 = useMemo(() => combineMaps(maps), [maps]);
+  const onUpdateMap1 = useCallback(
+    (userId: number, newStatus: boolean) => {
+      const keyString = userId.toString();
+      map1.set(keyString, newStatus);
+    },
+    [map1]
+  );
+
   const onCreate = async (fieldValues: CreateItem) => {
     try {
-      console.log(fieldValues);
-
       // Process form fieldsValues
-      const requiredValues = pickProperties(fieldValues, ["dutyTypeName", "userIds"]);
+      const requiredValues = pickProperties(fieldValues, ["dutyTypeName"]);
       if (hasNullishValue(requiredValues)) {
         MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
         return;
       }
       if (!fieldValues.dutyTypeName) return;
-
       // map `fieldValues` to a `TDutyTypeCreate` object
       const dutyTypeData: TDutyTypeCreate = {
         dutyTypeName: fieldValues.dutyTypeName,
-        userIds: fieldValues.userIds,
+        userIds: getMapKeysBySpecifyValue(map1, true).map((idString) => parseInt(idString)),
       };
-
       // Make request
       const responseJson = await createDutyType(session, dutyTypeData);
-
       if (responseJson.statusCode === 200) {
         MyToast.success("Thành công");
         router.back();
@@ -81,8 +95,6 @@ export default function AddDutyType() {
     }, [session])
   );
 
-  const [checked, setChecked] = useState(false);
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -90,28 +102,12 @@ export default function AddDutyType() {
         <FormInput formInputProps={{ control: control, name: "dutyTypeName" }} label="Tên loại trực" required placeholder="Nhập tên loại trực..." />
 
         {/* Accordions */}
+        <NunitoText type="body2" style={{ color: "black" }}>
+          Nhân viên tương ứng
+        </NunitoText>
         <List.AccordionGroup>
           {teamsWithUsers.map((team) => (
-            <CustomListAccordionWithCheckbox
-              checkboxProps={{
-                status: checked ? "checked" : "unchecked",
-                onPress: () => setChecked(!checked),
-              }}
-              title={team.name}
-              id={team.id}
-              key={team.id}
-            >
-              {team.users.map((user) => (
-                <CustomListItemWithCheckbox
-                  title={user.name}
-                  checkboxProps={{
-                    status: checked ? "checked" : "unchecked",
-                    onPress: () => setChecked(!checked),
-                  }}
-                  key={user.id}
-                />
-              ))}
-            </CustomListAccordionWithCheckbox>
+            <TeamWithUsers map1={map1} onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
           ))}
         </List.AccordionGroup>
         {/* Add more FormInput components as needed */}
@@ -127,11 +123,92 @@ export default function AddDutyType() {
   );
 }
 
-const CheckboxPlaceholder = () => (
-  <View style={{ opacity: 0 }}>
-    <Checkbox status="unchecked" />
-  </View>
-);
+type TeamWithUsersProps = {
+  map1: Map<string, boolean>;
+  onUpdateMap1: (userId: number, newStatus: boolean) => void;
+  team: TTeam & { users: TTeamUserSort[] };
+};
+const TeamWithUsers: React.FC<TeamWithUsersProps> = ({ team, map1, onUpdateMap1 }) => {
+  const [render, setRender] = useState(false);
+  const forceRender = () => setRender((prev) => !prev);
+
+  const checkedStatusMap = useMemo(() => arrayObjectToMap(team.users, "id", false), [team]);
+
+  const isAccordionUncheck = useMemo(() => {
+    return getMapValues(checkedStatusMap).includes(false);
+  }, [checkedStatusMap, render]);
+
+  const onUpdateAll = useCallback(
+    (newStatus: boolean) => {
+      checkedStatusMap.forEach((_v, k) => {
+        // updated internal map
+        checkedStatusMap.set(k, newStatus);
+        // update parent map
+        onUpdateMap1(parseInt(k), newStatus);
+      });
+
+      forceRender();
+    },
+    [checkedStatusMap]
+  );
+
+  const onUpdate = useCallback(
+    (userId: number, newStatus: boolean) => {
+      // updated internal map
+      const keyString = userId.toString();
+      checkedStatusMap.set(keyString, newStatus);
+
+      // update parent map
+      onUpdateMap1(userId, newStatus);
+
+      forceRender();
+    },
+    [checkedStatusMap]
+  );
+
+  return (
+    <CustomListAccordionWithCheckbox
+      checkboxProps={{
+        status: isAccordionUncheck ? "unchecked" : "checked",
+        onPress: () => onUpdateAll(isAccordionUncheck ? true : false),
+      }}
+      title={<NunitoText type="body2" style={{ color: "black" }}>{`P. ${team.name}`}</NunitoText>}
+      id={team.id}
+      key={team.id}
+      customContainerStyles={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
+      style={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
+      // customContainerStyles={{ backgroundColor: `#0B3A82${OPACITY_TO_HEX['15']}`, borderRadius: 4 }}
+      // style={{ backgroundColor: `#0B3A82${OPACITY_TO_HEX['15']}`, borderRadius: 4 }}
+    >
+      {team.users.map((user) => {
+        const isChecked = checkedStatusMap.get(user.id.toString()) ?? false;
+        return (
+          <CustomListItemWithCheckbox
+            title={
+              <View style={styles.teamUserContainer}>
+                <AvatarByRole role={user.roleCode} customStyles={{}} />
+                <View>
+                  <NunitoText type="body3" style={{ color: "black" }}>
+                    {user.name}
+                  </NunitoText>
+                  <NunitoText type="body4" style={{ color: "black" }}>
+                    {user.roleName}
+                  </NunitoText>
+                </View>
+              </View>
+            }
+            checkboxProps={{
+              status: isChecked ? "checked" : "unchecked",
+              onPress: () => onUpdate(user.id, !isChecked),
+            }}
+            key={user.id}
+          />
+        );
+      })}
+    </CustomListAccordionWithCheckbox>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -142,6 +219,11 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
+  },
+
+  teamUserContainer: {
+    flexDirection: "row",
+    gap: 16,
   },
   buttonContainer: {
     position: "absolute",

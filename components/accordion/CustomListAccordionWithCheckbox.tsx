@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ViewStyle } from "react-native";
 import { Checkbox, List } from "react-native-paper";
 import { Props as RNPCheckboxProps } from "react-native-paper/src/components/Checkbox/Checkbox";
 import { Props as RNPListAccordionProps } from "react-native-paper/src/components/List/ListAccordion";
@@ -6,17 +6,17 @@ import { HideChildren } from "../HideChildren";
 
 type Props = {
   checkboxProps: RNPCheckboxProps;
+  customContainerStyles?: ViewStyle;
 } & RNPListAccordionProps;
-export const CustomListAccordionWithCheckbox: React.FC<Props> = ({ checkboxProps, ...listAccordionProps }) => {
+export const CustomListAccordionWithCheckbox: React.FC<Props> = ({ checkboxProps, customContainerStyles, ...listAccordionProps }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, customContainerStyles]}>
       <View style={styles._absoluteBox}>
         <Checkbox {...checkboxProps} />
       </View>
 
       <List.Accordion
         {...listAccordionProps}
-
         // Just to align text of title between Accordion with Item
         left={(props) => (
           <HideChildren>
