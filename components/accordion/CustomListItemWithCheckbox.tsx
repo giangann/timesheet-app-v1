@@ -5,14 +5,17 @@ import { Props as RNPListItemProps } from "react-native-paper/src/components/Lis
 
 type Props = {
   checkboxProps: RNPCheckboxProps;
+  isShowCheckbox?: boolean;
 } & RNPListItemProps;
 
-export const CustomListItemWithCheckbox: React.FC<Props> = ({ checkboxProps, ...listItemProps }) => {
+export const CustomListItemWithCheckbox: React.FC<Props> = ({ checkboxProps, isShowCheckbox = true, ...listItemProps }) => {
   return (
     <View style={styles.container}>
-      <View style={styles._absoluteBox}>
-        <Checkbox {...checkboxProps} />
-      </View>
+      {isShowCheckbox && (
+        <View style={styles._absoluteBox}>
+          <Checkbox {...checkboxProps} />
+        </View>
+      )}
 
       <List.Item {...listItemProps} />
     </View>

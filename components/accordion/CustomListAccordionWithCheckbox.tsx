@@ -1,31 +1,58 @@
+import { ListAccordionGroupContext } from "react-native-paper/src/components/List/ListAccordionGroup";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import { Checkbox, List } from "react-native-paper";
 import { Props as RNPCheckboxProps } from "react-native-paper/src/components/Checkbox/Checkbox";
 import { Props as RNPListAccordionProps } from "react-native-paper/src/components/List/ListAccordion";
 import { HideChildren } from "../HideChildren";
+import { useContext } from "react";
+import { OPACITY_TO_HEX } from "@/constants/Colors";
 
 type Props = {
   checkboxProps: RNPCheckboxProps;
   customContainerStyles?: ViewStyle;
+  isShowCheckbox?: boolean;
+  showDivide?: boolean;
 } & RNPListAccordionProps;
-export const CustomListAccordionWithCheckbox: React.FC<Props> = ({ checkboxProps, customContainerStyles, ...listAccordionProps }) => {
+export const CustomListAccordionWithCheckbox: React.FC<Props> = ({
+  checkboxProps,
+  customContainerStyles,
+  isShowCheckbox = true,
+  showDivide = false,
+  ...listAccordionProps
+}) => {
+  const groupContext = useContext(ListAccordionGroupContext);
+  const isExpanding = groupContext?.expandedId === listAccordionProps.id;
+
+  const { style, ...restProps } = listAccordionProps;
+  const styleExtend = isExpanding ? (showDivide ? { borderBottomColor: `#000000${OPACITY_TO_HEX["15"]}`, borderBottomWidth: 1 } : {}) : {};
+
   return (
     <View style={[styles.container, customContainerStyles]}>
-      <View style={styles._absoluteBox}>
-        <Checkbox {...checkboxProps} />
-      </View>
+      {isShowCheckbox && (
+        <View style={styles._absoluteBox}>
+          <Checkbox {...checkboxProps} />
+        </View>
+      )}
 
-      <List.Accordion
-        {...listAccordionProps}
-        // Just to align text of title between Accordion with Item
-        left={(props) => (
-          <HideChildren>
-            <List.Icon {...props} icon="folder" />
-          </HideChildren>
-        )}
-      >
-        {listAccordionProps.children}
-      </List.Accordion>
+      {isShowCheckbox && (
+        <List.Accordion
+          {...restProps}
+          style={[style, styleExtend]}
+          left={(props) => (
+            <HideChildren>
+              <List.Icon {...props} icon="folder" />
+            </HideChildren>
+          )}
+        >
+          {listAccordionProps.children}
+        </List.Accordion>
+      )}
+
+      {!isShowCheckbox && (
+        <List.Accordion {...restProps} style={[style, styleExtend]}>
+          {listAccordionProps.children}
+        </List.Accordion>
+      )}
     </View>
   );
 };

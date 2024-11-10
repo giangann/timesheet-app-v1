@@ -1,9 +1,9 @@
-import { Button, Menu, Divider, PaperProvider } from "react-native-paper";
 import { fetchDutyTypes, softDeleteDutyType } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { UNIT_DIMENSION, _mockDutyTypes } from "@/constants/Misc";
+import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { getUserSummaryString } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
@@ -12,8 +12,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
-import { TouchableOpacity } from "react-native";
-import { MyModal } from "@/components/MyModal";
+import { Divider, Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
@@ -86,7 +85,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType, refetchList }) =>
   const onViewDetail = useCallback(() => {
     router.navigate({
       pathname: "/settings/duty_types/[id]",
-      params: { id: dutyType.id },
+      params: { id: dutyType.id, dutyTypeName: dutyType.dutyTypeName },
     });
 
     closeMenu();

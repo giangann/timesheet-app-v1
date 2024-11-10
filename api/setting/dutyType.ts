@@ -38,7 +38,7 @@ export async function softDeleteDutyType(session: string | null | undefined, dut
   return responseJson;
 }
 
-export async function fetchDutyTypeDetail(session: string | null | undefined, dutyTypeId:number) {
+export async function fetchDutyTypeDetail(session: string | null | undefined, dutyTypeId: number | string) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
