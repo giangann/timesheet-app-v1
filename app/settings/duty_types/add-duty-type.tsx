@@ -1,16 +1,21 @@
+import { createDutyType, fetchAllTeamWithUsers } from "@/api/setting";
+import { TDutyTypeCreate, TTeamUserSort } from "@/api/setting/type";
+import { TTeamUser } from "@/api/team/type";
 import { FormInput } from "@/components/FormInput";
-import { FormMultiSelect } from "@/components/FormMultiSelect";
+import { CustomListAccordionWithCheckbox, CustomListItemWithCheckbox } from "@/components/accordion";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { List, Checkbox } from "react-native-paper";
 
 type CreateItem = {
-  dutyTypeName: string;
-  teamIds: number[];
+  dutyTypeName: string | undefined;
+  userIds: number[];
 };
 type TTeam = {
   id: number;
@@ -19,75 +24,96 @@ type TTeam = {
 };
 
 export default function AddDutyType() {
-  const [teams, setTeams] = useState<TTeam[]>([]);
-  const teamOptions = teams.map((team) => ({ value: team.id, label: team.name }));
-  const { control, handleSubmit } = useForm<CreateItem>({ defaultValues: { dutyTypeName: "" } });
+  const [teamsWithUsers, setTeamsWithUsers] = useState<(TTeam & { users: TTeamUserSort[] })[]>([]);
+  const { control, handleSubmit } = useForm<CreateItem>({ defaultValues: { userIds: [] } });
   const { session } = useSession();
   const router = useRouter();
 
-  const onCreate = async (data: CreateItem) => {
-    console.log(data);
+  const onCreate = async (fieldValues: CreateItem) => {
+    try {
+      console.log(fieldValues);
 
-    const token = `Bearer ${session}`;
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/duty-types";
-    const url = `${baseUrl}${endpoint}`;
+      // Process form fieldsValues
+      const requiredValues = pickProperties(fieldValues, ["dutyTypeName", "userIds"]);
+      if (hasNullishValue(requiredValues)) {
+        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+        return;
+      }
+      if (!fieldValues.dutyTypeName) return;
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(data),
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-    console.log(responseJson);
-    if (responseJson.statusCode === 200) {
-      MyToast.success("Thành công");
-      router.back();
-    } else {
-      MyToast.error(responseJson.error);
+      // map `fieldValues` to a `TDutyTypeCreate` object
+      const dutyTypeData: TDutyTypeCreate = {
+        dutyTypeName: fieldValues.dutyTypeName,
+        userIds: fieldValues.userIds,
+      };
+
+      // Make request
+      const responseJson = await createDutyType(session, dutyTypeData);
+
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Thành công");
+        router.back();
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
     }
   };
 
-  const fetchTeams = async () => {
-    const token = `Bearer ${session}`;
+  const onFetchAllTeamsWithUsers = async () => {
+    try {
+      const responseJson = await fetchAllTeamWithUsers(session);
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/teams";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-
-    if (responseJson.statusCode === 200) {
-      setTeams(responseJson.data.teams);
-    } else {
-      MyToast.error(responseJson.error);
+      if (responseJson.statusCode === 200) {
+        setTeamsWithUsers(responseJson.data.teams);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchTeams();
-    }, [])
+      onFetchAllTeamsWithUsers();
+    }, [session])
   );
+
+  const [checked, setChecked] = useState(false);
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
         <FormInput formInputProps={{ control: control, name: "dutyTypeName" }} label="Tên loại trực" required placeholder="Nhập tên loại trực..." />
-        <FormMultiSelect
-          useControllerProps={{ control: control, name: "teamIds" }}
-          label="Phòng ban áp dụng"
-          required
-          placeholder="Chọn phòng ban..."
-          options={teamOptions}
-        />
+
+        {/* Accordions */}
+        <List.AccordionGroup>
+          {teamsWithUsers.map((team) => (
+            <CustomListAccordionWithCheckbox
+              checkboxProps={{
+                status: checked ? "checked" : "unchecked",
+                onPress: () => setChecked(!checked),
+              }}
+              title={team.name}
+              id={team.id}
+              key={team.id}
+            >
+              {team.users.map((user) => (
+                <CustomListItemWithCheckbox
+                  title={user.name}
+                  checkboxProps={{
+                    status: checked ? "checked" : "unchecked",
+                    onPress: () => setChecked(!checked),
+                  }}
+                  key={user.id}
+                />
+              ))}
+            </CustomListAccordionWithCheckbox>
+          ))}
+        </List.AccordionGroup>
         {/* Add more FormInput components as needed */}
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>
@@ -100,6 +126,12 @@ export default function AddDutyType() {
     </View>
   );
 }
+
+const CheckboxPlaceholder = () => (
+  <View style={{ opacity: 0 }}>
+    <Checkbox status="unchecked" />
+  </View>
+);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

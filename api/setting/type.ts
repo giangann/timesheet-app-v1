@@ -52,6 +52,7 @@ export type TDutyCalendarDetail = {
 };
 
 export type TTeamUserSort = {
+  id: number;
   address: string | null;
   email: string | null;
   identifyCard: string;
