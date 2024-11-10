@@ -4,6 +4,9 @@ import { ROLE_CODE } from "@/constants/Misc";
 export function hasNullishValue(obj: Record<string, any>): boolean {
   return Object.values(obj).some((value) => value === null || value === undefined);
 }
+export function isDefined<T>(val: T | undefined | null): val is T {
+  return val !== undefined && val !== null;
+}
 
 export function marginByRole(role: ROLE_CODE | undefined): number {
   let marginHorizontal: number = 40;

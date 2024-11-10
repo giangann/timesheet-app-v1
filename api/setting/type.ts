@@ -65,3 +65,8 @@ export type TDutyType = {
   dutyTypeName: string;
   teams: (TTeam & { users: TTeamUserSort[] })[];
 };
+
+export type TDutyTypeCreate = {
+  dutyTypeName: string;
+  userIds: number[];
+};
