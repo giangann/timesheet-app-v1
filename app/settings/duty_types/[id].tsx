@@ -1,20 +1,26 @@
-
-import { fetchDutyTypeDetail } from "@/api/setting";
-import { TDutyTypeDetail, TTeamUserSort } from "@/api/setting/type";
+import { fetchDutyTypeDetail, updateDutyType } from "@/api/setting";
+import { TDutyTypeDetail, TDutyTypeUpdate, TTeamUserSort } from "@/api/setting/type";
 import { TTeam } from "@/api/team/type";
+import { FormInput } from "@/components/FormInput";
 import { CustomListAccordionWithCheckbox, CustomListItemWithCheckbox } from "@/components/accordion";
 import { EditButton } from "@/components/button";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { _mockDutyTypeDetail } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { hasNullishValue, pickProperties } from "@/helper/common";
+import { arrayObjectToMap, combineMaps, getMapKeysBySpecifyValue, getMapValues } from "@/helper/map";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { List } from "react-native-paper";
+import { List, TouchableRipple } from "react-native-paper";
 
+type UpdateItem = {
+  dutyTypeName: string | undefined;
+};
 export default function DutyTypeDetail() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -23,11 +29,71 @@ export default function DutyTypeDetail() {
   const dutyTypeId = local.id as string;
   const dutyTypeName = local.dutyTypeName as string;
 
-  const [dutyType, setDutyType] = useState<TDutyTypeDetail>();
+  const initDutyType: TDutyTypeDetail = {
+    id: parseInt(dutyTypeId),
+    dutyTypeName: dutyTypeName,
+    teams: [],
+  };
+  const [dutyType, setDutyType] = useState<TDutyTypeDetail>(initDutyType);
   const [isEdit, setIsEdit] = useState(false);
   const toggleEditMode = () => setIsEdit((prev) => !prev);
 
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<UpdateItem>({ defaultValues: { dutyTypeName: dutyTypeName } });
   const { session } = useSession();
+
+  const maps = useMemo(() => {
+    if (!dutyType) return [];
+    const temps: Map<string, boolean>[] = [];
+    dutyType?.teams.forEach((team) => {
+      const map = arrayObjectToMap<TTeamUserSort & { isActive: boolean }, "id", boolean>(team.users, "id", (user) => user.isActive);
+      temps.push(map);
+    });
+    return temps;
+  }, [dutyType]);
+
+  const map1 = useMemo(() => combineMaps(maps), [maps]);
+  const onUpdateMap1 = useCallback(
+    (userId: number, newStatus: boolean) => {
+      const keyString = userId.toString();
+      map1.set(keyString, newStatus);
+    },
+    [map1]
+  );
+
+  const onUpdate = useCallback(
+    async (fieldValues: UpdateItem) => {
+      try {
+        // Process form fieldsValues
+        const requiredValues = pickProperties(fieldValues, ["dutyTypeName"]);
+        if (hasNullishValue(requiredValues)) {
+          MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+          return;
+        }
+        if (!fieldValues.dutyTypeName) return;
+        // map `fieldValues` to a `TDutyTypeCreate` object
+        const dutyTypeData: TDutyTypeUpdate = {
+          dutyTypeName: fieldValues.dutyTypeName,
+          userIds: getMapKeysBySpecifyValue(map1, true).map((idString) => parseInt(idString)),
+        };
+        // Make request
+        const responseJson = await updateDutyType(session, dutyTypeId, dutyTypeData);
+        if (responseJson.statusCode === 200) {
+          MyToast.success("Thành công");
+          setDutyType({ ...dutyType, dutyTypeName: dutyTypeData.dutyTypeName });
+          router.back();
+        } else {
+          MyToast.error(responseJson.error);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session, dutyTypeId, map1]
+  );
 
   const onfetchDutyTypeDetail = async () => {
     try {
@@ -35,7 +101,7 @@ export default function DutyTypeDetail() {
 
       if (responseJson.statusCode === 200) {
         // setDutyType({ ...responseJson.data, dutyTypeName: dutyTypeName, id: parseInt(dutyTypeId) });
-        setDutyType({ ..._mockDutyTypeDetail, dutyTypeName: dutyTypeName, id: parseInt(dutyTypeId) });
+        setDutyType({ ...initDutyType, ..._mockDutyTypeDetail });
       } else {
         MyToast.error(responseJson.error);
       }
@@ -56,6 +122,8 @@ export default function DutyTypeDetail() {
     });
   }, [router, isEdit, toggleEditMode]);
 
+  useEffect(() => {}, []);
+
   return (
     <>
       {!dutyType && (
@@ -65,23 +133,45 @@ export default function DutyTypeDetail() {
       )}
 
       {dutyType && (
-        <ScrollView contentContainerStyle={[styles.listBox, styles.container]}>
-          <Item title="Tên loại trực" content={dutyType.dutyTypeName} />
+        <View style={styles.container}>
+          <ScrollView contentContainerStyle={styles.listBox}>
+            {isEdit && (
+              <FormInput
+                formInputProps={{ control: control, name: "dutyTypeName" }}
+                label="Tên loại trực"
+                required
+                placeholder="Nhập tên loại trực..."
+              />
+            )}
+            {!isEdit && <Item title="Tên loại trực" content={dutyType.dutyTypeName} />}
 
-          {/* List users wrapper*/}
-          <View style={styles.itemCustom}>
-            <NunitoText type="body2" style={{ opacity: 0.5 }}>
-              Nhân viên tương ứng
-            </NunitoText>
+            {/* List users wrapper*/}
+            <View style={styles.itemCustom}>
+              <NunitoText type="body2" style={{ opacity: 0.5 }}>
+                Nhân viên tương ứng
+              </NunitoText>
 
-            {/* List users */}
-            <List.AccordionGroup>
-              {dutyType.teams.map((team) => (
-                <Team key={team.id} team={team} />
-              ))}
-            </List.AccordionGroup>
-          </View>
-        </ScrollView>
+              {/* List users */}
+              <List.AccordionGroup>
+                {dutyType.teams.map((team) => (
+                  <Team isEdit={isEdit} onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
+                ))}
+              </List.AccordionGroup>
+            </View>
+          </ScrollView>
+
+          {isEdit && (
+            <View style={styles.actionContainer}>
+              <TouchableRipple onPress={handleSubmit(onUpdate)} disabled={isSubmitting}>
+                <View style={styles.buttonContained}>
+                  <NunitoText type="body3" style={{ color: "white" }}>
+                    Lưu
+                  </NunitoText>
+                </View>
+              </TouchableRipple>
+            </View>
+          )}
+        </View>
       )}
     </>
   );
@@ -89,20 +179,63 @@ export default function DutyTypeDetail() {
 
 type TeamProps = {
   team: TTeam & { users: (TTeamUserSort & { isActive: boolean })[] };
+  onUpdateMap1: (userId: number, newStatus: boolean) => void;
+  isEdit: boolean;
 };
-const Team: React.FC<TeamProps> = ({ team }) => {
-  const numOfActiveUser = useMemo(() => team.users.filter((user) => user.isActive).length, [team]);
+const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
+  const [render, setRender] = useState(false);
+  const forceRender = () => setRender((prev) => !prev);
+
+  const checkedStatusMap = useMemo(
+    () => arrayObjectToMap<TTeamUserSort & { isActive: boolean }, "id", boolean>(team.users, "id", (user) => user.isActive),
+    [team]
+  );
+
+  const numOfActiveUserOrigin = useMemo(() => team.users.filter((user) => user.isActive).length, [team]);
+  const numOfActiveUser = useMemo(() => getMapValues(checkedStatusMap).filter((isActive) => isActive).length, [checkedStatusMap, render]);
+
+  const isAccordionUncheck = useMemo(() => {
+    return numOfActiveUser < team.users.length;
+  }, [checkedStatusMap, render]);
+
+  const onUpdateAll = useCallback(
+    (newStatus: boolean) => {
+      checkedStatusMap.forEach((_v, k) => {
+        // updated internal map
+        checkedStatusMap.set(k, newStatus);
+        // update parent map
+        onUpdateMap1(parseInt(k), newStatus);
+      });
+
+      forceRender();
+    },
+    [checkedStatusMap]
+  );
+
+  const onUpdate = useCallback(
+    (userId: number, newStatus: boolean) => {
+      // updated internal map
+      const keyString = userId.toString();
+      checkedStatusMap.set(keyString, newStatus);
+
+      // update parent map
+      onUpdateMap1(userId, newStatus);
+
+      forceRender();
+    },
+    [checkedStatusMap]
+  );
+
   return (
     <>
-      {numOfActiveUser > 0 && (
+      {(isEdit || numOfActiveUserOrigin > 0) && (
         <CustomListAccordionWithCheckbox
-          isShowCheckbox={false}
+          isShowCheckbox={isEdit}
           checkboxProps={{
-            status: "indeterminate",
+            status: isEdit ? (isAccordionUncheck ? "unchecked" : "checked") : "indeterminate",
+            onPress: () => onUpdateAll(isAccordionUncheck ? true : false),
           }}
-          title={
-            <NunitoText type="body2" style={{ color: "black", textTransform: "none" }}>{`P. ${team.name} (${numOfActiveUser})`}</NunitoText>
-          }
+          title={<NunitoText type="body2" style={{ color: "black", textTransform: "none" }}>{`P. ${team.name} (${numOfActiveUser})`}</NunitoText>}
           id={team.id}
           key={team.id}
           customContainerStyles={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
@@ -110,6 +243,8 @@ const Team: React.FC<TeamProps> = ({ team }) => {
           showDivide={true}
         >
           {team.users.map((user) => {
+            const isChecked = checkedStatusMap.get(user.id.toString()) ?? false;
+
             return (
               <CustomListItemWithCheckbox
                 title={
@@ -125,10 +260,11 @@ const Team: React.FC<TeamProps> = ({ team }) => {
                     </View>
                   </View>
                 }
+                isShowCheckbox={isEdit}
                 checkboxProps={{
-                  status: "indeterminate",
+                  status: isEdit ? (isChecked ? "checked" : "unchecked") : "indeterminate",
+                  onPress: () => onUpdate(user.id, !isChecked),
                 }}
-                isShowCheckbox={false}
                 key={user.id}
               />
             );
@@ -152,13 +288,12 @@ const Item = ({ title, content }: { title: string; content: string }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
   listBox: {
-    paddingBottom: 16,
+    padding: 16,
+    paddingBottom: 80,
     gap: 20,
   },
   item: {
@@ -171,13 +306,12 @@ const styles = StyleSheet.create({
   itemCustom: {
     gap: 8,
   },
-  approveContainer: {
+  actionContainer: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
   },
   buttonContainer: {
     flexDirection: "row",

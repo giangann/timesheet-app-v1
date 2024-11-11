@@ -1,9 +1,14 @@
-export function arrayObjectToMap<O, K extends keyof O, V>(arrayObjects: O[], key: K, iniValue: V): Map<string, V> {
+export function arrayObjectToMap<O, K extends keyof O, V>(arrayObjects: O[], key: K, iniValue: V): Map<string, V>;
+
+export function arrayObjectToMap<O, K extends keyof O, V>(arrayObjects: O[], key: K, iniValue: (obj: O) => V): Map<string, V>;
+
+export function arrayObjectToMap<O, K extends keyof O, V>(arrayObjects: O[], key: K, iniValue: V | ((obj: O) => V)): Map<string, V> {
   const result = new Map<string, V>();
 
   arrayObjects.forEach((obj) => {
-    const keyValue = String(obj[key]); // Convert to string to use as map key
-    result.set(keyValue, iniValue);
+    const keyValue = String(obj[key]);
+    const value = iniValue instanceof Function ? iniValue(obj) : iniValue;
+    result.set(keyValue, value);
   });
 
   return result;

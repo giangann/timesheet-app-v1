@@ -107,7 +107,7 @@ export default function AddDutyType() {
         </NunitoText>
         <List.AccordionGroup>
           {teamsWithUsers.map((team) => (
-            <TeamWithUsers map1={map1} onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
+            <TeamWithUsers onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
           ))}
         </List.AccordionGroup>
         {/* Add more FormInput components as needed */}
@@ -124,11 +124,10 @@ export default function AddDutyType() {
 }
 
 type TeamWithUsersProps = {
-  map1: Map<string, boolean>;
   onUpdateMap1: (userId: number, newStatus: boolean) => void;
   team: TTeam & { users: TTeamUserSort[] };
 };
-const TeamWithUsers: React.FC<TeamWithUsersProps> = ({ team, map1, onUpdateMap1 }) => {
+const TeamWithUsers: React.FC<TeamWithUsersProps> = ({ team, onUpdateMap1 }) => {
   const [render, setRender] = useState(false);
   const forceRender = () => setRender((prev) => !prev);
 
