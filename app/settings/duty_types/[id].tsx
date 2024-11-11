@@ -16,7 +16,7 @@ import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { List, TouchableRipple } from "react-native-paper";
+import { Button, List, Text, TouchableRipple, useTheme } from "react-native-paper";
 
 type UpdateItem = {
   dutyTypeName: string | undefined;
@@ -24,6 +24,7 @@ type UpdateItem = {
 export default function DutyTypeDetail() {
   const router = useRouter();
   const navigation = useNavigation();
+  const theme = useTheme();
 
   const local = useLocalSearchParams();
   const dutyTypeId = local.id as string;
@@ -162,13 +163,9 @@ export default function DutyTypeDetail() {
 
           {isEdit && (
             <View style={styles.actionContainer}>
-              <TouchableRipple onPress={handleSubmit(onUpdate)} disabled={isSubmitting}>
-                <View style={styles.buttonContained}>
-                  <NunitoText type="body3" style={{ color: "white" }}>
-                    Lưu
-                  </NunitoText>
-                </View>
-              </TouchableRipple>
+              <Button onPress={handleSubmit(onUpdate)} mode="contained" icon="content-save-all-outline" loading={isSubmitting} style={styles.buttonContained}>
+                Lưu
+              </Button>
             </View>
           )}
         </View>
@@ -321,11 +318,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   buttonContained: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: 44,
-    backgroundColor: "#0B3A82",
     borderRadius: 4,
+    height: 44,
+    // justifyContent: "center",
+    // alignItems: "center",
   },
   buttonOutlined: {
     justifyContent: "center",
