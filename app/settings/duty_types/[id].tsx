@@ -71,6 +71,19 @@ export default function DutyTypeDetail() {
     [map1]
   );
 
+  const onUpdateSideEffect = useCallback((dutyTypeData: TDutyTypeUpdate) => {
+    // update dutyTypeDetail in local
+    const newDutyTypeName = dutyTypeData.dutyTypeName;
+    const newDutyTypeTeams = dutyType.teams.map((team) => ({
+      ...team,
+      users: team.users.map((user) => ({
+        ...user,
+        isActive: map1.get(user.id.toString()) ?? false,
+      })),
+    }));
+    setDutyType((prev) => ({ ...prev, dutyTypeName: newDutyTypeName, teams: newDutyTypeTeams }));
+  }, [map1]);
+
   const onUpdate = useCallback(
     async (fieldValues: UpdateItem) => {
       try {
@@ -90,12 +103,15 @@ export default function DutyTypeDetail() {
         const responseJson = await updateDutyType(session, dutyTypeId, dutyTypeData);
         if (responseJson.statusCode === 200) {
           MyToast.success("Thành công");
-          router.back();
+
+          onUpdateSideEffect(dutyTypeData);
         } else {
           MyToast.error(responseJson.error);
         }
       } catch (error: any) {
         MyToast.error(error.message);
+      } finally {
+        toggleEditMode();
       }
     },
     [session, dutyTypeId, map1]
