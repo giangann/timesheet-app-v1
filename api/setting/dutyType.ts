@@ -79,7 +79,7 @@ export async function createDutyType(session: string | undefined | null, data: T
 export async function updateDutyType(session: string | undefined | null, dutyTypeId: number | string, data: TDutyTypeUpdate) {
   const token = `Bearer ${session}`;
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/duty-types";
+  const endpoint = "/duty-type";
   const querystring = paramsObjectToQueryString({ id: dutyTypeId });
   const url = `${baseUrl}${endpoint}${querystring}`;
 

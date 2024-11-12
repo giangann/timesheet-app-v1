@@ -13,8 +13,8 @@ import { arrayObjectToMap, combineMaps, getMapKeysBySpecifyValue, getMapValues }
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { UseFormReturn, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, List, Text, TouchableRipple, useTheme } from "react-native-paper";
 
@@ -22,9 +22,9 @@ type UpdateItem = {
   dutyTypeName: string | undefined;
 };
 export default function DutyTypeDetail() {
+  // CONSTANTS
   const router = useRouter();
   const navigation = useNavigation();
-  const theme = useTheme();
 
   const local = useLocalSearchParams();
   const dutyTypeId = local.id as string;
@@ -35,17 +35,20 @@ export default function DutyTypeDetail() {
     dutyTypeName: dutyTypeName,
     teams: [],
   };
-  const [dutyType, setDutyType] = useState<TDutyTypeDetail>(initDutyType);
-  const [isEdit, setIsEdit] = useState(false);
-  const toggleEditMode = () => setIsEdit((prev) => !prev);
 
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<UpdateItem>({ defaultValues: { dutyTypeName: dutyTypeName } });
+
   const { session } = useSession();
 
+  // STATES
+  const [dutyType, setDutyType] = useState<TDutyTypeDetail>(initDutyType);
+  const [isEdit, setIsEdit] = useState(false);
+
+  // VARS
   const maps = useMemo(() => {
     if (!dutyType) return [];
     const temps: Map<string, boolean>[] = [];
@@ -55,8 +58,11 @@ export default function DutyTypeDetail() {
     });
     return temps;
   }, [dutyType]);
-
   const map1 = useMemo(() => combineMaps(maps), [maps]);
+
+  // HANDLERS
+  const toggleEditMode = () => setIsEdit((prev) => !prev);
+
   const onUpdateMap1 = useCallback(
     (userId: number, newStatus: boolean) => {
       const keyString = userId.toString();
@@ -84,7 +90,6 @@ export default function DutyTypeDetail() {
         const responseJson = await updateDutyType(session, dutyTypeId, dutyTypeData);
         if (responseJson.statusCode === 200) {
           MyToast.success("Thành công");
-          setDutyType({ ...dutyType, dutyTypeName: dutyTypeData.dutyTypeName });
           router.back();
         } else {
           MyToast.error(responseJson.error);
@@ -111,6 +116,7 @@ export default function DutyTypeDetail() {
     }
   };
 
+  // EFFECTS
   useFocusEffect(
     useCallback(() => {
       onfetchDutyTypeDetail();
@@ -123,8 +129,6 @@ export default function DutyTypeDetail() {
     });
   }, [router, isEdit, toggleEditMode]);
 
-  useEffect(() => {}, []);
-
   return (
     <>
       {!dutyType && (
@@ -136,34 +140,18 @@ export default function DutyTypeDetail() {
       {dutyType && (
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
-            {isEdit && (
-              <FormInput
-                formInputProps={{ control: control, name: "dutyTypeName" }}
-                label="Tên loại trực"
-                required
-                placeholder="Nhập tên loại trực..."
-              />
-            )}
-            {!isEdit && <Item title="Tên loại trực" content={dutyType.dutyTypeName} />}
-
-            {/* List users wrapper*/}
-            <View style={styles.itemCustom}>
-              <NunitoText type="body2" style={{ opacity: 0.5 }}>
-                Nhân viên tương ứng
-              </NunitoText>
-
-              {/* List users */}
-              <List.AccordionGroup>
-                {dutyType.teams.map((team) => (
-                  <Team isEdit={isEdit} onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
-                ))}
-              </List.AccordionGroup>
-            </View>
+            <Content dutyType={dutyType} formProps={{ control }} isEdit={isEdit} onUpdateMap1={onUpdateMap1} />
           </ScrollView>
 
           {isEdit && (
             <View style={styles.actionContainer}>
-              <Button onPress={handleSubmit(onUpdate)} mode="contained" icon="content-save-all-outline" loading={isSubmitting} style={styles.buttonContained}>
+              <Button
+                onPress={handleSubmit(onUpdate)}
+                mode="contained"
+                icon="content-save-all-outline"
+                loading={isSubmitting}
+                style={styles.buttonContained}
+              >
                 Lưu
               </Button>
             </View>
@@ -173,6 +161,51 @@ export default function DutyTypeDetail() {
     </>
   );
 }
+
+type ContentProps = {
+  isEdit: boolean;
+  formProps: Pick<UseFormReturn<UpdateItem>, "control">;
+  dutyType: TDutyTypeDetail;
+  onUpdateMap1: (userId: number, newStatus: boolean) => void;
+};
+const RawContent: React.FC<ContentProps> = ({ isEdit, formProps, dutyType, onUpdateMap1 }) => {
+  const { control } = formProps;
+  return (
+    <>
+      {isEdit && (
+        <FormInput formInputProps={{ control: control, name: "dutyTypeName" }} label="Tên loại trực" required placeholder="Nhập tên loại trực..." />
+      )}
+      {!isEdit && <Item title="Tên loại trực" content={dutyType.dutyTypeName} />}
+
+      {/* List users wrapper*/}
+      <View style={styles.itemCustom}>
+        <TeamGroup dutyType={dutyType} isEdit={isEdit} onUpdateMap1={onUpdateMap1} />
+      </View>
+    </>
+  );
+};
+const Content = React.memo(RawContent);
+
+type TeamGroupProps = {
+  dutyType: TDutyTypeDetail;
+  isEdit: boolean;
+  onUpdateMap1: (userId: number, newStatus: boolean) => void;
+};
+const RawTeamGroup: React.FC<TeamGroupProps> = ({ dutyType, isEdit, onUpdateMap1 }) => {
+  return (
+    <>
+      <NunitoText type="body2" style={{ opacity: 0.5 }}>
+        Nhân viên tương ứng
+      </NunitoText>
+      <List.AccordionGroup>
+        {dutyType.teams.map((team) => (
+          <Team isEdit={isEdit} onUpdateMap1={onUpdateMap1} team={team} key={team.id} />
+        ))}
+      </List.AccordionGroup>
+    </>
+  );
+};
+const TeamGroup = React.memo(RawTeamGroup);
 
 type TeamProps = {
   team: TTeam & { users: (TTeamUserSort & { isActive: boolean })[] };
