@@ -1,4 +1,5 @@
 import { TDutyFormCreate } from "@/api/form/types";
+import { Delayed } from "@/components/Delayed";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
@@ -10,13 +11,26 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts/ctx";
 import { NoData } from "@/ui/NoData";
-import { Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Button, Divider, Menu } from "react-native-paper";
+import {
+  AnimatedFAB,
+  Avatar,
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  IconButton,
+  Menu,
+  SegmentedButtons,
+  Text,
+  TextInput,
+  TouchableRipple,
+} from "react-native-paper";
 
 export default function CreateDutyForm() {
   const { session } = useSession();
@@ -135,6 +149,7 @@ type DutyTypeItemProps = {
 const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
   const [visible, setVisible] = useState(false);
   const [openDelModal, setOpenDelModal] = useState(false);
+  const [openSelectUsersModal, setOpenSelectUsersModal] = useState(false);
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -142,7 +157,14 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
   const openCfModal = () => setOpenDelModal(true);
   const closeCfModal = () => setOpenDelModal(false);
 
+  const openFullScrModal = () => setOpenSelectUsersModal(true);
+  const closeFullScrModal = () => setOpenSelectUsersModal(false);
+
   // press delete item of menu handler
+  const onPressAttendee = useCallback(() => {
+    closeMenu();
+    openFullScrModal();
+  }, []);
   const onPressDelete = useCallback(() => {
     closeMenu();
     openCfModal();
@@ -200,7 +222,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
             </TouchableHighlight>
           }
         >
-          <Menu.Item onPress={() => {}} title="Thành viên" />
+          <Menu.Item onPress={onPressAttendee} title="Thành viên" />
           <Divider />
           <Menu.Item onPress={onPressDelete} title="Xóa" />
         </Menu>
@@ -208,9 +230,135 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
 
       {/* Delete confirm modal */}
       {openDelModal && <MyModal title="Xác nhận xóa" onClose={closeCfModal} />}
+
+      {/* Select users modal */}
+      {openSelectUsersModal && <SelectDutyTypeUsersModal onClose={closeFullScrModal} />}
     </View>
   );
 });
+
+type SelectDutyTypeUsersModalProps = {
+  onClose: () => void;
+};
+type TFilterCheckStatus = "checked" | "all";
+const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(({ onClose }) => {
+  const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
+  const [text, setText] = useState("");
+  const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
+
+  const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
+  const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
+
+  return (
+    <Modal transparent animationType="slide">
+      <View style={styles.modalContainer}>
+        <Delayed waitBeforeShow={100}>
+          <>
+            {/* Title */}
+            <View style={styles.modalTitleWrapper}>
+              <NunitoText type="heading2" style={styles.modalTitle}>
+                Loại trực lãnh đạo - chọn người tham gia
+              </NunitoText>
+              <TouchableOpacity onPress={onClose}>
+                <AntDesign name="close" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Content */}
+            <View style={styles.modalContentContainer}>
+              <View style={{ gap: 2 }}>
+                {/* Filter */}
+                <View style={styles.filterContainer}>
+                  <View style={styles.filterItem}>
+                    <SegmentedButtons
+                      value={filterCheckStatus}
+                      onValueChange={(value: string) => setFilterCheckStatus(value as TFilterCheckStatus)}
+                      buttons={[
+                        { value: "all", label: "Tất cả" },
+                        { value: "checked", label: "Đã chọn" },
+                      ]}
+                      style={{ marginLeft: -1 }}
+                    />
+                  </View>
+                  <IconButton
+                    style={{ margin: 0 }}
+                    icon="tune-variant"
+                    size={24}
+                    mode="outlined"
+                    rippleColor={"grey"}
+                    onPress={onOpenFilterUserModal}
+                    animated
+                  />
+                </View>
+
+                {/* Search */}
+                <TextInput
+                  style={{ height: 36 }}
+                  mode="outlined"
+                  label="Tên thành viên"
+                  value={text}
+                  onChangeText={(text) => setText(text)}
+                  placeholder="nhập tên để tìm kiếm "
+                />
+              </View>
+
+              {/* List */}
+              <View style={{ gap: 10, paddingTop: 16 }}>
+                <SuggestUserItem />
+                <SuggestUserItem />
+              </View>
+            </View>
+
+            <AnimatedFAB
+              icon={"plus"}
+              label={"Label"}
+              extended={false}
+              onPress={() => {
+                console.log("Pressed");
+                onClose();
+              }}
+              visible={true}
+              animateFrom={"right"}
+              iconMode={"static"}
+              style={[styles.fabStyle]}
+            />
+
+            {openFilterUserModal && (
+              <MySlideModal onClose={onCloseFilterUserModal}>
+                <NunitoText>Filter users modal</NunitoText>
+              </MySlideModal>
+            )}
+          </>
+        </Delayed>
+      </View>
+    </Modal>
+  );
+});
+
+type SuggestUserItemProps = {};
+const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(() => {
+  const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
+  const [checked, setChecked] = useState(false);
+
+  const toggleCheck = () => setChecked((prev) => !prev);
+  return (
+    <Card>
+      <TouchableRipple borderless rippleColor="rgba(0, 0, 0, .32)" onPress={toggleCheck}>
+        <View style={styles.userCardWrapper}>
+          <Card.Title title="Đặng Minh Chính" subtitle="P. Hệ thống thông tin" left={LeftContent} />
+          <Card.Content>
+            <Text variant="bodyMedium">Chức vụ: Lãnh đạo phòng</Text>
+            <Text variant="bodyMedium">Số lần trực: 30</Text>
+          </Card.Content>
+          <View style={styles.userCheckboxWrapper}>
+            <Checkbox status={checked ? "checked" : "unchecked"} />
+          </View>
+        </View>
+      </TouchableRipple>
+    </Card>
+  );
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -292,5 +440,57 @@ const styles = StyleSheet.create({
   dutyTypeUserTeam: {
     color: "black",
     opacity: 0.75,
+  },
+
+  modalContainer: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "white",
+    position: "relative",
+  },
+
+  modalTitleWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+
+  modalTitle: {
+    color: "black",
+  },
+
+  modalContentContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flex: 1,
+  },
+
+  filterContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  filterItem: {
+    flexGrow: 1,
+  },
+
+  fabStyle: {
+    bottom: 16,
+    right: 16,
+    position: "absolute",
+  },
+
+  userCardWrapper: {
+    position: "relative",
+    paddingBottom: 16,
+  },
+  userCheckboxWrapper: {
+    position: "absolute",
+    right: 20,
+    top: 20,
   },
 });
