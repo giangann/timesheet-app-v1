@@ -127,12 +127,20 @@ export type TDutyFormDetail = {
     roleCode: ROLE_CODE;
   }[];
 };
+
+export type TDutyFormCreateDutyTypeField = {
+  dutyTypeId: number;
+  userIds: number[];
+};
 export type TDutyFormCreate = {
-  dutyCalendarId: number;
-  userIdentifyCard: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  dutyTypes: TDutyFormCreateDutyTypeField[];
   userApproveIdentifyCard: string;
-  attachFile?: File | null;
   note?: string | null;
+  salaryCoefficientTypeId: number;
+  attachFile?: File | null;
 };
 export type TDutyFormCreateNoti = {
   message: string;
@@ -164,22 +172,22 @@ export type TApproveDutyFormFilterParams = {
 };
 
 export type TDutySuggestedUser = {
-  name: string,
-  id: number,
-  teamName: string,
-  roleName: string,
-  roleCode: string,
-  teamCode: string | null,
-  numOnDuty: number,
-  identifyCard: string,
-}
+  name: string;
+  id: number;
+  teamName: string;
+  roleName: string;
+  roleCode: string;
+  teamCode: string | null;
+  numOnDuty: number;
+  identifyCard: string;
+};
 
 export type TDutySuggestedUserFilterParams = {
-  startDate: string,
-  endDate: string,
-  date: string,
-  sort?: string
-}
+  startDate: string;
+  endDate: string;
+  date: string;
+  sort?: string;
+};
 
 /*
 const sampleResponse = {
