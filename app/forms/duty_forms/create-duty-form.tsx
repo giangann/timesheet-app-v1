@@ -1,4 +1,4 @@
-import { TDutyFormCreate } from "@/api/form/types";
+import { TDutyFormCreate, TDutyFormCreateDutyTypeField } from "@/api/form/types";
 import { Delayed } from "@/components/Delayed";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
@@ -9,13 +9,14 @@ import { MyModal } from "@/components/MyModal";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
+import { _mockDutyTypes } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { NoData } from "@/ui/NoData";
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { memo, useCallback, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Modal, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { useFieldArray, useForm } from "react-hook-form";
+import { Modal, Pressable, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   AnimatedFAB,
@@ -92,12 +93,27 @@ export default function CreateDutyForm() {
 }
 
 type ChooseDutyTypesAndDutyTypeUsersProps = {};
+type TFormFields = {
+  name: string;
+  dutyTypes: TDutyFormCreateDutyTypeField[];
+};
 const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({}) => {
   const [openSlideModal, setOpenSlideModal] = useState(false);
 
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
+  const { control } = useForm<TFormFields>();
+  const { fields, append, prepend, update } = useFieldArray({ name: "dutyTypes", control: control });
+
+  const onDutyTypeSelect = useCallback(
+    (dutyTypeId: number) => {
+      append({ dutyTypeId: dutyTypeId, userIds: [] });
+      onCloseDutyTypesModal();
+      console.log({fields})
+    },
+    [append, onCloseDutyTypesModal,fields]
+  );
   return (
     <View style={styles.dutyTypeFieldContainer}>
       {/*  */}
@@ -106,9 +122,12 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
       {/*  */}
       <View style={styles.dutyTypeGroup}>
         {/* DutyType Item With Users- Sample */}
-        <DutyTypeItem users={[{ id: 1, name: "", roleName: "", teamName: "" }]} />
+        {/* <DutyTypeItem users={[{ id: 1, name: "", roleName: "", teamName: "" }]} /> */}
         {/* DutyType Item Without Users- Sample */}
-        <DutyTypeItem users={[]} />
+
+        {fields.map((selectedDutyType) => (
+          <DutyTypeItem key={selectedDutyType.dutyTypeId} users={[]} />
+        ))}
       </View>
 
       {/*  */}
@@ -118,7 +137,11 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
       <>
         {openSlideModal && (
           <MySlideModal onClose={onCloseDutyTypesModal}>
-            <NunitoText>Hello world</NunitoText>
+            {_mockDutyTypes.map((dutyType) => (
+              <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id)}>
+                {dutyType.dutyTypeName}
+              </Button>
+            ))}
           </MySlideModal>
         )}
       </>

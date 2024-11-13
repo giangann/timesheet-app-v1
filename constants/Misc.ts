@@ -446,3 +446,13 @@ export const _mockDutyTypeDetail: Pick<TDutyTypeDetail, "teams"> = {
     },
   ],
 };
+
+export type TFakeDutyType = {
+  id: number;
+  dutyTypeName: string;
+};
+export const _mockDutyTypes: TFakeDutyType[] = [
+  { id: 1, dutyTypeName: "Truc co yeu" },
+  { id: 2, dutyTypeName: "Truc kĩ thuật" },
+  { id: 3, dutyTypeName: "Truc lãnh đạo" },
+];
