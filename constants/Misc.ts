@@ -1,3 +1,4 @@
+import { TDutySuggestedUser } from "@/api/form/types";
 import { TDutyType, TDutyTypeDetail } from "@/api/setting/type";
 import { TPagiParams } from "@/types";
 
@@ -451,8 +452,102 @@ export type TFakeDutyType = {
   id: number;
   dutyTypeName: string;
 };
+
 export const _mockDutyTypes: TFakeDutyType[] = [
   { id: 1, dutyTypeName: "Truc co yeu" },
   { id: 2, dutyTypeName: "Truc kĩ thuật" },
   { id: 3, dutyTypeName: "Truc lãnh đạo" },
+];
+
+export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
+  {
+    name: "Nguyễn Quang Ngân",
+    id: 258,
+    identifyCard: "033083007498",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Tổng hợp",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Hoàng Phương Nhung",
+    id: 259,
+    identifyCard: "001185010406",
+    roleName: "Văn thư",
+    roleCode: "ARCHIVIST",
+    teamName: "Tổng hợp",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Thị Thanh Hiền",
+    id: 260,
+    identifyCard: "037191006029",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Hệ thống thông tin",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Văn Hải",
+    id: 270,
+    identifyCard: "001073006920",
+    roleName: "Lãnh đạo phòng",
+    roleCode: "TEAM_DIRECTOR",
+    teamName: "cơ yếu",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Văn Quý",
+    id: 273,
+    identifyCard: "035083006087",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "cơ yếu",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Văn Thao",
+    id: 263,
+    identifyCard: "022086001298",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Hệ thống mạng máy tính",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Lê Thế Đạt",
+    id: 266,
+    identifyCard: "001078002960",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Hỗ trợ kỹ thuật",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Cao Cường",
+    id: 267,
+    identifyCard: "001081019700",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Hỗ trợ kỹ thuật",
+    teamCode: null,
+    numOnDuty: 0,
+  },
+  {
+    name: "Nguyễn Văn Sinh",
+    id: 268,
+    identifyCard: "030082001030",
+    roleName: "Chuyên viên",
+    roleCode: "SPECIALIST",
+    teamName: "Hỗ trợ kỹ thuật",
+    teamCode: null,
+    numOnDuty: 0,
+  },
 ];

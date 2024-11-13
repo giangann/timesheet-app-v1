@@ -5,18 +5,18 @@ import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
-import { MyModal } from "@/components/MyModal";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
-import { _mockDutyTypes } from "@/constants/Misc";
+import { _mockDutySuggestedUsers, _mockDutyTypes } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { arrayObjectToMap } from "@/helper/map";
 import { NoData } from "@/ui/NoData";
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Modal, Pressable, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   AnimatedFAB,
@@ -95,7 +95,7 @@ export default function CreateDutyForm() {
 type ChooseDutyTypesAndDutyTypeUsersProps = {};
 type TFormFields = {
   name: string;
-  dutyTypes: TDutyFormCreateDutyTypeField[];
+  dutyTypes: (TDutyFormCreateDutyTypeField & { dutyTypeName: string })[];
 };
 const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({}) => {
   const [openSlideModal, setOpenSlideModal] = useState(false);
@@ -103,17 +103,25 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-  const { control } = useForm<TFormFields>();
-  const { fields, append, prepend, update } = useFieldArray({ name: "dutyTypes", control: control });
+  const { control, watch } = useForm<TFormFields>();
+  const { fields, append, prepend, update, remove } = useFieldArray({ name: "dutyTypes", control: control });
 
   const onDutyTypeSelect = useCallback(
-    (dutyTypeId: number) => {
-      append({ dutyTypeId: dutyTypeId, userIds: [] });
+    (dutyTypeId: number, dutyTypeName: string) => {
+      append({ dutyTypeName, dutyTypeId, userIds: [] });
       onCloseDutyTypesModal();
-      console.log({fields})
     },
-    [append, onCloseDutyTypesModal,fields]
+    [append, onCloseDutyTypesModal, fields]
   );
+
+  const onDutyTypeDelete = useCallback(
+    (index: number) => {
+      remove(index);
+    },
+    [remove]
+  );
+
+  console.log({ fields });
   return (
     <View style={styles.dutyTypeFieldContainer}>
       {/*  */}
@@ -121,12 +129,18 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
 
       {/*  */}
       <View style={styles.dutyTypeGroup}>
-        {/* DutyType Item With Users- Sample */}
-        {/* <DutyTypeItem users={[{ id: 1, name: "", roleName: "", teamName: "" }]} /> */}
-        {/* DutyType Item Without Users- Sample */}
-
-        {fields.map((selectedDutyType) => (
-          <DutyTypeItem key={selectedDutyType.dutyTypeId} users={[]} />
+        {fields.map((selectedDutyType, index) => (
+          <DutyTypeItem
+            key={selectedDutyType.dutyTypeId}
+            users={_mockDutySuggestedUsers}
+            selectedUserIds={selectedDutyType.userIds}
+            dutyType={{
+              dutyTypeName: selectedDutyType.dutyTypeName,
+              dutyTypeId: selectedDutyType.dutyTypeId,
+            }}
+            deleteDutyType={onDutyTypeDelete}
+            fieldArrayIndex={index}
+          />
         ))}
       </View>
 
@@ -138,7 +152,7 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
         {openSlideModal && (
           <MySlideModal onClose={onCloseDutyTypesModal}>
             {_mockDutyTypes.map((dutyType) => (
-              <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id)}>
+              <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id, dutyType.dutyTypeName)}>
                 {dutyType.dutyTypeName}
               </Button>
             ))}
@@ -167,18 +181,34 @@ type DutyTypeItemUserInfo = {
   teamName: string;
 };
 type DutyTypeItemProps = {
+  dutyType: {
+    dutyTypeId: number;
+    dutyTypeName: string;
+  };
   users: DutyTypeItemUserInfo[];
+  selectedUserIds: number[];
+  deleteDutyType: (index: number) => void;
+  fieldArrayIndex: number;
 };
-const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
+const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users, selectedUserIds, dutyType, deleteDutyType, fieldArrayIndex }) => {
+  // States
   const [visible, setVisible] = useState(false);
   const [openDelModal, setOpenDelModal] = useState(false);
   const [openSelectUsersModal, setOpenSelectUsersModal] = useState(false);
 
+  // Variables
+  const allUsersMap: Map<string, DutyTypeItemUserInfo> = useMemo(() => arrayObjectToMap(users, "id"), [users]);
+  const selectedUsers: DutyTypeItemUserInfo[] = useMemo(() => {
+    return selectedUserIds.map((userId: number) => {
+      const userInfo = allUsersMap.get(userId.toString()) as DutyTypeItemUserInfo;
+      return userInfo;
+    });
+  }, [selectedUserIds]);
+  const isNoUser = useMemo(() => selectedUserIds.length <= 0, [selectedUserIds]);
+
+  // Handlers
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-
-  const openCfModal = () => setOpenDelModal(true);
-  const closeCfModal = () => setOpenDelModal(false);
 
   const openFullScrModal = () => setOpenSelectUsersModal(true);
   const closeFullScrModal = () => setOpenSelectUsersModal(false);
@@ -189,11 +219,9 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
     openFullScrModal();
   }, []);
   const onPressDelete = useCallback(() => {
-    closeMenu();
-    openCfModal();
-  }, []);
+    deleteDutyType(fieldArrayIndex);
+  }, [deleteDutyType, fieldArrayIndex]);
 
-  const isNoUser = useMemo(() => users.length <= 0, [users]);
   return (
     <View style={styles.dutyTypeItemBox}>
       <View style={styles.dutyTypeItemContainer}>
@@ -202,7 +230,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
             <View style={styles.bullet} />
           </View>
           <NunitoText type="body2" style={styles.dutyTypeName}>
-            Trực kĩ thuật
+            {dutyType.dutyTypeName}
           </NunitoText>
         </View>
 
@@ -214,22 +242,16 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
 
         {!isNoUser && (
           <View style={styles.dutyTypeUserContainer}>
-            <View style={styles.dutyTypeUser}>
-              <NunitoText type="body3" style={styles.dutyTypeUserName}>
-                Đặng Xuân Tiến - Chuyên viên
-              </NunitoText>
-              <NunitoText type="body4" style={styles.dutyTypeUserTeam}>
-                Phòng Hệ Thống Thông Tin
-              </NunitoText>
-            </View>
-            <View style={styles.dutyTypeUser}>
-              <NunitoText type="body3" style={styles.dutyTypeUserName}>
-                Nguyễn Văn Khái - Chuyên viên
-              </NunitoText>
-              <NunitoText type="body4" style={styles.dutyTypeUserTeam}>
-                Phòng Hệ Thống Thông Tin
-              </NunitoText>
-            </View>
+            {selectedUsers.map((user) => (
+              <View style={styles.dutyTypeUser} key={user.id}>
+                <NunitoText type="body3" style={styles.dutyTypeUserName}>
+                  {`${user.name} - ${user.roleName}`}
+                </NunitoText>
+                <NunitoText type="body4" style={styles.dutyTypeUserTeam}>
+                  {user.teamName}
+                </NunitoText>
+              </View>
+            ))}
           </View>
         )}
       </View>
@@ -250,9 +272,6 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ users }) => {
           <Menu.Item onPress={onPressDelete} title="Xóa" />
         </Menu>
       </View>
-
-      {/* Delete confirm modal */}
-      {openDelModal && <MyModal title="Xác nhận xóa" onClose={closeCfModal} />}
 
       {/* Select users modal */}
       {openSelectUsersModal && <SelectDutyTypeUsersModal onClose={closeFullScrModal} />}
