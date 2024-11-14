@@ -32,7 +32,7 @@ export default function DutyTypeDetail() {
 
   const initDutyType: TDutyTypeDetail = {
     id: parseInt(dutyTypeId),
-    dutyTypeName: dutyTypeName,
+    name: dutyTypeName,
     teams: [],
   };
 
@@ -122,8 +122,8 @@ export default function DutyTypeDetail() {
       const responseJson = await fetchDutyTypeDetail(session, dutyTypeId);
 
       if (responseJson.statusCode === 200) {
-        // setDutyType({ ...responseJson.data, dutyTypeName: dutyTypeName, id: parseInt(dutyTypeId) });
-        setDutyType({ ...initDutyType, ..._mockDutyTypeDetail });
+        setDutyType(responseJson.data.dutyType);
+        // setDutyType({ ...initDutyType, ..._mockDutyTypeDetail });
       } else {
         MyToast.error(responseJson.error);
       }
@@ -191,7 +191,7 @@ const RawContent: React.FC<ContentProps> = ({ isEdit, formProps, dutyType, onUpd
       {isEdit && (
         <FormInput formInputProps={{ control: control, name: "dutyTypeName" }} label="Tên loại trực" required placeholder="Nhập tên loại trực..." />
       )}
-      {!isEdit && <Item title="Tên loại trực" content={dutyType.dutyTypeName} />}
+      {!isEdit && <Item title="Tên loại trực" content={dutyType.name} />}
 
       {/* List users wrapper*/}
       <View style={styles.itemCustom}>
@@ -285,7 +285,7 @@ const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
           id={team.id}
           key={team.id}
           customContainerStyles={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
-          style={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
+          style={{ backgroundColor: `red`, borderRadius: 4 }}
           showDivide={true}
         >
           {team.users.map((user) => {

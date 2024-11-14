@@ -70,7 +70,7 @@ export type TDutyType = {
 
 export type TDutyTypeDetail = {
   id: number;
-  dutyTypeName: string;
+  name: string;
   teams: (TTeam & { users: (TTeamUserSort & { isActive: boolean })[] })[];
 };
 
