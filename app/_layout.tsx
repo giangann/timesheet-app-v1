@@ -16,7 +16,6 @@ Sentry.init({
   dsn: "https://449a5848754654eceaa1424ad7da4636@o4507923809173504.ingest.us.sentry.io/4507928784732160",
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  enableSpotlight: __DEV__,
 });
 
 function Root() {
