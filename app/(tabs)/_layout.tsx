@@ -125,8 +125,6 @@ export default function AppLayout() {
           }}
         />
       </Tabs>
-
-      <StatusBar style="inverted" />
     </>
   );
 }
