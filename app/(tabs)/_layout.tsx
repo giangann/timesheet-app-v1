@@ -91,6 +91,7 @@ export default function AppLayout() {
               ios: {
                 headerShown: true,
                 headerShadowVisible: false,
+                headerTitleStyle: { color: "#0B3A82" },
                 headerStyle: {
                   height: Constants.statusBarHeight + 10,
                   backgroundColor: "#0B3A82",
