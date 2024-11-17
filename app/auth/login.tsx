@@ -47,7 +47,7 @@ const Login = () => {
       // Navigate after signing in. You may want to tweak this to ensure sign-in is
       // successful before navigating.
       MyToast.success("Đăng nhập thành công");
-      router.replace("/");
+      router.replace("/(tabs)");
     } catch (error: any) {
       if (error instanceof Error) MyToast.error(error.message);
       else MyToast.error("Unknown Error");

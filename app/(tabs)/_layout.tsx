@@ -81,7 +81,11 @@ export default function AppLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            headerShown: false,
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: "#0B3A82",
+              elevation: 0,
+            },
             title: "Trang chủ",
             tabBarIcon: ({ color }) => <MaterialIcons name="home" size={22} color={color} />,
           }}
@@ -126,7 +130,7 @@ export default function AppLayout() {
         />
       </Tabs>
 
-      <StatusBar style="auto" backgroundColor="#0B3A82"/>
+      <StatusBar style="light"/>
     </>
   );
 }
