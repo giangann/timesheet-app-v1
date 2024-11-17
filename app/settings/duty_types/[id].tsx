@@ -369,8 +369,6 @@ const styles = StyleSheet.create({
   buttonContained: {
     borderRadius: 4,
     height: 44,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   buttonOutlined: {
     justifyContent: "center",

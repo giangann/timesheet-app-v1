@@ -2,6 +2,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Modal, ModalProps, View, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { NunitoText } from "./text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { ScrollView } from "react-native";
 
 type Props = {
   onClose: () => void;
@@ -28,7 +29,7 @@ export function MySlideModal({ title, onClose, children, modalProps, modalContai
             </View>
           </View>
 
-          <View style={styles.childrenContainer}>{children}</View>
+          <ScrollView contentContainerStyle={styles.childrenContainer}>{children} </ScrollView>
         </View>
       </View>
     </Modal>
@@ -81,7 +82,6 @@ const styles = StyleSheet.create({
   childrenContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    flex:1,
   },
   buttonContainer: {
     flexDirection: "row",

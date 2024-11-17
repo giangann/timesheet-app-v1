@@ -1,4 +1,6 @@
 import { TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser } from "@/api/form/types";
+import { fetchSalaryCoefTypes } from "@/api/setting";
+import { TSalaryCoefficientType } from "@/api/setting/type";
 import { Delayed } from "@/components/Delayed";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
@@ -11,8 +13,12 @@ import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { _mockDutySuggestedUsers, _mockDutyTypes } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { arrayObjectToMap } from "@/helper/map";
+import { useDutyTypes } from "@/hooks/form";
+import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
 import { useRouter } from "expo-router";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -34,13 +40,36 @@ import {
 } from "react-native-paper";
 
 export default function CreateDutyForm() {
+  const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
+
   const { session } = useSession();
   const router = useRouter();
   const {
     control,
     formState: { isSubmitting },
+    handleSubmit
   } = useForm<TDutyFormCreate>();
+  const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
+    value: id,
+    label: `${name} (x${coefficient.toFixed(2)})`,
+  }));
+  const onFetchSalaryCoefTypes = async () => {
+    const responseJson = await fetchSalaryCoefTypes(session);
+    if (responseJson.statusCode === 200) {
+      setSalaryCoefficientTypes(responseJson.data.salaryCoefficientTypes);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  };
 
+  const onSubmit = useCallback(async (values: TDutyFormCreate) => {
+    console.log({ values });
+  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      onFetchSalaryCoefTypes();
+    }, [session])
+  );
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -68,7 +97,7 @@ export default function CreateDutyForm() {
           </View>
           <FormSelectV2
             useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
-            options={[]}
+            options={salaryCoefTypeOpts}
             label="Loại ngoài giờ"
             required
             placeholder="Chọn loại ngoài giờ"
@@ -86,6 +115,17 @@ export default function CreateDutyForm() {
 
           <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
+          <View style={styles.actionContainer}>
+            <Button
+              onPress={handleSubmit(onSubmit)}
+              mode="contained"
+              icon="content-save-all-outline"
+              loading={isSubmitting}
+              style={styles.buttonContained}
+            >
+              Lưu
+            </Button>
+          </View>
         </ScrollView>
       </View>
     </KeyboardAwareScrollView>
@@ -99,11 +139,12 @@ type TFormFields = {
 };
 const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({}) => {
   const [openSlideModal, setOpenSlideModal] = useState(false);
+  const { isLoading: isFetchingDutyTypes, dutyTypes } = useDutyTypes();
 
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-  const { control, watch } = useForm<TFormFields>();
+  const { control } = useForm<TFormFields>();
   const { fields, append, update, remove } = useFieldArray({ name: "dutyTypes", control: control });
 
   const onDutyTypeSelect = useCallback(
@@ -166,11 +207,19 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
       <>
         {openSlideModal && (
           <MySlideModal onClose={onCloseDutyTypesModal}>
-            {_mockDutyTypes.map((dutyType) => (
-              <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id, dutyType.dutyTypeName)}>
-                {dutyType.dutyTypeName}
-              </Button>
-            ))}
+            <Delayed>
+              {isFetchingDutyTypes && <SkeletonRectangleLoader height={100} />}
+              {!isFetchingDutyTypes && (
+                <>
+                  {dutyTypes.map((dutyType) => (
+                    <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id, dutyType.dutyTypeName)}>
+                      {dutyType.dutyTypeName}
+                    </Button>
+                  ))}
+                </>
+              )}
+              {!isFetchingDutyTypes && dutyTypes.length <= 0 && <NoData message="Không có loại trực" />}
+            </Delayed>
           </MySlideModal>
         )}
       </>
@@ -483,6 +532,17 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
+  },
+  actionContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+  },
+  buttonContained: {
+    borderRadius: 4,
+    height: 44,
   },
   timeRangeContainer: {
     flexDirection: "row",
