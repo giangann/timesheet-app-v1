@@ -125,6 +125,8 @@ export default function AppLayout() {
           }}
         />
       </Tabs>
+
+      <StatusBar style="auto" backgroundColor="#0B3A82"/>
     </>
   );
 }
