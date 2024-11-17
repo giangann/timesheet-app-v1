@@ -81,22 +81,22 @@ export default function AppLayout() {
       >
         <Tabs.Screen
           name="index"
-          options={Platform.select({
-            default: {
-              title: "Trang chủ",
-              tabBarIcon: ({ color }: any) => <MaterialIcons name="home" size={22} color={color} />,
-            },
-            android: {
-              headerShown: false,
-            },
-            ios: {
-              headerShown: true,
-              headerShadowVisible: false,
-              headerStyle: {
-                height: Constants.statusBarHeight,
+          options={{
+            title: "Trang chủ",
+            tabBarIcon: ({ color }: any) => <MaterialIcons name="home" size={22} color={color} />,
+            ...Platform.select({
+              android: {
+                headerShown: false,
               },
-            },
-          })}
+              ios: {
+                headerShown: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  height: Constants.statusBarHeight,
+                },
+              },
+            }),
+          }}
         />
         <Tabs.Screen
           name="form"
