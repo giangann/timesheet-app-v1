@@ -1,4 +1,5 @@
 import { registerExponentPushToken } from "@/api/push-noti";
+import { HapticTab } from "@/components/HapticTab";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { marginByRole } from "@/helper/common";
@@ -12,7 +13,7 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { Redirect, Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
@@ -61,144 +62,66 @@ export default function AppLayout() {
     <>
       <Tabs
         screenOptions={{
-          tabBarStyle: {
-            backgroundColor: "#0B3A82",
-            position: "absolute",
-            bottom: 20,
-            justifyContent: "center",
-            alignSelf: "center",
-            height: 63,
-            marginHorizontal: marginByRole(userInfo?.roleCode),
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            paddingBottom: 8,
-            borderRadius: 40,
-            borderWidth: 1,
-            borderTopWidth: 1,
-            borderColor: "#0B3A82",
-            borderTopColor: "#333",
-          },
-          tabBarShowLabel: false,
-          tabBarInactiveTintColor: "white",
           tabBarActiveTintColor: "#0B3A82",
-
-          headerTitleAlign: "center",
-          headerTintColor: "white",
+          tabBarButton: HapticTab,
+          tabBarStyle: Platform.select({
+            ios: {
+              // Use a transparent background on iOS to show the blur effect
+              position: "absolute",
+              backgroundColor: "#0B3A82",
+            },
+            default: {},
+          }),
           headerStyle: {
             backgroundColor: "#0B3A82",
           },
+          headerTitleAlign: "center",
+          headerTintColor: "white",
         }}
       >
-        {/* COMMON */}
         <Tabs.Screen
           name="index"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                <MaterialIcons name="home" size={18} color={color} />
-              </View>
-            ),
             title: "Trang chủ",
+            tabBarIcon: ({ color }) => <MaterialIcons name="home" size={18} color={color} />,
           }}
         />
         <Tabs.Screen
           name="form"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                <Ionicons name="newspaper-sharp" size={18} color={color} />
-              </View>
-            ),
             title: "Đơn của tôi",
+            tabBarIcon: ({ color }) => <Ionicons name="newspaper-sharp" size={18} color={color} />,
           }}
         />
         <Tabs.Screen
           name="timesheet"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                <Ionicons name="calendar" size={18} color={color} />
-              </View>
-            ),
             title: "Quản lý công - cá nhân",
+            tabBarIcon: ({ color }) => <Ionicons name="calendar" size={18} color={color} />,
           }}
         />
-
-        {/* ARCHIVIST ONLY */}
         <Tabs.Screen
           name="timeKeeping"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                <Ionicons name="today" size={18} color={color} />
-              </View>
-            ),
             title: "Quản lý công - đơn vị",
+            tabBarIcon: ({ color }) => <Ionicons name="today" size={18} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/timeKeeping",
           }}
         />
-
         <Tabs.Screen
           name="setting"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                {/* <FontAwesome name="user-o" size={18} color={color} /> */}
-                <Ionicons name="settings" size={18} color={color} />
-              </View>
-            ),
             title: "Cài đặt",
+            tabBarIcon: ({ color }) => <Ionicons name="settings" size={18} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
           }}
         />
-
-        {/* DIRECTOR ONLY */}
         <Tabs.Screen
           name="approveForm"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? "white" : "#0B3A82",
-                }}
-              >
-                <Octicons name="checklist" size={18} color={color} />
-              </View>
-            ),
             title: "Phê duyệt đơn",
+            tabBarIcon: ({ color }) => <Octicons name="checklist" size={18} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/approveForm",
           }}
         />
