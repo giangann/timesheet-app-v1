@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { registerExponentPushToken } from "@/api/push-noti";
 import { HapticTab } from "@/components/HapticTab";
 import { ROLE_CODE } from "@/constants/Misc";
@@ -80,15 +81,22 @@ export default function AppLayout() {
       >
         <Tabs.Screen
           name="index"
-          options={{
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: "#0B3A82",
-              elevation: 0,
+          options={Platform.select({
+            default: {
+              title: "Trang chủ",
+              tabBarIcon: ({ color }: any) => <MaterialIcons name="home" size={22} color={color} />,
             },
-            title: "Trang chủ",
-            tabBarIcon: ({ color }) => <MaterialIcons name="home" size={22} color={color} />,
-          }}
+            android: {
+              headerShown: false,
+            },
+            ios: {
+              headerShown: true,
+              headerShadowVisible: false,
+              headerStyle: {
+                height: Constants.statusBarHeight,
+              },
+            },
+          })}
         />
         <Tabs.Screen
           name="form"
@@ -102,6 +110,7 @@ export default function AppLayout() {
           options={{
             title: "Quản lý công - cá nhân",
             tabBarIcon: ({ color }) => <Ionicons name="calendar" size={22} color={color} />,
+            headerShown: true,
           }}
         />
         <Tabs.Screen
@@ -130,7 +139,7 @@ export default function AppLayout() {
         />
       </Tabs>
 
-      <StatusBar style="light"/>
+      <StatusBar style="light" />
     </>
   );
 }
