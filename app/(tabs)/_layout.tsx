@@ -92,7 +92,7 @@ export default function AppLayout() {
                 headerShown: true,
                 headerShadowVisible: false,
                 headerStyle: {
-                  height: Constants.statusBarHeight,
+                  height: Constants.statusBarHeight + 10,
                   backgroundColor: "#0B3A82",
                 },
               },
