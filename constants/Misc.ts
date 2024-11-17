@@ -468,6 +468,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Tổng hợp",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -478,6 +479,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "ARCHIVIST",
     teamName: "Tổng hợp",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -488,6 +490,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Hệ thống thông tin",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -498,6 +501,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "TEAM_DIRECTOR",
     teamName: "cơ yếu",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -508,6 +512,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "cơ yếu",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -518,6 +523,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Hệ thống mạng máy tính",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -528,6 +534,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Hỗ trợ kỹ thuật",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -538,6 +545,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Hỗ trợ kỹ thuật",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
   {
@@ -548,6 +556,7 @@ export const _mockDutySuggestedUsers: TDutySuggestedUser[] = [
     roleCode: "SPECIALIST",
     teamName: "Hỗ trợ kỹ thuật",
     teamCode: null,
+    teamId: 1,
     numOnDuty: 0,
   },
 ];

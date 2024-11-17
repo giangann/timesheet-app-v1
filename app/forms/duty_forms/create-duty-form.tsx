@@ -10,18 +10,19 @@ import FormUploadImage from "@/components/FormUploadImage";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
-import { _mockDutySuggestedUsers, _mockDutyTypes } from "@/constants/Misc";
+import { ROLE_CODE, _mockDutySuggestedUsers, _mockDutyTypes } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { arrayObjectToMap } from "@/helper/map";
-import { useDutyTypes } from "@/hooks/form";
+import { useDutyTypes, useSuggestDutyUsers, useUserApprovesByRole } from "@/hooks/form";
+import { TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useRouter } from "expo-router";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Control, useFieldArray, useForm } from "react-hook-form";
 import { Modal, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
@@ -42,17 +43,39 @@ import {
 export default function CreateDutyForm() {
   const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
 
+  const { isLoading: isFetchingUserApproves, users, onFetchUserApprovesInMultiTeams } = useUserApprovesByRole();
+  const teamIdsRef = useRef<number[]>([]);
+
+  const updateTeamIdsRef = useCallback(
+    (newTeamId: number) => {
+      const nowTeamIds = teamIdsRef.current;
+
+      if (nowTeamIds.includes(newTeamId)) {
+        teamIdsRef.current = nowTeamIds.filter((teamId) => teamId !== newTeamId);
+      } else teamIdsRef.current = [...nowTeamIds, newTeamId];
+
+      return teamIdsRef.current;
+    },
+    [teamIdsRef.current]
+  );
+
+  const onRefetchUserApproveWhenChangeAttendance = useCallback(() => {
+    const teamIds = teamIdsRef.current;
+    onFetchUserApprovesInMultiTeams({ role: ROLE_CODE.TEAM_DIRECTOR, teamIds: teamIds });
+  }, [teamIdsRef]);
+
   const { session } = useSession();
   const router = useRouter();
   const {
     control,
     formState: { isSubmitting },
-    handleSubmit
-  } = useForm<TDutyFormCreate>();
+    handleSubmit,
+  } = useForm<TDutyFormCreateFormField>();
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,
     label: `${name} (x${coefficient.toFixed(2)})`,
   }));
+  const userApproveOpts = users.map(({ identifyCard, name }) => ({ value: identifyCard, label: `${name}` }));
   const onFetchSalaryCoefTypes = async () => {
     const responseJson = await fetchSalaryCoefTypes(session);
     if (responseJson.statusCode === 200) {
@@ -62,9 +85,12 @@ export default function CreateDutyForm() {
     }
   };
 
-  const onSubmit = useCallback(async (values: TDutyFormCreate) => {
-    console.log({ values });
-  }, []);
+  const onSubmit = useCallback(
+    async (values: TDutyFormCreate) => {
+      const dutyTypes: TDutyFormCreateDutyTypeField[] = values.dutyTypes.map((el) => ({ dutyTypeId: el.dutyTypeId, userIds: el.userIds })); // ok
+    },
+    [onFetchUserApprovesInMultiTeams]
+  );
   useFocusEffect(
     useCallback(() => {
       onFetchSalaryCoefTypes();
@@ -103,15 +129,24 @@ export default function CreateDutyForm() {
             placeholder="Chọn loại ngoài giờ"
             leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
           />
-          <ChooseDutyTypesAndDutyTypeUsers />
-          <FormSelectV2
-            useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-            options={[]}
-            label="Lãnh đạo phê duyệt"
-            required
-            placeholder="Chọn lãnh đạo phê duyệt"
-            leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
+
+          <ChooseDutyTypesAndDutyTypeUsers
+            updateTeamIds={updateTeamIdsRef}
+            updateUserApproves={onRefetchUserApproveWhenChangeAttendance}
+            control={control}
           />
+
+          {isFetchingUserApproves && <SkeletonRectangleLoader height={60} />}
+          {!isFetchingUserApproves && (
+            <FormSelectV2
+              useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
+              options={userApproveOpts}
+              label="Lãnh đạo phê duyệt"
+              required
+              placeholder="Chọn lãnh đạo phê duyệt"
+              leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
+            />
+          )}
 
           <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
@@ -132,19 +167,19 @@ export default function CreateDutyForm() {
   );
 }
 
-type ChooseDutyTypesAndDutyTypeUsersProps = {};
-type TFormFields = {
-  name: string;
-  dutyTypes: (TDutyFormCreateDutyTypeField & { dutyTypeName: string })[];
+type ChooseDutyTypesAndDutyTypeUsersProps = {
+  control: Control<TDutyFormCreateFormField>;
+  updateUserApproves: () => void;
+  updateTeamIds: (newTeamId: number) => void;
 };
-const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({}) => {
+
+const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({ control, updateUserApproves, updateTeamIds }) => {
   const [openSlideModal, setOpenSlideModal] = useState(false);
   const { isLoading: isFetchingDutyTypes, dutyTypes } = useDutyTypes();
 
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-  const { control } = useForm<TFormFields>();
   const { fields, append, update, remove } = useFieldArray({ name: "dutyTypes", control: control });
 
   const onDutyTypeSelect = useCallback(
@@ -176,7 +211,6 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
     [fields]
   );
 
-  console.log({ fields });
   return (
     <View style={styles.dutyTypeFieldContainer}>
       {/*  */}
@@ -196,6 +230,8 @@ const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersP
             deleteDutyType={onDutyTypeDelete}
             fieldArrayIndex={index}
             updateDutyTypeUserIds={updateUserIds}
+            updateUserApproves={updateUserApproves}
+            updateTeamIds={updateTeamIds}
           />
         ))}
       </View>
@@ -243,6 +279,7 @@ type DutyTypeItemUserInfo = {
   name: string;
   roleName: string;
   teamName: string;
+  teamId: number;
 };
 type DutyTypeItemProps = {
   dutyType: {
@@ -254,9 +291,11 @@ type DutyTypeItemProps = {
   deleteDutyType: (index: number) => void;
   fieldArrayIndex: number;
   updateDutyTypeUserIds: (index: number, userId: number) => void;
+  updateUserApproves: () => void;
+  updateTeamIds: (newTeamId: number) => void;
 };
 const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
-  ({ users, selectedUserIds, dutyType, deleteDutyType, fieldArrayIndex, updateDutyTypeUserIds }) => {
+  ({ users, selectedUserIds, dutyType, deleteDutyType, fieldArrayIndex, updateDutyTypeUserIds, updateTeamIds, updateUserApproves }) => {
     // States
     const [visible, setVisible] = useState(false);
     const [openSelectUsersModal, setOpenSelectUsersModal] = useState(false);
@@ -276,7 +315,10 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
     const closeMenu = () => setVisible(false);
 
     const openFullScrModal = () => setOpenSelectUsersModal(true);
-    const closeFullScrModal = () => setOpenSelectUsersModal(false);
+    const closeFullScrModal = () => {
+      setOpenSelectUsersModal(false);
+      updateUserApproves();
+    };
 
     const addOrRemoveUserId = useCallback(
       (userId: number) => {
@@ -354,6 +396,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
             dutyType={dutyType}
             selectedUserIds={selectedUserIds}
             onAddOrRemoveUserId={addOrRemoveUserId}
+            updateTeamIds={updateTeamIds}
           />
         )}
       </View>
@@ -369,132 +412,135 @@ type SelectDutyTypeUsersModalProps = {
   };
   selectedUserIds: number[];
   onAddOrRemoveUserId: (userId: number) => void;
+  updateTeamIds: (newTeamId: number) => void;
 };
 type TFilterCheckStatus = "checked" | "all";
-const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(({ onClose, dutyType, selectedUserIds, onAddOrRemoveUserId }) => {
-  const [suggestedUsers, setSuggestedUsers] = useState<TDutySuggestedUser[]>([]);
-  const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
-  const [text, setText] = useState("");
-  const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
-  const suggestedUsersMap = useMemo(() => {
-    return arrayObjectToMap(suggestedUsers, "id");
-  }, [suggestedUsers]);
-  const selectedUsers: TDutySuggestedUser[] = useMemo(() => {
-    return selectedUserIds.map((userId: number) => {
-      const userInfo = suggestedUsersMap.get(userId.toString()) as TDutySuggestedUser;
-      return userInfo;
-    });
-  }, [selectedUserIds, suggestedUsersMap]);
-  const users = useMemo(() => (filterCheckStatus === "all" ? suggestedUsers : selectedUsers), [suggestedUsers, selectedUsers, filterCheckStatus]);
+const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
+  ({ onClose, dutyType, selectedUserIds, onAddOrRemoveUserId, updateTeamIds }) => {
+    const { users: suggestedUsers, isLoading: isFetchingUsers, onFetchDutySuggestedUsers } = useSuggestDutyUsers();
+    const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
+    const [text, setText] = useState("");
+    const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
+    const suggestedUsersMap = useMemo(() => {
+      return arrayObjectToMap(suggestedUsers, "id");
+    }, [suggestedUsers]);
+    const selectedUsers: TDutySuggestedUser[] = useMemo(() => {
+      return selectedUserIds.map((userId: number) => {
+        const userInfo = suggestedUsersMap.get(userId.toString()) as TDutySuggestedUser;
+        return userInfo;
+      });
+    }, [selectedUserIds, suggestedUsersMap]);
+    const users = useMemo(() => (filterCheckStatus === "all" ? suggestedUsers : selectedUsers), [suggestedUsers, selectedUsers, filterCheckStatus]);
 
-  const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
-  const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
+    const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
+    const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
 
-  const onFetchSuggestedUsers = useCallback(() => {
-    setSuggestedUsers(_mockDutySuggestedUsers);
-  }, [setSuggestedUsers]);
+    useEffect(() => {
+      onFetchDutySuggestedUsers(
+        { page: 0, size: 50 },
+        { date: "1970-01-01", dutyTypeId: dutyType.dutyTypeId, startDate: "2024-01-01", endDate: "2024-12-30" }
+      );
+    }, [onFetchDutySuggestedUsers]);
 
-  useEffect(() => {
-    onFetchSuggestedUsers();
-  }, [onFetchSuggestedUsers]);
+    return (
+      <Modal transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <Delayed waitBeforeShow={100}>
+            <>
+              {/* Title */}
+              <View style={styles.modalTitleWrapper}>
+                <NunitoText type="heading2" style={styles.modalTitle}>
+                  {dutyType.dutyTypeName} - chọn người tham gia
+                </NunitoText>
+                <TouchableOpacity onPress={onClose}>
+                  <AntDesign name="close" size={20} color="black" />
+                </TouchableOpacity>
+              </View>
 
-  return (
-    <Modal transparent animationType="slide">
-      <View style={styles.modalContainer}>
-        <Delayed waitBeforeShow={100}>
-          <>
-            {/* Title */}
-            <View style={styles.modalTitleWrapper}>
-              <NunitoText type="heading2" style={styles.modalTitle}>
-                {dutyType.dutyTypeName} - chọn người tham gia
-              </NunitoText>
-              <TouchableOpacity onPress={onClose}>
-                <AntDesign name="close" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Content */}
-            <ScrollView>
-              <View style={styles.modalContentContainer}>
-                <View style={{ gap: 2 }}>
-                  {/* Filter */}
-                  <View style={styles.filterContainer}>
-                    <View style={styles.filterItem}>
-                      <SegmentedButtons
-                        value={filterCheckStatus}
-                        onValueChange={(value: string) => {
-                          console.log({ value });
-                          setFilterCheckStatus(value as TFilterCheckStatus);
-                        }}
-                        buttons={[
-                          { value: "all", label: "Tất cả" },
-                          { value: "checked", label: "Đã chọn" },
-                        ]}
-                        style={{ marginLeft: -1 }}
+              {/* Content */}
+              <ScrollView>
+                <View style={styles.modalContentContainer}>
+                  <View style={{ gap: 2 }}>
+                    {/* Filter */}
+                    <View style={styles.filterContainer}>
+                      <View style={styles.filterItem}>
+                        <SegmentedButtons
+                          value={filterCheckStatus}
+                          onValueChange={(value: string) => {
+                            console.log({ value });
+                            setFilterCheckStatus(value as TFilterCheckStatus);
+                          }}
+                          buttons={[
+                            { value: "all", label: "Tất cả" },
+                            { value: "checked", label: "Đã chọn" },
+                          ]}
+                          style={{ marginLeft: -1 }}
+                        />
+                      </View>
+                      <IconButton
+                        style={{ margin: 0 }}
+                        icon="tune-variant"
+                        size={24}
+                        mode="outlined"
+                        rippleColor={"grey"}
+                        onPress={onOpenFilterUserModal}
+                        animated
                       />
                     </View>
-                    <IconButton
-                      style={{ margin: 0 }}
-                      icon="tune-variant"
-                      size={24}
+
+                    {/* Search */}
+                    <TextInput
+                      style={{ height: 36 }}
                       mode="outlined"
-                      rippleColor={"grey"}
-                      onPress={onOpenFilterUserModal}
-                      animated
+                      label="Tên thành viên"
+                      value={text}
+                      onChangeText={(text) => setText(text)}
+                      placeholder="nhập tên để tìm kiếm "
                     />
                   </View>
 
-                  {/* Search */}
-                  <TextInput
-                    style={{ height: 36 }}
-                    mode="outlined"
-                    label="Tên thành viên"
-                    value={text}
-                    onChangeText={(text) => setText(text)}
-                    placeholder="nhập tên để tìm kiếm "
-                  />
+                  {/* List */}
+                  <View style={{ gap: 10, paddingTop: 16 }}>
+                    {isFetchingUsers && <SkeletonRectangleLoader height={400} />}
+                    {users.map((user) => (
+                      <SuggestUserItem key={user.id} user={user} onChooseUser={onAddOrRemoveUserId} updateTeamIds={updateTeamIds} />
+                    ))}
+                  </View>
                 </View>
+              </ScrollView>
 
-                {/* List */}
-                <View style={{ gap: 10, paddingTop: 16 }}>
-                  {users.map((user) => (
-                    <SuggestUserItem key={user.id} user={user} onChooseUser={onAddOrRemoveUserId} />
-                  ))}
-                </View>
-              </View>
-            </ScrollView>
+              <AnimatedFAB
+                icon={"plus"}
+                label={"Label"}
+                extended={false}
+                onPress={() => {
+                  onClose();
+                }}
+                visible={true}
+                animateFrom={"right"}
+                iconMode={"static"}
+                style={[styles.fabStyle]}
+              />
 
-            <AnimatedFAB
-              icon={"plus"}
-              label={"Label"}
-              extended={false}
-              onPress={() => {
-                console.log("Pressed");
-                onClose();
-              }}
-              visible={true}
-              animateFrom={"right"}
-              iconMode={"static"}
-              style={[styles.fabStyle]}
-            />
-
-            {openFilterUserModal && (
-              <MySlideModal onClose={onCloseFilterUserModal}>
-                <NunitoText>Filter users modal</NunitoText>
-              </MySlideModal>
-            )}
-          </>
-        </Delayed>
-      </View>
-    </Modal>
-  );
-});
+              {openFilterUserModal && (
+                <MySlideModal onClose={onCloseFilterUserModal}>
+                  <NunitoText>Filter users modal</NunitoText>
+                </MySlideModal>
+              )}
+            </>
+          </Delayed>
+        </View>
+      </Modal>
+    );
+  }
+);
 
 type SuggestUserItemProps = {
   user: TDutySuggestedUser;
   onChooseUser: (userId: number) => void;
+  updateTeamIds: (newTeamId: number) => void;
 };
-const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUser }) => {
+const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUser, updateTeamIds }) => {
   const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
   const [checked, setChecked] = useState(false);
 
@@ -503,6 +549,7 @@ const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUs
   const onPressUserCard = useCallback(() => {
     toggleCheck();
     onChooseUser(user.id);
+    updateTeamIds(user.teamId);
   }, [onChooseUser, toggleCheck, user]);
   return (
     <Card>

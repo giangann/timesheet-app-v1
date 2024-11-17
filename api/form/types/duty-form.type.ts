@@ -175,6 +175,7 @@ export type TDutySuggestedUser = {
   roleName: string;
   roleCode: string;
   teamCode: string | null;
+  teamId: number;
   numOnDuty: number;
   identifyCard: string;
 };
@@ -183,5 +184,6 @@ export type TDutySuggestedUserFilterParams = {
   startDate: string;
   endDate: string;
   date: string;
+  dutyTypeId: number;
   sort?: string;
 };
