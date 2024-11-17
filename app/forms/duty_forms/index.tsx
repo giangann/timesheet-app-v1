@@ -4,7 +4,7 @@ import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { omitNullishValues, omitProperties } from "@/helper/common";
 import { formatRelativeTimeWithLongText } from "@/helper/date";
@@ -51,7 +51,7 @@ export default function DutyForms() {
     try {
       const responseJson = await fetchMyDutyForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
-        const moreDutyForms = responseJson.data.dutyForm;
+        const moreDutyForms = responseJson.data.dutyForms;
         setDutyForms((prev) => [...prev, ...moreDutyForms]);
         setPageable(responseJson.data.pageable);
       } else {
@@ -76,7 +76,7 @@ export default function DutyForms() {
     try {
       const responseJson = await fetchMyDutyForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
-        const overrideDutyForms = responseJson.data.dutyForm;
+        const overrideDutyForms = responseJson.data.dutyForms;
         setDutyForms(overrideDutyForms);
       } else {
         MyToast.error(responseJson.error);
@@ -107,7 +107,7 @@ export default function DutyForms() {
       const responseJson = await fetchMyDutyForms(session, pagiParams, filterParams);
 
       if (responseJson.statusCode === 200) {
-        const formsWithFilter = responseJson.data.dutyForm;
+        const formsWithFilter = responseJson.data.dutyForms;
         setDutyForms(formsWithFilter);
         setPageable(responseJson.data.pageable);
       } else {
@@ -389,11 +389,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.itemBoxSumary}>
           <View style={styles.infos}>
             <View style={styles.userInfo}>
-              <AvatarByRole role={dutyForm.userApproveRole.code} />
+              <AvatarByRole role={dutyForm.userApproveRoleName as ROLE_CODE} />
               <View style={{ gap: 4 }}>
                 <NunitoText type="body3">{dutyForm.userApproveName}</NunitoText>
                 <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                  {dutyForm.userApproveRole.name}
+                  {dutyForm.userApproveRoleName}
                 </NunitoText>
               </View>
             </View>

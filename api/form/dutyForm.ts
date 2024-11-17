@@ -68,6 +68,34 @@ export async function fetchApproveDutyForms(
   return responseJson;
 }
 
+export async function fetchUserCreateDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/duty-forms/filter/user-create";
+
+  const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
+  const { page, size } = paginationParams;
+  const queryString = `?page=${page}&size=${size}&sort=id,desc`;
+
+  const url = `${baseUrl}${endpoint}${queryString}`;
+
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.createdAt) {
+    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(bodyFilterParams),
+    headers: { "Content-Type": "application/json", Authorization: token },
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
 export async function fetchDutyFormDetail(session: string, formId: number) {
   const token = `Bearer ${session}`;
 
@@ -106,14 +134,18 @@ export async function createDutyForm(session: string | null | undefined, bodyFor
   return responseJson;
 }
 
-export async function fetchDutySuggestedUsers(session: string | null | undefined, pagiParams: TPagiParams, filterParams: TDutySuggestedUserFilterParams) {
+export async function fetchDutySuggestedUsers(
+  session: string | null | undefined,
+  pagiParams: TPagiParams,
+  filterParams: TDutySuggestedUserFilterParams
+) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
   const endpoint = "/duty-forms/suggest-users";
-  const queryString = paramsObjectToQueryString({ ...filterParams, ...pagiParams })
+  const queryString = paramsObjectToQueryString({ ...filterParams, ...pagiParams });
 
-  const url = `${baseUrl}${endpoint}${queryString}`
+  const url = `${baseUrl}${endpoint}${queryString}`;
 
   const response = await fetch(url, {
     method: "GET",

@@ -14,6 +14,9 @@ export type TDutyForm = {
   date: string;
   status: FORM_STATUS;
   userApproveName: string;
+  userApproveRoleName: string;
+  userApproveTeamName: string;
+
   userApproveIdentifyCard: string;
   note: string;
   reason: string | null;
@@ -24,18 +27,12 @@ export type TDutyForm = {
   dutyTypeName: string;
   salaryCoefficientTypeName: string;
   salaryCoefficient: number;
+  createdUserName: string;
+  createdUserRoleName: string;
+  createdUserTeamName: string;
+  dutyTypeNames: string[];
   users: TFormUserApply[];
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
+  userNames: string[];
 };
 
 export type TApproveDutyForm = {
@@ -188,26 +185,3 @@ export type TDutySuggestedUserFilterParams = {
   date: string;
   sort?: string;
 };
-
-/*
-const sampleResponse = {
-  message: "Yêu cầu phê duyệt",
-  obj: {
-    approveDate: null,
-    attachFileId: 2265,
-    createdAt: "2024-09-24T16:14:04.041+00:00",
-    dutyCalendarId: 1,
-    id: 402,
-    isDeleted: false,
-    note: "trực",
-    reason: null,
-    status: 0,
-    updatedAt: "2024-09-24T16:14:04.041+00:00",
-    userApproveId: 102,
-  },
-  status: 0,
-  timestamp: "2024-09-24T23:14:04.046844258",
-  title: "Thông báo",
-  type: "dutyForm",
-};
-*/
