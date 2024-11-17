@@ -68,7 +68,6 @@ export default function AppLayout() {
             ios: {
               // Use a transparent background on iOS to show the blur effect
               position: "absolute",
-              backgroundColor: "#0B3A82",
             },
             default: {},
           }),
@@ -84,28 +83,28 @@ export default function AppLayout() {
           options={{
             headerShown: false,
             title: "Trang chủ",
-            tabBarIcon: ({ color }) => <MaterialIcons name="home" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <MaterialIcons name="home" size={22} color={color} />,
           }}
         />
         <Tabs.Screen
           name="form"
           options={{
             title: "Đơn của tôi",
-            tabBarIcon: ({ color }) => <Ionicons name="newspaper-sharp" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="newspaper-sharp" size={22} color={color} />,
           }}
         />
         <Tabs.Screen
           name="timesheet"
           options={{
             title: "Quản lý công - cá nhân",
-            tabBarIcon: ({ color }) => <Ionicons name="calendar" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="calendar" size={22} color={color} />,
           }}
         />
         <Tabs.Screen
           name="timeKeeping"
           options={{
             title: "Quản lý công - đơn vị",
-            tabBarIcon: ({ color }) => <Ionicons name="today" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="today" size={22} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/timeKeeping",
           }}
         />
@@ -113,7 +112,7 @@ export default function AppLayout() {
           name="setting"
           options={{
             title: "Cài đặt",
-            tabBarIcon: ({ color }) => <Ionicons name="settings" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="settings" size={22} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
           }}
         />
@@ -121,7 +120,7 @@ export default function AppLayout() {
           name="approveForm"
           options={{
             title: "Phê duyệt đơn",
-            tabBarIcon: ({ color }) => <Octicons name="checklist" size={18} color={color} />,
+            tabBarIcon: ({ color }) => <Octicons name="checklist" size={22} color={color} />,
             href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/approveForm",
           }}
         />
