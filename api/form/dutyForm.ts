@@ -1,7 +1,7 @@
 import { DEFAULT_PAGI_PARAMS, ROLE_CODE } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import moment from "moment";
-import { TApproveDutyFormFilterParams, TDutyFormFilterParams, TDutySuggestedUserFilterParams } from "./types";
+import { TApproveDutyFormFilterParams, TDutyFormCreate, TDutyFormFilterParams, TDutySuggestedUserFilterParams } from "./types";
 import { paramsObjectToQueryString } from "@/helper/common";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ export async function fetchDutyFormDetail(session: string, formId: number) {
   return responseJson;
 }
 
-export async function createDutyForm(session: string | null | undefined, bodyFormData: FormData) {
+export async function createDutyForm(session: string | null | undefined, bodyData: TDutyFormCreate) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
@@ -123,10 +123,10 @@ export async function createDutyForm(session: string | null | undefined, bodyFor
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: token,
     }, // do not set content-type for formData, let browser do it automatically
-    body: bodyFormData,
+    body: JSON.stringify(bodyData),
     credentials: "include",
   });
   const responseJson = await response.json();

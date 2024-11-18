@@ -12,8 +12,9 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE, _mockDutySuggestedUsers, _mockDutyTypes } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { arrayObjectToMap } from "@/helper/map";
-import { useDutyTypes, useSuggestDutyUsers, useUserApprovesByRole } from "@/hooks/form";
+import { useCreateNewForm, useDutyTypes, useSuggestDutyUsers, useUploadFile, useUserApprovesByRole } from "@/hooks/form";
 import { TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
@@ -44,6 +45,8 @@ export default function CreateDutyForm() {
   const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
 
   const { isLoading: isFetchingUserApproves, users, onFetchUserApprovesInMultiTeams } = useUserApprovesByRole();
+  const { onUploadFile } = useUploadFile();
+  const { onCreate } = useCreateNewForm();
   const teamIdsRef = useRef<number[]>([]);
 
   const updateTeamIdsRef = useCallback(
@@ -91,8 +94,23 @@ export default function CreateDutyForm() {
   };
 
   const onSubmit = useCallback(
-    async (values: TDutyFormCreate) => {
-      const dutyTypes: TDutyFormCreateDutyTypeField[] = values.dutyTypes.map((el) => ({ dutyTypeId: el.dutyTypeId, userIds: el.userIds })); // ok
+    async (values: TDutyFormCreateFormField) => {
+      try {
+        const requiredValues = pickProperties(values, [
+          "date",
+          "startTime",
+          "endTime",
+          "salaryCoefficientTypeId",
+          "dutyTypes",
+          "userApproveIdentifyCard",
+        ]);
+        if (hasNullishValue(requiredValues)) {
+          MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+          return;
+        }
+
+        await onCreate(values);
+      } catch (error: any) {}
     },
     [onFetchUserApprovesInMultiTeams]
   );
@@ -313,7 +331,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
         return userInfo;
       });
     }, [selectedUserIds]);
-    console.log({selectedUsers})
+    console.log({ selectedUsers });
     const isNoUser = useMemo(() => selectedUserIds.length <= 0, [selectedUserIds]);
 
     // Handlers

@@ -137,7 +137,7 @@ export type TDutyFormCreate = {
   userApproveIdentifyCard: string;
   note?: string | null;
   salaryCoefficientTypeId: number;
-  attachFile?: File | null;
+  attachFileId?: number | null;
 };
 export type TDutyFormCreateNoti = {
   message: string;

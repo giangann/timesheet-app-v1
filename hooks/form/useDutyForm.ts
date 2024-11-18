@@ -1,13 +1,13 @@
-import { fetchDutySuggestedUsers } from "@/api/form";
-import { TDutySuggestedUser, TDutySuggestedUserFilterParams } from "@/api/form/types";
+import { createDutyForm, fetchDutySuggestedUsers } from "@/api/form";
+import { TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser, TDutySuggestedUserFilterParams } from "@/api/form/types";
 import { fetchDutyTypes } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
-import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { TPagiParams } from "@/types";
+import { TDutyFormCreateFormField, TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import { useUploadFile } from "./useFile";
 
 export function useDutyTypes() {
   const [dutyTypes, setDutyTypes] = useState<TDutyType[]>([]);
@@ -59,4 +59,40 @@ export function useSuggestDutyUsers() {
   }, []);
 
   return { users, isLoading, onFetchDutySuggestedUsers };
+}
+
+export function useCreateNewForm() {
+  const { session } = useSession();
+  const { onUploadFile } = useUploadFile();
+  const onCreate = useCallback(
+    async (fields: TDutyFormCreateFormField) => {
+      try {
+        let createResult: any = {};
+        const dutyTypes: TDutyFormCreateDutyTypeField[] = fields.dutyTypes.map((el) => ({ dutyTypeId: el.dutyTypeId, userIds: el.userIds })); // ok
+
+        const dutyTypesStringfy = JSON.stringify(dutyTypes)
+        if (fields.attachFile) {
+          const uploadFileRes = await onUploadFile(fields.attachFile);
+
+          if (uploadFileRes !== 1) {
+            const fileId = uploadFileRes.data.attachFile.id;
+            createResult = await createDutyForm(session, { ...fields, dutyTypes: dutyTypes, attachFileId: fileId });
+          }
+        } else {
+          createResult = await createDutyForm(session, { ...fields, dutyTypes: dutyTypes });
+        }
+
+        if (createResult.statusCode === 200) {
+          MyToast.success("Thành công");
+        } else {
+          MyToast.error(createResult.error ?? createResult.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session]
+  );
+
+  return { onCreate };
 }
