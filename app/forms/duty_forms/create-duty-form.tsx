@@ -1,4 +1,4 @@
-import { TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser } from "@/api/form/types";
+import { TCheckAction, TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser } from "@/api/form/types";
 import { fetchSalaryCoefTypes } from "@/api/setting";
 import { TSalaryCoefficientType } from "@/api/setting/type";
 import { Delayed } from "@/components/Delayed";
@@ -47,12 +47,17 @@ export default function CreateDutyForm() {
   const teamIdsRef = useRef<number[]>([]);
 
   const updateTeamIdsRef = useCallback(
-    (newTeamId: number) => {
+    (newTeamId: number, action: "check" | "uncheck") => {
       const nowTeamIds = teamIdsRef.current;
 
-      if (nowTeamIds.includes(newTeamId)) {
+      if (action === "check") {
+        if (!nowTeamIds.includes(newTeamId)) {
+          teamIdsRef.current = [...nowTeamIds, newTeamId];
+        }
+      }
+      if (action === "uncheck") {
         teamIdsRef.current = nowTeamIds.filter((teamId) => teamId !== newTeamId);
-      } else teamIdsRef.current = [...nowTeamIds, newTeamId];
+      }
 
       return teamIdsRef.current;
     },
@@ -170,7 +175,7 @@ export default function CreateDutyForm() {
 type ChooseDutyTypesAndDutyTypeUsersProps = {
   control: Control<TDutyFormCreateFormField>;
   updateUserApproves: () => void;
-  updateTeamIds: (newTeamId: number) => void;
+  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
 };
 
 const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({ control, updateUserApproves, updateTeamIds }) => {
@@ -292,7 +297,7 @@ type DutyTypeItemProps = {
   fieldArrayIndex: number;
   updateDutyTypeUserIds: (index: number, userId: number) => void;
   updateUserApproves: () => void;
-  updateTeamIds: (newTeamId: number) => void;
+  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
 };
 const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
   ({ users, selectedUserIds, dutyType, deleteDutyType, fieldArrayIndex, updateDutyTypeUserIds, updateTeamIds, updateUserApproves }) => {
@@ -308,6 +313,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(
         return userInfo;
       });
     }, [selectedUserIds]);
+    console.log({selectedUsers})
     const isNoUser = useMemo(() => selectedUserIds.length <= 0, [selectedUserIds]);
 
     // Handlers
@@ -412,9 +418,10 @@ type SelectDutyTypeUsersModalProps = {
   };
   selectedUserIds: number[];
   onAddOrRemoveUserId: (userId: number) => void;
-  updateTeamIds: (newTeamId: number) => void;
+  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
 };
 type TFilterCheckStatus = "checked" | "all";
+type TUserWithCheckStatus = TDutySuggestedUser & { isChecked: boolean };
 const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
   ({ onClose, dutyType, selectedUserIds, onAddOrRemoveUserId, updateTeamIds }) => {
     const { users: suggestedUsers, isLoading: isFetchingUsers, onFetchDutySuggestedUsers } = useSuggestDutyUsers();
@@ -424,13 +431,20 @@ const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
     const suggestedUsersMap = useMemo(() => {
       return arrayObjectToMap(suggestedUsers, "id");
     }, [suggestedUsers]);
-    const selectedUsers: TDutySuggestedUser[] = useMemo(() => {
+    const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(
+      () => suggestedUsers.map((user) => ({ ...user, isChecked: selectedUserIds.includes(user.id) })),
+      [selectedUserIds, suggestedUsers]
+    );
+    const selectedUsers: TUserWithCheckStatus[] = useMemo(() => {
       return selectedUserIds.map((userId: number) => {
         const userInfo = suggestedUsersMap.get(userId.toString()) as TDutySuggestedUser;
-        return userInfo;
+        return { ...userInfo, isChecked: true };
       });
     }, [selectedUserIds, suggestedUsersMap]);
-    const users = useMemo(() => (filterCheckStatus === "all" ? suggestedUsers : selectedUsers), [suggestedUsers, selectedUsers, filterCheckStatus]);
+    const users: TUserWithCheckStatus[] = useMemo(
+      () => (filterCheckStatus === "all" ? usersWithCheckStatus : selectedUsers),
+      [suggestedUsers, selectedUsers, filterCheckStatus]
+    );
 
     const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
     const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
@@ -503,7 +517,13 @@ const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
                   <View style={{ gap: 10, paddingTop: 16 }}>
                     {isFetchingUsers && <SkeletonRectangleLoader height={400} />}
                     {users.map((user) => (
-                      <SuggestUserItem key={user.id} user={user} onChooseUser={onAddOrRemoveUserId} updateTeamIds={updateTeamIds} />
+                      <SuggestUserItem
+                        isChecked={user.isChecked}
+                        key={user.id}
+                        user={user}
+                        onChooseUser={onAddOrRemoveUserId}
+                        updateTeamIds={updateTeamIds}
+                      />
                     ))}
                   </View>
                 </View>
@@ -538,19 +558,20 @@ const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
 type SuggestUserItemProps = {
   user: TDutySuggestedUser;
   onChooseUser: (userId: number) => void;
-  updateTeamIds: (newTeamId: number) => void;
+  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
+  isChecked: boolean;
 };
-const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUser, updateTeamIds }) => {
+const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUser, updateTeamIds, isChecked }) => {
   const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
-  const [checked, setChecked] = useState(false);
+  // const [checked, setChecked] = useState(false);
 
-  const toggleCheck = () => setChecked((prev) => !prev);
+  // const toggleCheck = () => setChecked((prev) => !prev);
 
   const onPressUserCard = useCallback(() => {
-    toggleCheck();
+    // toggleCheck();
     onChooseUser(user.id);
-    updateTeamIds(user.teamId);
-  }, [onChooseUser, toggleCheck, user]);
+    updateTeamIds(user.teamId, isChecked ? "uncheck" : "check");
+  }, [onChooseUser, user]);
   return (
     <Card>
       <TouchableRipple borderless rippleColor="rgba(0, 0, 0, .32)" onPress={onPressUserCard}>
@@ -561,7 +582,7 @@ const SuggestUserItem: React.FC<SuggestUserItemProps> = memo(({ user, onChooseUs
             <Text variant="bodyMedium">Số lần trực: {user.numOnDuty}</Text>
           </Card.Content>
           <View style={styles.userCheckboxWrapper}>
-            <Checkbox status={checked ? "checked" : "unchecked"} />
+            <Checkbox status={isChecked ? "checked" : "unchecked"} />
           </View>
         </View>
       </TouchableRipple>

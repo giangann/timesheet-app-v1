@@ -18,3 +18,6 @@ export type TListUserApproveInMultiTeamsParams = {
   role: ROLE_CODE;
   teamIds: number[];
 };
+
+export type TCheckAction = "check" | "uncheck";
+ 
