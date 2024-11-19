@@ -18,9 +18,9 @@ export type TDutyFormCreateDutyTypeFormField = {
 } & TDutyFormCreateDutyTypeInfo;
 
 export type TDutyFormCreateFormField = {
-  date: string;
-  startTime: string;
-  endTime: string;
+  date: Date;
+  startTime: Date;
+  endTime: Date;
   dutyTypes: TDutyFormCreateDutyTypeFormField[];
   userApproveIdentifyCard: string;
   note?: string | null;

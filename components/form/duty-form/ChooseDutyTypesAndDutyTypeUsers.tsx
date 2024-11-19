@@ -1,18 +1,17 @@
-import { TCheckAction } from "@/api/form/types";
+import { TDutyType } from "@/api/setting/type";
 import { Delayed } from "@/components/Delayed";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
+import { useDutyFormCreateContext } from "@/contexts";
 import { useDutyTypes } from "@/hooks/form";
-import { TDutyFormAttendanceInfo, TDutyFormCreateFormField } from "@/types";
+import { TDutyFormCreateFormField } from "@/types";
+import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { memo, useCallback, useState } from "react";
-import { Control, useFieldArray } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
-import { DutyTypeItem } from "./DutyTypeItem";
 import { Button } from "react-native-paper";
-import { NoData } from "@/ui/NoData";
-import { _mockDutySuggestedUsers } from "@/constants/Misc";
-import { useDutyFormCreateContext } from "@/contexts";
+import { DutyTypeItem } from "./DutyTypeItem";
 
 type ChooseDutyTypesAndDutyTypeUsersProps = {
   control: Control<TDutyFormCreateFormField>;
@@ -25,14 +24,17 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-  const { onAddDutyType, onRemoveDutyType, formDutyTypes } = useDutyFormCreateContext();
+  const { onAddDutyType, formDutyTypes } = useDutyFormCreateContext();
+
+  const onSelectDutyType = useCallback((dutyType: TDutyType) => {
+    onAddDutyType({ dutyTypeId: dutyType.id, dutyTypeName: dutyType.dutyTypeName });
+    onCloseDutyTypesModal();
+  }, []);
 
   return (
     <View style={styles.dutyTypeFieldContainer}>
       {/*  */}
       <FieldLabel />
-
-      {/*  */}
       <View style={styles.dutyTypeGroup}>
         {formDutyTypes.map((selectedDutyType, index) => (
           <DutyTypeItem key={selectedDutyType.dutyTypeId} dutyTypeInfo={selectedDutyType} fieldArrayIndex={index} />
@@ -51,7 +53,7 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
               {!isFetchingDutyTypes && (
                 <>
                   {dutyTypes.map((dutyType) => (
-                    <Button key={dutyType.id} onPress={() => onAddDutyType({ dutyTypeId: dutyType.id, dutyTypeName: dutyType.dutyTypeName })}>
+                    <Button key={dutyType.id} onPress={() => onSelectDutyType(dutyType)}>
                       {dutyType.dutyTypeName}
                     </Button>
                   ))}

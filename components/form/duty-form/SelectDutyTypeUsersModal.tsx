@@ -34,14 +34,26 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
   const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
   const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
 
-  const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(() => suggestedUsers.map((user) => ({ ...user, isChecked: false })), [suggestedUsers]);
   const selectedUsers: TDutyFormAttendanceInfo[] = useMemo(() => {
     const users: TDutyFormAttendanceInfo[] = [];
     formDutyTypes.forEach((dutyType) => {
-      dutyType.dutyTypeUsers.forEach((user) => users.push(user));
+      dutyType.dutyTypeUsers.forEach((user) => users.push({ ...user, isChecked: true }));
     });
     return users;
   }, [formDutyTypes]);
+
+  const selectedUserIds: number[] = useMemo(() => {
+    const userIds: number[] = [];
+    formDutyTypes.forEach((dutyType) => {
+      dutyType.dutyTypeUsers.forEach((user) => userIds.push(user.id));
+    });
+    return userIds;
+  }, [formDutyTypes]);
+
+  const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(
+    () => suggestedUsers.map((user) => ({ ...user, isChecked: selectedUserIds.includes(user.id) ? true : false })),
+    [suggestedUsers, selectedUsers]
+  );
 
   const users: TDutyFormAttendanceInfo[] = useMemo(
     () => (filterCheckStatus === "all" ? usersWithCheckStatus : selectedUsers),
@@ -83,7 +95,7 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
                 />
               )}
               ListHeaderComponent={
-                <>
+                <View style={{ gap: 2 }}>
                   <View style={styles.filterContainer}>
                     <View style={styles.filterItem}>
                       <SegmentedButtons
@@ -118,11 +130,13 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
                     onChangeText={(text) => setText(text)}
                     placeholder="nhập tên để tìm kiếm "
                   />
-                </>
+                </View>
               }
               ListEmptyComponent={
                 isFetchingUsers ? <SkeletonRectangleLoader height={400} /> : <NoData message="Không có nhân viên thuộc loại trực" />
               }
+              contentContainerStyle={styles.modalContentContainer}
+              
             />
 
             <AnimatedFAB
@@ -173,7 +187,7 @@ const styles = StyleSheet.create({
   modalContentContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    flex: 1,
+    gap:16,
   },
 
   filterContainer: {

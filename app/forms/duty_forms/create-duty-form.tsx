@@ -13,7 +13,7 @@ import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFo
 import { MyToast } from "@/ui/MyToast";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -23,7 +23,6 @@ export default function CreateDutyForm() {
   const { salaryCoefficientTypes } = useFetchSalaryCoefTypes();
   const { isLoading: isFetchingUserApproves, users, onFetchUserApprovesInMultiTeams } = useUserApprovesByRole();
   const { onCreate } = useCreateNewForm();
-  const teamIdsRef = useRef<number[]>([]);
   const {
     control,
     getValues,
@@ -73,7 +72,7 @@ export default function CreateDutyForm() {
     });
     // refetch user apporves
     onFetchUserApprovesInMultiTeams({ role: ROLE_CODE.TEAM_DIRECTOR, teamIds: teamIds });
-  }, [teamIdsRef]);
+  }, [getValues, onFetchUserApprovesInMultiTeams]);
 
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,

@@ -1,4 +1,4 @@
-import { fetchMyDutyForms } from "@/api/form";
+import { fetchMyDutyForms, fetchUserCreateDutyForms } from "@/api/form";
 import { TDutyForm, TDutyFormFilterParams } from "@/api/form/types";
 import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
@@ -30,7 +30,7 @@ export default function DutyForms() {
   const pagiParamsRef = useRef<TPagiParams>(DEFAULT_PAGI_PARAMS);
   const filterParamsRef = useRef<TDutyFormFilterParams>({});
 
-  const { session } = useSession();
+  const { session, userInfo } = useSession();
 
   const handleEndListReached = () => {
     if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
@@ -46,10 +46,21 @@ export default function DutyForms() {
     }
   };
 
+  const fetchByRole = useCallback(
+    (session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) => {
+      if (userInfo?.roleCode === ROLE_CODE.ARCHIVIST) {
+        return fetchUserCreateDutyForms(session, pagiParams, filterParams);
+      } else {
+        return fetchMyDutyForms(session, pagiParams, filterParams);
+      }
+    },
+    [userInfo, fetchUserCreateDutyForms, fetchMyDutyForms]
+  );
+
   const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const responseJson = await fetchMyDutyForms(session, pagiParams, filterParamsRef.current);
+      const responseJson = await fetchByRole(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
         const moreDutyForms = responseJson.data.dutyForms;
         setDutyForms((prev) => [...prev, ...moreDutyForms]);
@@ -74,7 +85,7 @@ export default function DutyForms() {
 
   const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
     try {
-      const responseJson = await fetchMyDutyForms(session, pagiParams, filterParamsRef.current);
+      const responseJson = await fetchByRole(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
         const overrideDutyForms = responseJson.data.dutyForms;
         setDutyForms(overrideDutyForms);
@@ -104,7 +115,7 @@ export default function DutyForms() {
     setIsLoading(true);
     try {
       // api call
-      const responseJson = await fetchMyDutyForms(session, pagiParams, filterParams);
+      const responseJson = await fetchByRole(session, pagiParams, filterParams);
 
       if (responseJson.statusCode === 200) {
         const formsWithFilter = responseJson.data.dutyForms;

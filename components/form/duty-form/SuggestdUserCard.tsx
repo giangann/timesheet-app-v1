@@ -17,7 +17,7 @@ export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, onC
     updateDutyTypeUser(fieldArrayIndex, user, isChecked ? "remove" : "add");
   }, [user]);
   return (
-    <Card>
+    <Card style={styles.card}>
       <TouchableRipple borderless rippleColor="rgba(0, 0, 0, .32)" onPress={onPressUserCard}>
         <View style={styles.userCardWrapper}>
           <Card.Title title={user.name} subtitle={`P. ${user.teamName}`} left={LeftContent} />
@@ -35,6 +35,7 @@ export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, onC
 });
 
 const styles = StyleSheet.create({
+  card: {},
   userCardWrapper: {
     position: "relative",
     paddingBottom: 16,

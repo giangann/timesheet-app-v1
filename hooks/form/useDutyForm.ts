@@ -5,7 +5,8 @@ import { TDutyType } from "@/api/setting/type";
 import { useSession } from "@/contexts/ctx";
 import { TDutyFormCreateFormField, TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import moment from "moment";
 import { useCallback, useState } from "react";
 import { useUploadFile } from "./useFile";
 
@@ -64,26 +65,42 @@ export function useSuggestDutyUsers() {
 export function useCreateNewForm() {
   const { session } = useSession();
   const { onUploadFile } = useUploadFile();
+  const router = useRouter();
+
   const onCreate = useCallback(
     async (fields: TDutyFormCreateFormField) => {
       try {
-        let createResult: any = {};
-        const dutyTypes: TDutyFormCreateDutyTypeField[] = fields.dutyTypes.map((el) => ({ dutyTypeId: el.dutyTypeId, userIds: el.userIds })); // ok
+        // process data from form
+        const dutyTypes: TDutyFormCreateDutyTypeField[] = fields.dutyTypes.map((el) => ({
+          dutyTypeId: el.dutyTypeId,
+          userIds: el.dutyTypeUsers.map((user) => user.id),
+        })); // ok
 
-        const dutyTypesStringfy = JSON.stringify(dutyTypes)
+        const reqBodyFields: TDutyFormCreate = {
+          ...fields,
+          dutyTypes: dutyTypes,
+          date: moment(fields.date).format("YYYY-MM-DD"),
+          startTime: moment(fields.startTime).format("HH:mm:ss"),
+          endTime: moment(fields.endTime).format("HH:mm:ss"),
+        };
+
+        // upload file
         if (fields.attachFile) {
           const uploadFileRes = await onUploadFile(fields.attachFile);
 
           if (uploadFileRes !== 1) {
             const fileId = uploadFileRes.data.attachFile.id;
-            createResult = await createDutyForm(session, { ...fields, dutyTypes: dutyTypes, attachFileId: fileId });
+            reqBodyFields["attachFileId"] = fileId;
           }
-        } else {
-          createResult = await createDutyForm(session, { ...fields, dutyTypes: dutyTypes });
         }
 
+        // make request
+        const createResult = await createDutyForm(session, reqBodyFields);
+
+        // process response
         if (createResult.statusCode === 200) {
           MyToast.success("Thành công");
+          router.back();
         } else {
           MyToast.error(createResult.error ?? createResult.message);
         }
