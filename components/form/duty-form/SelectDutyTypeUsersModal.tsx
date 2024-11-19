@@ -1,9 +1,10 @@
-import { TCheckAction, TDutySuggestedUser } from "@/api/form/types";
+import { TDutySuggestedUser } from "@/api/form/types";
 import { Delayed } from "@/components/Delayed";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
-import { arrayObjectToMap } from "@/helper/map";
+import { useDutyFormCreateContext } from "@/contexts";
 import { useSuggestDutyUsers } from "@/hooks/form";
+import { TDutyFormAttendanceInfo } from "@/types";
 import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign } from "@expo/vector-icons";
@@ -18,135 +19,136 @@ type SelectDutyTypeUsersModalProps = {
     dutyTypeId: number;
     dutyTypeName: string;
   };
-  selectedUserIds: number[];
-  onAddOrRemoveUserId: (userId: number) => void;
-  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
+  fieldArrayIndex: number;
 };
 type TFilterCheckStatus = "checked" | "all";
 type TUserWithCheckStatus = TDutySuggestedUser & { isChecked: boolean };
-export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(
-  ({ onClose, dutyType, selectedUserIds, onAddOrRemoveUserId, updateTeamIds }) => {
-    const { users: suggestedUsers, isLoading: isFetchingUsers, onFetchDutySuggestedUsers } = useSuggestDutyUsers();
-    const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
-    const [text, setText] = useState("");
-    const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
-    const suggestedUsersMap = useMemo(() => {
-      return arrayObjectToMap(suggestedUsers, "id");
-    }, [suggestedUsers]);
-    const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(
-      () => suggestedUsers.map((user) => ({ ...user, isChecked: selectedUserIds.includes(user.id) })),
-      [selectedUserIds, suggestedUsers]
+export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(({ onClose, dutyType, fieldArrayIndex }) => {
+  const { formDutyTypes } = useDutyFormCreateContext();
+  const { users: suggestedUsers, isLoading: isFetchingUsers, onFetchDutySuggestedUsers } = useSuggestDutyUsers();
+
+  const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
+  const [text, setText] = useState("");
+  const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
+
+  const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
+  const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
+
+  const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(() => suggestedUsers.map((user) => ({ ...user, isChecked: false })), [suggestedUsers]);
+  const selectedUsers: TDutyFormAttendanceInfo[] = useMemo(() => {
+    const users: TDutyFormAttendanceInfo[] = [];
+    formDutyTypes.forEach((dutyType) => {
+      dutyType.dutyTypeUsers.forEach((user) => users.push(user));
+    });
+    return users;
+  }, [formDutyTypes]);
+
+  const users: TDutyFormAttendanceInfo[] = useMemo(
+    () => (filterCheckStatus === "all" ? usersWithCheckStatus : selectedUsers),
+    [selectedUsers, usersWithCheckStatus, filterCheckStatus]
+  );
+
+  useEffect(() => {
+    onFetchDutySuggestedUsers(
+      { page: 0, size: 50 },
+      { date: "1970-01-01", dutyTypeId: dutyType.dutyTypeId, startDate: "2024-01-01", endDate: "2024-12-30" }
     );
-    const selectedUsers: TUserWithCheckStatus[] = useMemo(() => {
-      return selectedUserIds.map((userId: number) => {
-        const userInfo = suggestedUsersMap.get(userId.toString()) as TDutySuggestedUser;
-        return { ...userInfo, isChecked: true };
-      });
-    }, [selectedUserIds, suggestedUsersMap]);
-    const users: TUserWithCheckStatus[] = useMemo(
-      () => (filterCheckStatus === "all" ? usersWithCheckStatus : selectedUsers),
-      [suggestedUsers, selectedUsers, filterCheckStatus]
-    );
+  }, [onFetchDutySuggestedUsers]);
 
-    const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
-    const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
+  return (
+    <Modal transparent animationType="slide">
+      <View style={styles.modalContainer}>
+        <Delayed waitBeforeShow={100}>
+          <>
+            {/* Title */}
+            <View style={styles.modalTitleWrapper}>
+              <NunitoText type="heading2" style={styles.modalTitle}>
+                {dutyType.dutyTypeName} - chọn người tham gia
+              </NunitoText>
+              <TouchableOpacity onPress={onClose}>
+                <AntDesign name="close" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
 
-    useEffect(() => {
-      onFetchDutySuggestedUsers(
-        { page: 0, size: 50 },
-        { date: "1970-01-01", dutyTypeId: dutyType.dutyTypeId, startDate: "2024-01-01", endDate: "2024-12-30" }
-      );
-    }, [onFetchDutySuggestedUsers]);
-
-    return (
-      <Modal transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <Delayed waitBeforeShow={100}>
-            <>
-              {/* Title */}
-              <View style={styles.modalTitleWrapper}>
-                <NunitoText type="heading2" style={styles.modalTitle}>
-                  {dutyType.dutyTypeName} - chọn người tham gia
-                </NunitoText>
-                <TouchableOpacity onPress={onClose}>
-                  <AntDesign name="close" size={20} color="black" />
-                </TouchableOpacity>
-              </View>
-
-              {/* Content */}
-              <FlatList
-                data={users}
-                renderItem={({ item: user }) => (
-                  <SuggestUserCard isChecked={user.isChecked} key={user.id} user={user} onCardPressed={(user) => console.log("press", { user })} />
-                )}
-                ListHeaderComponent={
-                  <>
-                    <View style={styles.filterContainer}>
-                      <View style={styles.filterItem}>
-                        <SegmentedButtons
-                          value={filterCheckStatus}
-                          onValueChange={(value: string) => {
-                            console.log({ value });
-                            setFilterCheckStatus(value as TFilterCheckStatus);
-                          }}
-                          buttons={[
-                            { value: "all", label: "Tất cả" },
-                            { value: "checked", label: "Đã chọn" },
-                          ]}
-                          style={{ marginLeft: -1 }}
-                        />
-                      </View>
-                      <IconButton
-                        style={{ margin: 0 }}
-                        icon="tune-variant"
-                        size={24}
-                        mode="outlined"
-                        rippleColor={"grey"}
-                        onPress={onOpenFilterUserModal}
-                        animated
+            {/* Content */}
+            <FlatList
+              data={users}
+              renderItem={({ item: user }) => (
+                <SuggestUserCard
+                  fieldArrayIndex={fieldArrayIndex}
+                  isChecked={user.isChecked}
+                  key={user.id}
+                  user={user}
+                  onCardPressed={(user) => console.log("press", { user })}
+                />
+              )}
+              ListHeaderComponent={
+                <>
+                  <View style={styles.filterContainer}>
+                    <View style={styles.filterItem}>
+                      <SegmentedButtons
+                        value={filterCheckStatus}
+                        onValueChange={(value: string) => {
+                          console.log({ value });
+                          setFilterCheckStatus(value as TFilterCheckStatus);
+                        }}
+                        buttons={[
+                          { value: "all", label: "Tất cả" },
+                          { value: "checked", label: "Đã chọn" },
+                        ]}
+                        style={{ marginLeft: -1 }}
                       />
                     </View>
-                    {/* Search */}
-                    <TextInput
-                      style={{ height: 36 }}
+                    <IconButton
+                      style={{ margin: 0 }}
+                      icon="tune-variant"
+                      size={24}
                       mode="outlined"
-                      label="Tên thành viên"
-                      value={text}
-                      onChangeText={(text) => setText(text)}
-                      placeholder="nhập tên để tìm kiếm "
+                      rippleColor={"grey"}
+                      onPress={onOpenFilterUserModal}
+                      animated
                     />
-                  </>
-                }
-                ListEmptyComponent={
-                  isFetchingUsers ? <SkeletonRectangleLoader height={400} /> : <NoData message="Không có nhân viên thuộc loại trực" />
-                }
-              />
+                  </View>
+                  {/* Search */}
+                  <TextInput
+                    style={{ height: 36 }}
+                    mode="outlined"
+                    label="Tên thành viên"
+                    value={text}
+                    onChangeText={(text) => setText(text)}
+                    placeholder="nhập tên để tìm kiếm "
+                  />
+                </>
+              }
+              ListEmptyComponent={
+                isFetchingUsers ? <SkeletonRectangleLoader height={400} /> : <NoData message="Không có nhân viên thuộc loại trực" />
+              }
+            />
 
-              <AnimatedFAB
-                icon={"plus"}
-                label={"Label"}
-                extended={false}
-                onPress={() => {
-                  onClose();
-                }}
-                visible={true}
-                animateFrom={"right"}
-                iconMode={"static"}
-                style={[styles.fabStyle]}
-              />
+            <AnimatedFAB
+              icon={"plus"}
+              label={"Label"}
+              extended={false}
+              onPress={() => {
+                onClose();
+              }}
+              visible={true}
+              animateFrom={"right"}
+              iconMode={"static"}
+              style={[styles.fabStyle]}
+            />
 
-              {openFilterUserModal && (
-                <MySlideModal onClose={onCloseFilterUserModal}>
-                  <NunitoText>Filter users modal</NunitoText>
-                </MySlideModal>
-              )}
-            </>
-          </Delayed>
-        </View>
-      </Modal>
-    );
-  }
-);
+            {openFilterUserModal && (
+              <MySlideModal onClose={onCloseFilterUserModal}>
+                <NunitoText>Filter users modal</NunitoText>
+              </MySlideModal>
+            )}
+          </>
+        </Delayed>
+      </View>
+    </Modal>
+  );
+});
 
 const styles = StyleSheet.create({
   modalContainer: {

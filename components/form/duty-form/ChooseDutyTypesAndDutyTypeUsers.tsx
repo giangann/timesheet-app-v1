@@ -3,7 +3,7 @@ import { Delayed } from "@/components/Delayed";
 import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useDutyTypes } from "@/hooks/form";
-import { TDutyFormCreateFormField } from "@/types";
+import { TDutyFormAttendanceInfo, TDutyFormCreateFormField } from "@/types";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { memo, useCallback, useState } from "react";
 import { Control, useFieldArray } from "react-hook-form";
@@ -12,104 +12,59 @@ import { DutyTypeItem } from "./DutyTypeItem";
 import { Button } from "react-native-paper";
 import { NoData } from "@/ui/NoData";
 import { _mockDutySuggestedUsers } from "@/constants/Misc";
+import { useDutyFormCreateContext } from "@/contexts";
 
 type ChooseDutyTypesAndDutyTypeUsersProps = {
   control: Control<TDutyFormCreateFormField>;
-  updateUserApproves: () => void;
-  updateTeamIds: (newTeamId: number, action: TCheckAction) => void;
 };
 
-export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(
-  ({ control, updateUserApproves, updateTeamIds }) => {
-    const [openSlideModal, setOpenSlideModal] = useState(false);
-    const { isLoading: isFetchingDutyTypes, dutyTypes } = useDutyTypes();
+export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({ control }) => {
+  const [openSlideModal, setOpenSlideModal] = useState(false);
+  const { isLoading: isFetchingDutyTypes, dutyTypes } = useDutyTypes();
 
-    const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
-    const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
+  const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
+  const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-    const { fields, append, update, remove } = useFieldArray({ name: "dutyTypes", control: control });
+  const { onAddDutyType, onRemoveDutyType, formDutyTypes } = useDutyFormCreateContext();
 
-    const onDutyTypeSelect = useCallback(
-      (dutyTypeId: number, dutyTypeName: string) => {
-        append({ dutyTypeName, dutyTypeId, userIds: [] });
-        onCloseDutyTypesModal();
-      },
-      [append, onCloseDutyTypesModal, fields]
-    );
+  return (
+    <View style={styles.dutyTypeFieldContainer}>
+      {/*  */}
+      <FieldLabel />
 
-    const onDutyTypeDelete = useCallback(
-      (index: number) => {
-        remove(index);
-      },
-      [remove]
-    );
-
-    const updateUserIds = useCallback(
-      (fieldArrayIndex: number, userId: number) => {
-        const dutyType = fields[fieldArrayIndex];
-
-        if (dutyType.userIds.includes(userId)) {
-          const newUserIds = dutyType.userIds.filter((id) => id !== userId);
-          update(fieldArrayIndex, { ...dutyType, userIds: newUserIds });
-        } else {
-          update(fieldArrayIndex, { ...dutyType, userIds: [...dutyType.userIds, userId] });
-        }
-      },
-      [fields]
-    );
-
-    return (
-      <View style={styles.dutyTypeFieldContainer}>
-        {/*  */}
-        <FieldLabel />
-
-        {/*  */}
-        <View style={styles.dutyTypeGroup}>
-          {fields.map((selectedDutyType, index) => (
-            <DutyTypeItem
-              key={selectedDutyType.dutyTypeId}
-              users={_mockDutySuggestedUsers}
-              selectedUserIds={selectedDutyType.userIds}
-              dutyType={{
-                dutyTypeName: selectedDutyType.dutyTypeName,
-                dutyTypeId: selectedDutyType.dutyTypeId,
-              }}
-              deleteDutyType={onDutyTypeDelete}
-              fieldArrayIndex={index}
-              updateDutyTypeUserIds={updateUserIds}
-              updateUserApproves={updateUserApproves}
-              updateTeamIds={updateTeamIds}
-            />
-          ))}
-        </View>
-
-        {/*  */}
-        <Button style={{ alignItems: "flex-start" }} onPress={onOpenDutyTypesModal} textColor="#0B3A82">
-          + thêm loại trực
-        </Button>
-        <>
-          {openSlideModal && (
-            <MySlideModal onClose={onCloseDutyTypesModal}>
-              <Delayed>
-                {isFetchingDutyTypes && <SkeletonRectangleLoader height={100} />}
-                {!isFetchingDutyTypes && (
-                  <>
-                    {dutyTypes.map((dutyType) => (
-                      <Button key={dutyType.id} onPress={() => onDutyTypeSelect(dutyType.id, dutyType.dutyTypeName)}>
-                        {dutyType.dutyTypeName}
-                      </Button>
-                    ))}
-                  </>
-                )}
-                {!isFetchingDutyTypes && dutyTypes.length <= 0 && <NoData message="Không có loại trực" />}
-              </Delayed>
-            </MySlideModal>
-          )}
-        </>
+      {/*  */}
+      <View style={styles.dutyTypeGroup}>
+        {formDutyTypes.map((selectedDutyType, index) => (
+          <DutyTypeItem key={selectedDutyType.dutyTypeId} dutyTypeInfo={selectedDutyType} fieldArrayIndex={index} />
+        ))}
       </View>
-    );
-  }
-);
+
+      {/*  */}
+      <Button style={{ alignItems: "flex-start" }} onPress={onOpenDutyTypesModal} textColor="#0B3A82">
+        + thêm loại trực
+      </Button>
+      <>
+        {openSlideModal && (
+          <MySlideModal onClose={onCloseDutyTypesModal}>
+            <Delayed>
+              {isFetchingDutyTypes && <SkeletonRectangleLoader height={100} />}
+              {!isFetchingDutyTypes && (
+                <>
+                  {dutyTypes.map((dutyType) => (
+                    <Button key={dutyType.id} onPress={() => onAddDutyType({ dutyTypeId: dutyType.id, dutyTypeName: dutyType.dutyTypeName })}>
+                      {dutyType.dutyTypeName}
+                    </Button>
+                  ))}
+                </>
+              )}
+              {!isFetchingDutyTypes && dutyTypes.length <= 0 && <NoData message="Không có loại trực" />}
+            </Delayed>
+          </MySlideModal>
+        )}
+      </>
+    </View>
+  );
+});
 
 const FieldLabel: React.FC = () => (
   <View style={styles.labelWrapper}>

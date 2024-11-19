@@ -1,18 +1,20 @@
-import { TDutySuggestedUser } from "@/api/form/types";
+import { useDutyFormCreateContext } from "@/contexts";
+import { TDutyFormAttendanceInfo } from "@/types";
 import { memo, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Card, Checkbox, Text, TouchableRipple } from "react-native-paper";
 
 type SuggestUserItemProps = {
-  user: TDutySuggestedUser;
-  onCardPressed: (user: TDutySuggestedUser) => void;
+  user: TDutyFormAttendanceInfo;
+  onCardPressed: (user: TDutyFormAttendanceInfo) => void;
   isChecked: boolean;
+  fieldArrayIndex: number;
 };
-export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, onCardPressed, isChecked }) => {
+export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, onCardPressed, isChecked, fieldArrayIndex }) => {
   const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
-
+  const { updateDutyTypeUser } = useDutyFormCreateContext();
   const onPressUserCard = useCallback(() => {
-    onCardPressed(user);
+    updateDutyTypeUser(fieldArrayIndex, user, isChecked ? "remove" : "add");
   }, [user]);
   return (
     <Card>
