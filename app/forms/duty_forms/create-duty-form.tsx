@@ -7,7 +7,7 @@ import { ChooseDutyTypesAndDutyTypeUsers } from "@/components/form";
 import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { DutyFormCreateContext } from "@/contexts";
-import { hasNullishValue, pickProperties } from "@/helper/common";
+import { getDistinctElements, hasNullishValue, pickProperties } from "@/helper/common";
 import { useCreateNewForm, useFetchSalaryCoefTypes, useUserApprovesByRole } from "@/hooks/form";
 import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
@@ -71,7 +71,7 @@ export default function CreateDutyForm() {
       });
     });
     // refetch user apporves
-    onFetchUserApprovesInMultiTeams({ role: ROLE_CODE.TEAM_DIRECTOR, teamIds: teamIds });
+    onFetchUserApprovesInMultiTeams({ role: ROLE_CODE.TEAM_DIRECTOR, teamIds: getDistinctElements(teamIds) });
   }, [getValues, onFetchUserApprovesInMultiTeams]);
 
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({

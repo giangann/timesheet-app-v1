@@ -202,3 +202,7 @@ export function getUserSummaryString(users: TTeamUserSort[]): string {
 export function arrayStringToString(arrayOfString: string[]): string {
   return arrayOfString.join(", ");
 }
+
+export function getDistinctElements<T>(array: T[]): T[] {
+  return Array.from(new Set(array));
+}
