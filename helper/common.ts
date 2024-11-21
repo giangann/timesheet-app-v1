@@ -198,3 +198,7 @@ export function getUserSummaryString(users: TTeamUserSort[]): string {
     return displayedUsers.join(", ");
   }
 }
+
+export function arrayStringToString(arrayOfString: string[]): string {
+  return arrayOfString.join(", ");
+}

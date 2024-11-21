@@ -6,7 +6,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { omitNullishValues, omitProperties } from "@/helper/common";
+import { arrayStringToString, omitNullishValues, omitProperties } from "@/helper/common";
 import { formatRelativeTimeWithLongText } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
@@ -400,7 +400,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.itemBoxSumary}>
           <View style={styles.infos}>
             <View style={styles.userInfo}>
-              <AvatarByRole role={dutyForm.userApproveRoleName as ROLE_CODE} />
+              <AvatarByRole role={dutyForm.userApproveRoleCode as ROLE_CODE} />
               <View style={{ gap: 4 }}>
                 <NunitoText type="body3">{dutyForm.userApproveName}</NunitoText>
                 <NunitoText type="body4" style={{ opacity: 0.75 }}>
@@ -435,7 +435,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.extraInfo}>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại trực: </NunitoText>
-            {dutyForm.dutyTypeName}
+            {arrayStringToString(dutyForm.dutyTypeNames)}
+          </NunitoText>
+          <NunitoText type="body4">
+            <NunitoText type="body2">Thành viên: </NunitoText>
+            {arrayStringToString(dutyForm.userNames)}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
@@ -451,6 +455,10 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
               {moment(dutyForm.approveDate).format("DD/MM/YYYY HH:mm")}
             </NunitoText>
           )}
+          <NunitoText type="body4">
+            <NunitoText type="body2">Tạo bởi: </NunitoText>
+            {dutyForm.createdUserName}
+          </NunitoText>
         </View>
       )}
 

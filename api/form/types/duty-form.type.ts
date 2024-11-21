@@ -13,26 +13,28 @@ export type TDutyForm = {
   endTime: string;
   date: string;
   status: FORM_STATUS;
+
   userApproveName: string;
   userApproveRoleName: string;
   userApproveTeamName: string;
+  userApproveRoleCode: string;
 
-  userApproveIdentifyCard: string;
+  createdUserRoleCode: string;
+  createdUserName: string;
+  createdUserRoleName: string;
+  createdUserTeamName: string;
+
+  dutyTypeNames: string[];
+  salaryCoefficient: number;
+  salaryCoefficientTypeName: string;
+
+  userNames: string[];
+
   note: string;
   reason: string | null;
   approveDate: string | null;
   createdAt: string;
   attachFilePath: string;
-  isDeleted: boolean;
-  dutyTypeName: string;
-  salaryCoefficientTypeName: string;
-  salaryCoefficient: number;
-  createdUserName: string;
-  createdUserRoleName: string;
-  createdUserTeamName: string;
-  dutyTypeNames: string[];
-  users: TFormUserApply[];
-  userNames: string[];
 };
 
 export type TApproveDutyForm = {
