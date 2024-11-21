@@ -29,9 +29,6 @@ export default function SettingLayout() {
       <Stack.Screen name="duty_types/index" options={{ title: "Loại trực" }} />
       <Stack.Screen name="duty_types/add-duty-type" options={{ title: "Thêm loại trực" }} />
       <Stack.Screen name="duty_types/[id]" options={{ title: "Chi tiết loại trực" }} />
-    
-      <Stack.Screen name="duty_calendars/index" options={{ title: "Lịch trực theo tuần" }} />
-      <Stack.Screen name="duty_calendars/add-duty-calendar" options={{ title: "Tạo mới lịch trực" }} />
     </Stack>
   );
 }
