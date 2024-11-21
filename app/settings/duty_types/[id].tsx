@@ -71,18 +71,21 @@ export default function DutyTypeDetail() {
     [map1]
   );
 
-  const onUpdateSideEffect = useCallback((dutyTypeData: TDutyTypeUpdate) => {
-    // update dutyTypeDetail in local
-    const newDutyTypeName = dutyTypeData.dutyTypeName;
-    const newDutyTypeTeams = dutyType.teams.map((team) => ({
-      ...team,
-      users: team.users.map((user) => ({
-        ...user,
-        isActive: map1.get(user.id.toString()) ?? false,
-      })),
-    }));
-    setDutyType((prev) => ({ ...prev, dutyTypeName: newDutyTypeName, teams: newDutyTypeTeams }));
-  }, [map1]);
+  const onUpdateSideEffect = useCallback(
+    (dutyTypeData: TDutyTypeUpdate) => {
+      // update dutyTypeDetail in local
+      const newDutyTypeName = dutyTypeData.dutyTypeName;
+      const newDutyTypeTeams = dutyType.teams.map((team) => ({
+        ...team,
+        users: team.users.map((user) => ({
+          ...user,
+          isActive: map1.get(user.id.toString()) ?? false,
+        })),
+      }));
+      setDutyType((prev) => ({ ...prev, dutyTypeName: newDutyTypeName, teams: newDutyTypeTeams }));
+    },
+    [map1]
+  );
 
   const onUpdate = useCallback(
     async (fieldValues: UpdateItem) => {
@@ -237,6 +240,8 @@ const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
     [team]
   );
 
+  const users = useMemo(() => (isEdit ? team.users : team.users.filter((user) => user.isActive)), [team, isEdit]);
+
   const numOfActiveUserOrigin = useMemo(() => team.users.filter((user) => user.isActive).length, [team]);
   const numOfActiveUser = useMemo(() => getMapValues(checkedStatusMap).filter((isActive) => isActive).length, [checkedStatusMap, render]);
 
@@ -288,7 +293,7 @@ const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
           style={{ backgroundColor: `red`, borderRadius: 4 }}
           showDivide={true}
         >
-          {team.users.map((user) => {
+          {users.map((user) => {
             const isChecked = checkedStatusMap.get(user.id.toString()) ?? false;
 
             return (
