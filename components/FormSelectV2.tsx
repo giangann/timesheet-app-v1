@@ -44,7 +44,8 @@ function RawFormSelectV2<T extends FieldValues>({
   const { field } = useController(useControllerProps);
   const { value: fieldValue, onChange } = field;
 
-  const labelDisplay = useMemo(() => options?.filter((opt) => opt.value === fieldValue)?.[0]?.label, [fieldValue]);
+  const labelDisplay = useMemo(() => options?.filter((opt) => opt.value === fieldValue)?.[0]?.label, [options, fieldValue]);
+
   const isEmptyOpt = !options || options?.length === 0;
 
   const onSelectOpt = (option: TOption) => {

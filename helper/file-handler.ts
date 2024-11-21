@@ -10,3 +10,14 @@ export const uriToFormDataValidImage = (uri: string) => {
     type: `image/${fileType}`,
   };
 };
+
+export const imageUrlToFile = async (remoteUrl: string): Promise<File> => {
+  const response = await fetch(remoteUrl);
+  const blob = await response.blob();
+
+  // Extract the filename from the URL
+  const filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
+
+  // Create a File from the Blob
+  return new File([blob], filename, { type: blob.type });
+};

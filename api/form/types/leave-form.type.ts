@@ -1,5 +1,21 @@
 import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
 
+export type TLeaveType = {
+  id: number;
+  name: string;
+};
+export type TLeaveFormCreateFormFields = {
+  startDate: string | Date;
+  endDate: string | Date;
+  leaveFormTypeId: number;
+  userApproveIdentifyCard: string;
+  attachFile: File | null;
+  note: string | null;
+};
+export type TLeaveFormEditFormFields = {
+  id: number;
+} & Partial<TLeaveFormCreateFormFields>;
+
 export type TLeaveForm = {
   id: number;
   startDate: string;
@@ -33,6 +49,7 @@ export type TLeaveForm = {
   approveDate: string | null;
   reason: string | null;
 };
+
 export type TApproveLeaveForm = {
   id: number;
   startDate: string;

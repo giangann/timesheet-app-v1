@@ -1,10 +1,7 @@
 import { fetchListUserByRole } from "@/api/form";
 import { TListUserApproveInMultiTeamsParams, TListUserApproveParams, TUserApproveWithId } from "@/api/form/types";
-import { fetchDutyTypes } from "@/api/setting";
-import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 
 export function useUserApprovesByRole() {

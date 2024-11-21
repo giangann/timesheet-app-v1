@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
 import { Alert, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NunitoText } from "./text/NunitoText";
-import * as Progress from 'react-native-progress';
+import * as Progress from "react-native-progress";
 const AddImageIcon = require("@/assets/images/add-image.png");
 const ClearImageIcon = require("@/assets/images/x-close_white.png");
 
@@ -12,10 +12,10 @@ type FormUploadImageProps<T extends FieldValues> = {
   label?: string;
   required?: boolean;
   useControllerProps: UseControllerProps<T>;
+  defaultUri?: string;
 };
 
-export default function FormUploadImage<T extends FieldValues>({ label, required, useControllerProps }: FormUploadImageProps<T>) {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+export default function FormUploadImage<T extends FieldValues>({ label, required, useControllerProps, defaultUri }: FormUploadImageProps<T>) {
   // Stores any error message
   const [error, setError] = useState(null);
   const [isWaiting, setIsWaiting] = useState(false);
@@ -23,6 +23,7 @@ export default function FormUploadImage<T extends FieldValues>({ label, required
   const { field } = useController(useControllerProps);
   const { onChange } = field;
 
+  const [fileUri, setFileUri] = useState<string | null>(defaultUri ?? null);
   // Function to pick an image from
   //the device's media library
   const pickImage = async () => {
@@ -75,11 +76,11 @@ export default function FormUploadImage<T extends FieldValues>({ label, required
       </View>
       {/* Button to choose an image */}
       <View style={styles.waitingWrapper}>
-        {isWaiting &&
+        {isWaiting && (
           <View style={styles.waitingLoading}>
-            <Progress.Bar indeterminate style={{width:'100%'}} />
+            <Progress.Bar indeterminate style={{ width: "100%" }} />
           </View>
-        }
+        )}
         {!fileUri && (
           <TouchableOpacity onPress={pickImage}>
             <View style={styles.imageBox}>

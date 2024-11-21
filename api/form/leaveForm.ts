@@ -63,7 +63,7 @@ export async function fetchApproveLeaveForms(
   return responseJson;
 }
 
-export async function fetchLeaveFormDetail(session: string, formId: number) {
+export async function fetchLeaveFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
