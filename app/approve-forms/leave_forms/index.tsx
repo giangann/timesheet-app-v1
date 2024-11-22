@@ -147,7 +147,7 @@ export default function ApproveLeaveForms() {
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader/> : null}
+        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : null}
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
@@ -332,13 +332,15 @@ const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFo
   };
 
   useEffect(() => {
-    setValue("createdAt", filterParams.createdAt);
+    setValue("startCreatedAt", filterParams.startCreatedAt);
+    setValue("endCreatedAt", filterParams.endCreatedAt);
   }, [filterParams]);
 
   return (
     <View style={styles.modalContent}>
       <View style={styles.modalFields}>
-        <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "startCreatedAt" }} label="Ngày tạo đơn (từ ngày):" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "endCreatedAt" }} label="Ngày tạo đơn (đến ngày):" placeholder="Chọn ngày" />
       </View>
 
       <View style={styles.buttonModalContainer}>

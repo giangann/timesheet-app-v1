@@ -145,7 +145,8 @@ export type TOvertimeFormFilterParams = {
 
 export type TApproveOvertimeFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 /*
 const sampleResponse = {

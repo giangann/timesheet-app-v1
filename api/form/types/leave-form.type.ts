@@ -148,7 +148,8 @@ export type TLeaveFormFilterParams = {
 
 export type TApproveLeaveFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 
 /*
