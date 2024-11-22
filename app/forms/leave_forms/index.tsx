@@ -336,13 +336,15 @@ const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFo
   };
 
   useEffect(() => {
-    setValue("createdAt", filterParams.createdAt);
+    setValue("startCreatedAt", filterParams.startCreatedAt);
+    setValue("endCreatedAt", filterParams.endCreatedAt);
   }, [filterParams]);
 
   return (
     <View style={styles.modalContent}>
       <View style={styles.modalFields}>
-        <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "startCreatedAt" }} label="Ngày tạo đơn (từ ngày):" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "endCreatedAt" }} label="Ngày tạo đơn (đến ngày):" placeholder="Chọn ngày" />
       </View>
 
       <View style={styles.buttonModalContainer}>

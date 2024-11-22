@@ -142,7 +142,8 @@ export type TLeaveFormCreateNoti = {
 
 export type TLeaveFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 
 export type TApproveLeaveFormFilterParams = {
