@@ -69,52 +69,37 @@ export type TApproveDutyForm = {
 
 export type TDutyFormDetail = {
   id: number;
-  dutyCalendar: {
-    startTime: string;
-    endTime: string;
-    date: string;
-    salaryCoefficientType: {
-      id: number;
-      name: string;
-      coefficient: number;
-    };
-    dutyType: {
-      id: number;
-      name: string;
-    };
-  };
-  attachFile: {
-    id: number;
-    name: string;
-    type: string;
-    path: string;
-    url: string;
-  };
-  userApproveIdentifyCard: string;
-  note: string;
-
-  userApproveName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
   reason: string | null;
   status: FORM_STATUS;
   approveDate: string | null;
-
-  userApproveTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
+  note: string | null;
+  createdAt: string;
+  createdUserId: number;
+  createdUserName: string;
+  approvedUserId: number;
+  approvedUserName: string;
+  userApproveRoleCode: ROLE_CODE
+  salaryCoefficientTypeId: number;
+  salaryCoefficientTypeName: string;
+  salaryCoefficient:number;
+  attachFileId: number | null;
+  attachFilePath: string | null;
+  attachFileUrl: string | null;
+  dutyTypes: TDutyFormDetailDutyType[];
+};
+export type TDutyFormDetailDutyType = {
+  id: number;
+  dutyTypeName: string;
   users: {
+    id: number;
     name: string;
-    identifyCard: string;
-    roleId: number;
     roleName: string;
-    roleCode: ROLE_CODE;
+    roleId: number;
+    teamName: string;
+    teamId: number;
   }[];
 };
 

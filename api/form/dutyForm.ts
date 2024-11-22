@@ -105,12 +105,13 @@ export async function fetchUserCreateDutyForms(session: string | undefined | nul
   return responseJson;
 }
 
-export async function fetchDutyFormDetail(session: string, formId: number) {
+export async function fetchDutyFormDetail(session: string | undefined | null, formId: number) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = `/duty-forms/${formId}`;
-  const url = `${baseUrl}${endpoint}`;
+  const endpoint = `/duty-forms`;
+  const querystring = paramsObjectToQueryString({ id: formId });
+  const url = `${baseUrl}${endpoint}${querystring}`;
 
   const response = await fetch(url, {
     method: "GET",
