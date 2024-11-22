@@ -43,37 +43,28 @@ export type TApproveDutyForm = {
   endTime: string;
   date: string;
   status: FORM_STATUS;
+
   userApproveName: string;
-  userApproveIdentifyCard: string;
+  userApproveRoleName: string;
+  userApproveTeamName: string;
+  userApproveRoleCode: string;
+
+  createdUserRoleCode: string;
+  createdUserName: string;
+  createdUserRoleName: string;
+  createdUserTeamName: string;
+
+  dutyTypeNames: string[];
+  salaryCoefficient: number;
+  salaryCoefficientTypeName: string;
+
+  userNames: string[];
+
   note: string;
   reason: string | null;
   approveDate: string | null;
   createdAt: string;
   attachFilePath: string;
-  isDeleted: boolean;
-  dutyTypeName: string;
-  salaryCoefficientTypeName: string;
-  salaryCoefficient: number;
-  users: [
-    {
-      name: string;
-      identifyCard: string;
-      roleId: number;
-      roleName: string;
-      roleCode: ROLE_CODE;
-    }
-  ];
-  userTeam: {
-    id: number;
-    name: string;
-    code: string | null;
-    hotline: string | null;
-  };
-  userApproveRole: {
-    id: number;
-    code: ROLE_CODE;
-    name: string;
-  };
 };
 
 export type TDutyFormDetail = {
@@ -168,7 +159,8 @@ export type TDutyFormFilterParams = {
 };
 export type TApproveDutyFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 
 export type TDutySuggestedUser = {

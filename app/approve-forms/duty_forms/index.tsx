@@ -4,9 +4,9 @@ import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
+import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { omitNullishValues, omitProperties } from "@/helper/common";
+import { arrayStringToString, omitNullishValues, omitProperties } from "@/helper/common";
 import { formatRelativeTimeWithLongText } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
@@ -51,7 +51,7 @@ export default function ApproveDutyForms() {
     try {
       const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
-        const moreDutyForms = responseJson.data.dutyForm;
+        const moreDutyForms = responseJson.data.dutyForms;
         setDutyForms((prev) => [...prev, ...moreDutyForms]);
         setPageable(responseJson.data.pageable);
       } else {
@@ -76,7 +76,7 @@ export default function ApproveDutyForms() {
     try {
       const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParamsRef.current);
       if (responseJson.statusCode === 200) {
-        const overrideDutyForms = responseJson.data.dutyForm;
+        const overrideDutyForms = responseJson.data.dutyForms;
         setDutyForms(overrideDutyForms);
       } else {
         MyToast.error(responseJson.error);
@@ -107,7 +107,7 @@ export default function ApproveDutyForms() {
       const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParams);
 
       if (responseJson.statusCode === 200) {
-        const formsWithFilter = responseJson.data.dutyForm;
+        const formsWithFilter = responseJson.data.dutyForms;
         setDutyForms(formsWithFilter);
         setPageable(responseJson.data.pageable);
       } else {
@@ -333,13 +333,15 @@ const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFo
   };
 
   useEffect(() => {
-    setValue("createdAt", filterParams.createdAt);
+    setValue("startCreatedAt", filterParams.startCreatedAt);
+    setValue("endCreatedAt", filterParams.endCreatedAt);
   }, [filterParams]);
 
   return (
     <View style={styles.modalContent}>
       <View style={styles.modalFields}>
-        <FormPickDate useControllerProps={{ control: control, name: "createdAt" }} label="Ngày tạo đơn:" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "startCreatedAt" }} label="Ngày tạo đơn (từ ngày):" placeholder="Chọn ngày" />
+        <FormPickDate useControllerProps={{ control: control, name: "endCreatedAt" }} label="Ngày tạo đơn (đến ngày):" placeholder="Chọn ngày" />{" "}
       </View>
 
       <View style={styles.buttonModalContainer}>
@@ -383,7 +385,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
     <View style={styles.itemBox}>
       {/* sumary */}
       <Pressable onPress={onGoToFormDetail}>
-        <View style={styles.itemBoxSumary}>
+        {/* <View style={styles.itemBoxSumary}>
           <View style={styles.infos}>
             <View style={styles.userInfo}>
               {dutyForm.users.length > 0 && (
@@ -417,6 +419,37 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
               {formatRelativeTimeWithLongText(dutyForm.createdAt)}
             </NunitoText>
           </View>
+        </View> */}
+        <View style={styles.itemBoxSumary}>
+          <View style={styles.infos}>
+            <View style={styles.userInfo}>
+              <AvatarByRole role={dutyForm.createdUserRoleCode as ROLE_CODE} />
+              <View style={{ gap: 4 }}>
+                <NunitoText type="body3">{dutyForm.createdUserName}</NunitoText>
+                <NunitoText type="body4" style={{ opacity: 0.75 }}>
+                  {dutyForm.createdUserRoleName}
+                </NunitoText>
+              </View>
+            </View>
+            <View style={styles.formInfo}>
+              <ChipStatus status={dutyForm.status} />
+              <View>
+                <View>
+                  <NunitoText type="body4" style={{ opacity: 0.675 }}>
+                    {moment(dutyForm.date).format("DD/MM/YYYY")}
+                  </NunitoText>
+                  <NunitoText type="body4" style={{ opacity: 0.675 }}>
+                    {`${dutyForm.startTime} - ${dutyForm.endTime}`}
+                  </NunitoText>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={styles.timestamp}>
+            <NunitoText type="body4" style={{ opacity: 0.5 }}>
+              {formatRelativeTimeWithLongText(dutyForm.createdAt)}
+            </NunitoText>
+          </View>
         </View>
       </Pressable>
 
@@ -425,7 +458,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.extraInfo}>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại trực: </NunitoText>
-            {dutyForm.dutyTypeName}
+            {arrayStringToString(dutyForm.dutyTypeNames)}
+          </NunitoText>
+          <NunitoText type="body4">
+            <NunitoText type="body2">Thành viên: </NunitoText>
+            {arrayStringToString(dutyForm.userNames)}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
@@ -435,24 +472,16 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
             <NunitoText type="body2">Ghi chú: </NunitoText>
             {dutyForm.note}
           </NunitoText>
-
-          {dutyForm.users.length > 1 && (
-            <NunitoText type="body4">
-              <NunitoText type="body2">Danh sách thành viên trong đơn: </NunitoText>
-              {dutyForm.users.map((user, index) => (
-                <NunitoText key={user.identifyCard} type="body4">
-                  {`(${index + 1}) ${user.name} (${user.roleName})`}
-                </NunitoText>
-              ))}
-            </NunitoText>
-          )}
-
           {dutyForm.approveDate && (
             <NunitoText type="body4">
               <NunitoText type="body2">Phê duyệt lúc: </NunitoText>
               {moment(dutyForm.approveDate).format("DD/MM/YYYY HH:mm")}
             </NunitoText>
           )}
+          <NunitoText type="body4">
+            <NunitoText type="body2">Tạo bởi: </NunitoText>
+            {dutyForm.createdUserName}
+          </NunitoText>
         </View>
       )}
 

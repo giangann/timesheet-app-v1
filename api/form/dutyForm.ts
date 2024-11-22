@@ -56,8 +56,11 @@ export async function fetchApproveDutyForms(
   const url = `${baseUrl}${endpoint}${queryString}`;
 
   const bodyFilterParams = { ...filterParams };
-  if (bodyFilterParams?.createdAt) {
-    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  if (bodyFilterParams?.startCreatedAt) {
+    bodyFilterParams.startCreatedAt = moment(bodyFilterParams?.startCreatedAt).format("YYYY-MM-DD");
+  }
+  if (bodyFilterParams?.endCreatedAt) {
+    bodyFilterParams.endCreatedAt = moment(bodyFilterParams?.endCreatedAt).format("YYYY-MM-DD");
   }
 
   const response = await fetch(url, {
