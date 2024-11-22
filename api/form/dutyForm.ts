@@ -21,8 +21,11 @@ export async function fetchMyDutyForms(session: string | undefined | null, pagiP
   const url = `${baseUrl}${endpoint}${queryString}`;
 
   const bodyFilterParams = { ...filterParams };
-  if (bodyFilterParams?.createdAt) {
-    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  if (bodyFilterParams?.startCreatedAt) {
+    bodyFilterParams.startCreatedAt = moment(bodyFilterParams?.startCreatedAt).format("YYYY-MM-DD");
+  }
+  if (bodyFilterParams?.endCreatedAt) {
+    bodyFilterParams.endCreatedAt = moment(bodyFilterParams?.endCreatedAt).format("YYYY-MM-DD");
   }
 
   const response = await fetch(url, {
@@ -81,8 +84,11 @@ export async function fetchUserCreateDutyForms(session: string | undefined | nul
   const url = `${baseUrl}${endpoint}${queryString}`;
 
   const bodyFilterParams = { ...filterParams };
-  if (bodyFilterParams?.createdAt) {
-    bodyFilterParams.createdAt = moment(bodyFilterParams?.createdAt).format("YYYY-MM-DD");
+  if (bodyFilterParams?.startCreatedAt) {
+    bodyFilterParams.startCreatedAt = moment(bodyFilterParams?.startCreatedAt).format("YYYY-MM-DD");
+  }
+  if (bodyFilterParams?.endCreatedAt) {
+    bodyFilterParams.endCreatedAt = moment(bodyFilterParams?.endCreatedAt).format("YYYY-MM-DD");
   }
 
   const response = await fetch(url, {

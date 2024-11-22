@@ -163,7 +163,8 @@ export type TDutyFormCreateNoti = {
 };
 export type TDutyFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 export type TApproveDutyFormFilterParams = {
   status?: FORM_STATUS | null;
