@@ -17,7 +17,7 @@ export type TOvertimeForm = {
   salaryCoefficient: number;
   userName: string;
   userIdentifyCard: string;
-  createdAt:string;
+  createdAt: string;
   userRole: {
     id: number;
     code: string;
@@ -54,7 +54,7 @@ export type TApproveOvertimeForm = {
   salaryCoefficient: number;
   userName: string;
   userIdentifyCard: string;
-  createdAt:string;
+  createdAt: string;
   userRole: {
     id: number;
     code: ROLE_CODE;
@@ -139,7 +139,8 @@ export type TOvertimeFormCreateNoti = {
 
 export type TOvertimeFormFilterParams = {
   status?: FORM_STATUS | null;
-  createdAt?: string;
+  startCreatedAt?: string;
+  endCreatedAt?: string;
 };
 
 export type TApproveOvertimeFormFilterParams = {
