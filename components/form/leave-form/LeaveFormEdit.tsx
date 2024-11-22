@@ -7,7 +7,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts";
-import { hasNullishValue, pickProperties } from "@/helper/common";
+import { dirtyValues, hasNullishValue, pickProperties } from "@/helper/common";
 import { useEditLeaveForm, useLeaveType, useUserApprovesByRole } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -36,29 +36,33 @@ export const LeaveFormEdit: React.FC<LeaveFormEditProps> = memo(({ form }) => {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, dirtyFields },
   } = useForm<TLeaveFormEditFormFields>({
     defaultValues: {
       startDate: new Date(form.startDate),
       endDate: new Date(form.endDate),
-      leaveFormTypeId: 202,
+      leaveFormTypeId: form.leaveFormTypeId,
       userApproveIdentifyCard: form.userApproveIdentifyCard,
-      note: form.note
+      note: form.note,
     },
   });
 
-  const onSave = async (value: TLeaveFormEditFormFields) => {
-    try {
-      const requiredValues = pickProperties(value, ["startDate", "endDate", "leaveFormTypeId", "userApproveIdentifyCard"]);
-      if (hasNullishValue(requiredValues)) {
-        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
-        return;
+  const onSave = useCallback(
+    async (value: TLeaveFormEditFormFields) => {
+      try {
+        const requiredValues = pickProperties(value, ["startDate", "endDate", "leaveFormTypeId", "userApproveIdentifyCard"]);
+        if (hasNullishValue(requiredValues)) {
+          MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+          return;
+        }
+        const editedFields = dirtyValues(dirtyFields, value);
+        onEdit(form.id, editedFields);
+      } catch (error: any) {
+        MyToast.error(error.message);
       }
-      onEdit(value);
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  };
+    },
+    [form, dirtyFields]
+  );
 
   const fetchUserApproves = async () => {
     const users = await onFetchUsers({ role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });

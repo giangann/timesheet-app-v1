@@ -12,9 +12,7 @@ export type TLeaveFormCreateFormFields = {
   attachFile: File | null;
   note: string | null;
 };
-export type TLeaveFormEditFormFields = {
-  id: number;
-} & Partial<TLeaveFormCreateFormFields>;
+export type TLeaveFormEditFormFields = Partial<TLeaveFormCreateFormFields>;
 
 export type TLeaveForm = {
   id: number;
@@ -92,6 +90,7 @@ export type TLeaveFormDetail = {
   endDate: string;
   note: string;
   leaveFormType: string;
+  leaveFormTypeId: number;
   attachFilePath: string;
   status: number;
   userRole: {
