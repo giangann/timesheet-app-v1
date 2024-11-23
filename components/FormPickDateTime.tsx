@@ -42,7 +42,6 @@ export function FormPickDateTime<T extends FieldValues>({
 
   const onDateConfirm = useCallback(
     (newValue: Date) => {
-      console.log("onConfirm", { newValue });
       onHideDatePicker();
       onChange(newValue);
 
