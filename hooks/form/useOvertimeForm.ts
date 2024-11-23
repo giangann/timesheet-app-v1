@@ -1,25 +1,36 @@
-import { fetchLeaveFormDetail } from "@/api/form";
-import { TLeaveFormDetail, TLeaveFormEditFormFields } from "@/api/form/types";
+import { fetchOvertimeFormDetail } from "@/api/form";
+import { TOvertimeFormDetail, TOvertimeFormEdit, TOvertimeFormEditFormFields } from "@/api/form/types";
 import { useSession } from "@/contexts";
 import { logFormData } from "@/helper/common";
 import { formatDateToLocalString } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import moment from "moment";
 import { useCallback, useState } from "react";
 
-export function useEditLeaveForm() {
+export function useEditOvertimeForm() {
   const { session } = useSession();
   const router = useRouter();
 
   const onEdit = useCallback(
-    async (leaveFormId: number, fields: TLeaveFormEditFormFields) => {
+    async (overtimeFormId: number, fields: TOvertimeFormEditFormFields) => {
       try {
         // process data from form
         console.log({ fields });
 
+        const bodyData: TOvertimeFormEdit = {};
+
+        if (fields.date) bodyData["date"] = moment(fields.date).format("YYYY-MM-DD");
+        if (fields.startTime) bodyData["startTime"] = moment(fields.startTime).format("HH:mm:ss");
+        if (fields.endTime) bodyData["endTime"] = moment(fields.endTime).format("HH:mm:ss");
+        if (fields.salaryCoefficientTypeId) bodyData["salaryCoefficientTypeId"] = fields.salaryCoefficientTypeId;
+        if (fields.userApproveIdentifyCard) bodyData["userApproveIdentifyCard"] = fields.userApproveIdentifyCard;
+        if (fields.note) bodyData["note"] = fields.note;
+        if (fields.attachFile) bodyData["attachFile"] = fields.attachFile;
+
         const formData = new FormData();
 
-        Object.entries(fields).forEach(([k, v]) => {
+        Object.entries(bodyData).forEach(([k, v]) => {
           if (v !== null && v !== undefined) {
             if (typeof v === "number") formData.append(k, v.toString());
             else if (v instanceof Date) {
@@ -33,7 +44,7 @@ export function useEditLeaveForm() {
         // make request
         const token = `Bearer ${session}`;
         const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-        const endpoint = `/leave-forms?id=${leaveFormId}`;
+        const endpoint = `/overtime-forms?id=${overtimeFormId}`;
         const url = `${baseUrl}${endpoint}`;
 
         const response = await fetch(url, {
@@ -64,21 +75,20 @@ export function useEditLeaveForm() {
 
   return { onEdit };
 }
-
-export function useDetailLeaveForm() {
+export function useDetailOvertimeForm() {
   const { session } = useSession();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<TLeaveFormDetail | null>(null);
+  const [form, setForm] = useState<TOvertimeFormDetail | null>(null);
   const local = useLocalSearchParams();
   const formId = local.id;
 
   const onFetchFormDetail = useCallback(async () => {
     setLoading(true);
     try {
-      const responseJson = await fetchLeaveFormDetail(session, parseInt(String(formId)));
+      const responseJson = await fetchOvertimeFormDetail(session, parseInt(String(formId)));
 
       if (responseJson.statusCode === 200) {
-        setForm(responseJson.data.leaveFormDetail);
+        setForm(responseJson.data.overtimeFormDetail);
       } else {
         MyToast.error(responseJson.error ?? responseJson.message);
       }

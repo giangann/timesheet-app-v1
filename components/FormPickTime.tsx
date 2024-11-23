@@ -42,7 +42,6 @@ function RawFormPickTime<T extends FieldValues>({
   };
 
   const formattedDate = value ? moment(value).locale(locale).format(timeFormat) : placeholder;
-
   return (
     <View style={styles.container}>
       {/* label */}

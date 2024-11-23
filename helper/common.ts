@@ -223,3 +223,11 @@ export const logFormData = (formData: FormData): void => {
     console.log(`${key}: ${value}`);
   }
 };
+export function combineDateAndTimeToDateObject(date: string, time: string): Date {
+  // Parse the time string, default to "00" for seconds if not provided
+  const [hours, minutes, seconds = "00"] = time.split(":");
+
+  // Combine date and time into a single Date object
+  const dateObject = new Date(`${date}T${hours}:${minutes}:${seconds}`);
+  return dateObject;
+}

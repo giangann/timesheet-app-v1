@@ -1,4 +1,25 @@
 import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+
+export type TOvertimeFormCreateFormFields = {
+  date: Date | null;
+  startTime: Date | null;
+  endTime: Date | null;
+  salaryCoefficientTypeId: number | null;
+  userApproveIdentifyCard: string | null;
+  attachFile: File | null;
+  note: string | null;
+};
+
+export type TOvertimeFormEditFormFields = Partial<TOvertimeFormCreateFormFields>
+export type TOvertimeFormEdit = {
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  salaryCoefficientTypeId?: number;
+  userApproveIdentifyCard?: string;
+  attachFile?: File | null;
+  note?: string | null;
+}
 export type TOvertimeForm = {
   id: number;
   date: string;

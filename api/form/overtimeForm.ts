@@ -68,7 +68,7 @@ export async function fetchApproveOvertimeForms(
   return responseJson;
 }
 
-export async function fetchOvertimeFormDetail(session: string, formId: number) {
+export async function fetchOvertimeFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
