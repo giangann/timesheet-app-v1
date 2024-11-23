@@ -31,33 +31,17 @@ export function FormPickDateTime<T extends FieldValues>({
   const { field, fieldState } = useController(useControllerProps);
   const { onChange, value } = field;
   const { error } = fieldState;
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showDateTimePicker, setShowDateTimePicker] = useState(false);
 
-  const onShowDatePicker = useCallback(() => setShowDatePicker(true), [setShowDatePicker]);
-  const onHideDatePicker = useCallback(() => setShowDatePicker(false), [setShowDatePicker]);
+  const onShowDatePicker = useCallback(() => setShowDateTimePicker(true), [setShowDateTimePicker]);
+  const onHideDatePicker = useCallback(() => setShowDateTimePicker(false), [setShowDateTimePicker]);
 
-  const onShowTimePicker = useCallback(() => setShowTimePicker(true), [setShowDatePicker]);
-  const onHideTimePicker = useCallback(() => setShowTimePicker(false), [setShowDatePicker]);
-
-  const onDateConfirm = useCallback(
+  const onDateTimeConfirm = useCallback(
     (newValue: Date) => {
       onHideDatePicker();
       onChange(newValue);
-
-      onShowTimePicker();
     },
-    [onHideDatePicker, onShowTimePicker, onChange]
-  );
-
-  const onDateDismiss = useCallback(() => onHideDatePicker(), [onHideDatePicker]);
-
-  const onTimeConfirm = useCallback(
-    (newValue: Date) => {
-      onHideTimePicker();
-      onChange(newValue);
-    },
-    [onHideDatePicker, onShowTimePicker, onChange]
+    [onHideDatePicker, onChange]
   );
 
   const formattedValue = useMemo(
@@ -89,27 +73,8 @@ export function FormPickDateTime<T extends FieldValues>({
         </View>
       </Pressable>
 
-      {/* Date picker modal */}
-      <DateTimePickerModal
-        isVisible={showDatePicker}
-        date={value}
-        mode="date"
-        onConfirm={onDateConfirm}
-        onCancel={onDateDismiss}
-        testID="datePickerModal"
-        is24Hour={true}
-      />
-
-      {/* Time picker modal */}
-      <DateTimePickerModal
-        isVisible={showTimePicker}
-        date={value}
-        mode="time"
-        onConfirm={onTimeConfirm}
-        onCancel={() => {}}
-        testID="timePickerModal"
-        is24Hour={true}
-      />
+      {/* DateTime picker modal */}
+      <DateTimePickerModal isVisible={showDateTimePicker} mode="datetime" onConfirm={onDateTimeConfirm} onCancel={() => {}} />
 
       {/* Error message */}
       {error && <Text style={styles.errorText}>{error.message || errorMessage}</Text>}
