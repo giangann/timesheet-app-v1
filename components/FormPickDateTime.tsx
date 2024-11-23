@@ -1,10 +1,10 @@
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import Fontisto from "@expo/vector-icons/Fontisto";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import moment from "moment";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { NunitoText } from "./text/NunitoText";
 
 type FormPickDateTimeProps<T extends FieldValues> = {
@@ -34,46 +34,37 @@ export function FormPickDateTime<T extends FieldValues>({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const onOpenDatePicker = () => {
-    setShowDatePicker(true);
-  };
-  const onCloseDatePicker = () => {
-    setShowDatePicker(false);
-  };
-  const onOpenTimePicker = () => {
-    setShowTimePicker(true);
-  };
-  const onCloseTimePicker = () => {
-    setShowTimePicker(false);
-  };
+  const onShowDatePicker = useCallback(() => setShowDatePicker(true), [setShowDatePicker]);
+  const onHideDatePicker = useCallback(() => setShowDatePicker(false), [setShowDatePicker]);
 
-  const onDateChange = (_e: DateTimePickerEvent, newValue: Date | undefined) => {
-    if (_e.type === "set") {
-      if (newValue) {
-        onChange(new Date(newValue));
-        onCloseDatePicker();
-        onOpenTimePicker();
-      }
-    }
+  const onShowTimePicker = useCallback(() => setShowTimePicker(true), [setShowDatePicker]);
+  const onHideTimePicker = useCallback(() => setShowTimePicker(false), [setShowDatePicker]);
 
-    if (_e.type === "dismissed") {
-      onCloseDatePicker();
-    }
-  };
+  const onDateConfirm = useCallback(
+    (newValue: Date) => {
+      console.log("onConfirm", { newValue });
+      onHideDatePicker();
+      onChange(newValue);
 
-  const onTimeChange = (_e: DateTimePickerEvent, newValue: Date | undefined) => {
-    if (_e.type === "set") {
-      if (newValue) {
-        onChange(new Date(newValue));
-        onCloseTimePicker();
-      }
-    }
-    if (_e.type === "dismissed") {
-      onCloseTimePicker();
-    }
-  };
+      onShowTimePicker();
+    },
+    [onHideDatePicker, onShowTimePicker, onChange]
+  );
 
-  const formattedValue = value ? `${moment(value).format(dateFormat)} - ${moment(value).format(timeFormat)}` : placeholder;
+  const onDateDismiss = useCallback(() => onHideDatePicker(), [onHideDatePicker]);
+
+  const onTimeConfirm = useCallback(
+    (newValue: Date) => {
+      onHideTimePicker();
+      onChange(newValue);
+    },
+    [onHideDatePicker, onShowTimePicker, onChange]
+  );
+
+  const formattedValue = useMemo(
+    () => (value ? `${moment(value).format(dateFormat)} - ${moment(value).format(timeFormat)}` : placeholder),
+    [value, dateFormat, timeFormat]
+  );
 
   return (
     <View style={styles.container}>
@@ -88,7 +79,7 @@ export function FormPickDateTime<T extends FieldValues>({
       </View>
 
       {/* Open date picker modal when pressed */}
-      <Pressable onPress={onOpenDatePicker}>
+      <Pressable onPress={onShowDatePicker}>
         <View style={styles.showDateBox}>
           {/* Left icon */}
           {leftIcon}
@@ -100,14 +91,26 @@ export function FormPickDateTime<T extends FieldValues>({
       </Pressable>
 
       {/* Date picker modal */}
-      {showDatePicker && (
-        <DateTimePicker testID="dateTimePicker" value={value || new Date()} display="default" mode="date" is24Hour={true} onChange={onDateChange} />
-      )}
+      <DateTimePickerModal
+        isVisible={showDatePicker}
+        date={value}
+        mode="date"
+        onConfirm={onDateConfirm}
+        onCancel={onDateDismiss}
+        testID="datePickerModal"
+        is24Hour={true}
+      />
 
       {/* Time picker modal */}
-      {showTimePicker && (
-        <DateTimePicker testID="dateTimePicker" value={value || new Date()} display="default" mode="time" is24Hour={true} onChange={onTimeChange} />
-      )}
+      <DateTimePickerModal
+        isVisible={showTimePicker}
+        date={value}
+        mode="time"
+        onConfirm={onTimeConfirm}
+        onCancel={() => {}}
+        testID="timePickerModal"
+        is24Hour={true}
+      />
 
       {/* Error message */}
       {error && <Text style={styles.errorText}>{error.message || errorMessage}</Text>}

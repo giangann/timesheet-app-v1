@@ -1,10 +1,10 @@
 import { Colors, OPACITY_TO_HEX } from "@/constants/Colors";
 import Fontisto from "@expo/vector-icons/Fontisto";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import moment from "moment";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { NunitoText } from "./text/NunitoText";
 
 type FormPickDateProps<T extends FieldValues> = {
@@ -30,18 +30,19 @@ export function FormPickDate<T extends FieldValues>({
   const { onChange, value } = field;
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const onToggleShowDatePicker = () => setShowDatePicker(!showDatePicker);
+  const onShowDatePicker = useCallback(() => setShowDatePicker(true), [setShowDatePicker]);
+  const onHideDatePicker = useCallback(() => setShowDatePicker(false), [setShowDatePicker]);
 
-  const onDateChange = (_e: DateTimePickerEvent, newValue: Date | undefined) => {
-    if (_e.type === "set") {
-      if (newValue) {
-        onChange(new Date(newValue));
-      }
-    }
-    setShowDatePicker(false);
-  };
+  const onDateConfirm = useCallback(
+    (newValue: Date) => {
+      onHideDatePicker();
+      onChange(newValue);
+    },
+    [onHideDatePicker, onChange]
+  );
 
-  const formattedDate = value ? moment(value).locale(locale).format(dateFormat) : placeholder;
+  const formattedDate = useMemo(() => (value ? moment(value).locale(locale).format(dateFormat) : placeholder), [value, locale, dateFormat]);
+  
   return (
     <View style={styles.container}>
       {/* label */}
@@ -55,7 +56,7 @@ export function FormPickDate<T extends FieldValues>({
       </View>
 
       {/* open date picker modal when press */}
-      <Pressable onPress={onToggleShowDatePicker} accessible accessibilityLabel="Open date picker">
+      <Pressable onPress={onShowDatePicker} accessible accessibilityLabel="Open date picker">
         <View style={styles.showDateBox}>
           {/* left icon */}
           {leftIcon}
@@ -67,9 +68,15 @@ export function FormPickDate<T extends FieldValues>({
       </Pressable>
 
       {/* date picker modal */}
-      {showDatePicker && (
-        <DateTimePicker testID="dateTimePicker" value={value || new Date()} display="default" mode="date" is24Hour={true} onChange={onDateChange} />
-      )}
+      <DateTimePickerModal
+        isVisible={showDatePicker}
+        date={value}
+        mode="date"
+        onConfirm={onDateConfirm}
+        onCancel={() => {}}
+        testID="dateTimePickerModal"
+        is24Hour={true}
+      />
     </View>
   );
 }
