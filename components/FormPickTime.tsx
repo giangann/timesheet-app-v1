@@ -3,7 +3,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import { memo, useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Platform } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { NunitoText } from "./text/NunitoText";
 
@@ -76,6 +76,7 @@ function RawFormPickTime<T extends FieldValues>({
         onCancel={() => {}}
         testID="dateTimePickerModal"
         is24Hour={true}
+        display={Platform.OS === "ios" ? "spinner" : "default"}
       />
     </View>
   );

@@ -3,7 +3,7 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import moment from "moment";
 import { useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { NunitoText } from "./text/NunitoText";
 
@@ -74,7 +74,13 @@ export function FormPickDateTime<T extends FieldValues>({
       </Pressable>
 
       {/* DateTime picker modal */}
-      <DateTimePickerModal isVisible={showDateTimePicker} mode="datetime" onConfirm={onDateTimeConfirm} onCancel={() => {}} />
+      <DateTimePickerModal
+        isVisible={showDateTimePicker}
+        mode="datetime"
+        onConfirm={onDateTimeConfirm}
+        onCancel={() => {}}
+        display={Platform.OS === "ios" ? "inline" : "default"}
+      />
 
       {/* Error message */}
       {error && <Text style={styles.errorText}>{error.message || errorMessage}</Text>}

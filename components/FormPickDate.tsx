@@ -3,7 +3,7 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import moment from "moment";
 import { useCallback, useMemo, useState } from "react";
 import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { NunitoText } from "./text/NunitoText";
 
@@ -42,7 +42,7 @@ export function FormPickDate<T extends FieldValues>({
   );
 
   const formattedDate = useMemo(() => (value ? moment(value).locale(locale).format(dateFormat) : placeholder), [value, locale, dateFormat]);
-  
+
   return (
     <View style={styles.container}>
       {/* label */}
@@ -76,6 +76,7 @@ export function FormPickDate<T extends FieldValues>({
         onCancel={() => {}}
         testID="dateTimePickerModal"
         is24Hour={true}
+        display={Platform.OS === "ios" ? "spinner" : "default"}
       />
     </View>
   );
