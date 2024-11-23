@@ -9,7 +9,7 @@ import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign } from "@expo/vector-icons";
 import { memo, useEffect, useMemo, useState } from "react";
-import { FlatList, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { AnimatedFAB, IconButton, SegmentedButtons, TextInput } from "react-native-paper";
 import { SuggestUserCard } from "./SuggestdUserCard";
 
@@ -69,97 +69,98 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
 
   return (
     <Modal transparent animationType="slide">
-      <View style={styles.modalContainer}>
-        <Delayed waitBeforeShow={100}>
-          <>
-            {/* Title */}
-            <View style={styles.modalTitleWrapper}>
-              <NunitoText type="heading2" style={styles.modalTitle}>
-                {dutyType.dutyTypeName} - chọn người tham gia
-              </NunitoText>
-              <TouchableOpacity onPress={onClose}>
-                <AntDesign name="close" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
+      <SafeAreaView style={{flex:1}}>
+        <View style={styles.modalContainer}>
+          <Delayed waitBeforeShow={100}>
+            <>
+              {/* Title */}
+              <View style={styles.modalTitleWrapper}>
+                <NunitoText type="heading2" style={styles.modalTitle}>
+                  {dutyType.dutyTypeName} - chọn người tham gia
+                </NunitoText>
+                <TouchableOpacity onPress={onClose}>
+                  <AntDesign name="close" size={20} color="black" />
+                </TouchableOpacity>
+              </View>
 
-            {/* Content */}
-            <FlatList
-              data={users}
-              renderItem={({ item: user }) => (
-                <SuggestUserCard
-                  fieldArrayIndex={fieldArrayIndex}
-                  isChecked={user.isChecked}
-                  key={user.id}
-                  user={user}
-                  onCardPressed={(user) => console.log("press", { user })}
-                />
-              )}
-              ListHeaderComponent={
-                <View style={{ gap: 2 }}>
-                  <View style={styles.filterContainer}>
-                    <View style={styles.filterItem}>
-                      <SegmentedButtons
-                        value={filterCheckStatus}
-                        onValueChange={(value: string) => {
-                          console.log({ value });
-                          setFilterCheckStatus(value as TFilterCheckStatus);
-                        }}
-                        buttons={[
-                          { value: "all", label: "Tất cả" },
-                          { value: "checked", label: "Đã chọn" },
-                        ]}
-                        style={{ marginLeft: -1 }}
+              {/* Content */}
+              <FlatList
+                data={users}
+                renderItem={({ item: user }) => (
+                  <SuggestUserCard
+                    fieldArrayIndex={fieldArrayIndex}
+                    isChecked={user.isChecked}
+                    key={user.id}
+                    user={user}
+                    onCardPressed={(user) => console.log("press", { user })}
+                  />
+                )}
+                ListHeaderComponent={
+                  <View style={{ gap: 2 }}>
+                    <View style={styles.filterContainer}>
+                      <View style={styles.filterItem}>
+                        <SegmentedButtons
+                          value={filterCheckStatus}
+                          onValueChange={(value: string) => {
+                            console.log({ value });
+                            setFilterCheckStatus(value as TFilterCheckStatus);
+                          }}
+                          buttons={[
+                            { value: "all", label: "Tất cả" },
+                            { value: "checked", label: "Đã chọn" },
+                          ]}
+                          style={{ marginLeft: -1 }}
+                        />
+                      </View>
+                      <IconButton
+                        style={{ margin: 0 }}
+                        icon="tune-variant"
+                        size={24}
+                        mode="outlined"
+                        rippleColor={"grey"}
+                        onPress={onOpenFilterUserModal}
+                        animated
                       />
                     </View>
-                    <IconButton
-                      style={{ margin: 0 }}
-                      icon="tune-variant"
-                      size={24}
+                    {/* Search */}
+                    <TextInput
+                      style={{ height: 36 }}
                       mode="outlined"
-                      rippleColor={"grey"}
-                      onPress={onOpenFilterUserModal}
-                      animated
+                      label="Tên thành viên"
+                      value={text}
+                      onChangeText={(text) => setText(text)}
+                      placeholder="nhập tên để tìm kiếm "
                     />
                   </View>
-                  {/* Search */}
-                  <TextInput
-                    style={{ height: 36 }}
-                    mode="outlined"
-                    label="Tên thành viên"
-                    value={text}
-                    onChangeText={(text) => setText(text)}
-                    placeholder="nhập tên để tìm kiếm "
-                  />
-                </View>
-              }
-              ListEmptyComponent={
-                isFetchingUsers ? <SkeletonRectangleLoader height={400} /> : <NoData message="Không có nhân viên thuộc loại trực" />
-              }
-              contentContainerStyle={styles.modalContentContainer}
-              
-            />
+                }
+                ListEmptyComponent={
+                  isFetchingUsers ? <SkeletonRectangleLoader height={400} /> : <NoData message="Không có nhân viên thuộc loại trực" />
+                }
+                contentContainerStyle={styles.modalContentContainer}
+              />
 
-            <AnimatedFAB
-              icon={"plus"}
-              label={"Label"}
-              extended={false}
-              onPress={() => {
-                onClose();
-              }}
-              visible={true}
-              animateFrom={"right"}
-              iconMode={"static"}
-              style={[styles.fabStyle]}
-            />
+              <AnimatedFAB
+                icon={"plus"}
+                label={"Label"}
+                extended={false}
+                onPress={() => {
+                  onClose();
+                }}
+                visible={true}
+                animateFrom={"right"}
+                iconMode={"static"}
+                style={[styles.fabStyle]}
+              />
 
-            {openFilterUserModal && (
-              <MySlideModal onClose={onCloseFilterUserModal}>
-                <NunitoText>Filter users modal</NunitoText>
-              </MySlideModal>
-            )}
-          </>
-        </Delayed>
-      </View>
+              {openFilterUserModal && (
+                <MySlideModal onClose={onCloseFilterUserModal}>
+                  <NunitoText>Filter users modal</NunitoText>
+                </MySlideModal>
+              )}
+            </>
+          </Delayed>
+        </View>
+      </SafeAreaView>
     </Modal>
   );
 });
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
   modalContentContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    gap:16,
+    gap: 16,
   },
 
   filterContainer: {
