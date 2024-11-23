@@ -40,7 +40,9 @@ function RawFormPickTime<T extends FieldValues>({
     },
     [onHideDatePicker, onChange]
   );
-
+  const onDateDismiss = useCallback(() => {
+    onHideDatePicker();
+  }, [onHideDatePicker]);
   const formattedDate = useMemo(() => (value ? moment(value).locale(locale).format(timeFormat) : placeholder), [value, locale, timeFormat]);
   return (
     <View style={styles.container}>
@@ -73,7 +75,7 @@ function RawFormPickTime<T extends FieldValues>({
         date={value}
         mode="time"
         onConfirm={onDateConfirm}
-        onCancel={() => {}}
+        onCancel={onDateDismiss}
         testID="dateTimePickerModal"
         is24Hour={true}
         display={Platform.OS === "ios" ? "spinner" : "default"}

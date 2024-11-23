@@ -41,6 +41,10 @@ export function FormPickDate<T extends FieldValues>({
     [onHideDatePicker, onChange]
   );
 
+  const onDateDismiss = useCallback(() => {
+    onHideDatePicker();
+  }, [onHideDatePicker]);
+
   const formattedDate = useMemo(() => (value ? moment(value).locale(locale).format(dateFormat) : placeholder), [value, locale, dateFormat]);
 
   return (
@@ -73,7 +77,7 @@ export function FormPickDate<T extends FieldValues>({
         date={value}
         mode="date"
         onConfirm={onDateConfirm}
-        onCancel={() => {}}
+        onCancel={onDateDismiss}
         testID="dateTimePickerModal"
         is24Hour={true}
         display={Platform.OS === "ios" ? "spinner" : "default"}

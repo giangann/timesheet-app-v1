@@ -44,6 +44,10 @@ export function FormPickDateTime<T extends FieldValues>({
     [onHideDatePicker, onChange]
   );
 
+  const onDateTimeDismiss = useCallback(() => {
+    onHideDatePicker();
+  }, [onHideDatePicker]);
+
   const formattedValue = useMemo(
     () => (value ? `${moment(value).format(dateFormat)} - ${moment(value).format(timeFormat)}` : placeholder),
     [value, dateFormat, timeFormat]
@@ -78,7 +82,7 @@ export function FormPickDateTime<T extends FieldValues>({
         isVisible={showDateTimePicker}
         mode="datetime"
         onConfirm={onDateTimeConfirm}
-        onCancel={() => {}}
+        onCancel={onDateTimeDismiss}
         display={Platform.OS === "ios" ? "inline" : "default"}
       />
 
