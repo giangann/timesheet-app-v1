@@ -16,6 +16,7 @@ type FormPickDateTimeProps<T extends FieldValues> = {
   dateFormat?: string;
   timeFormat?: string;
   errorMessage?: string;
+  initDate?: Date;
 };
 
 export function FormPickDateTime<T extends FieldValues>({
@@ -27,6 +28,7 @@ export function FormPickDateTime<T extends FieldValues>({
   dateFormat = "DD/MM/YYYY",
   timeFormat = "HH:mm:ss",
   errorMessage,
+  initDate,
 }: FormPickDateTimeProps<T>) {
   const { field, fieldState } = useController(useControllerProps);
   const { onChange, value } = field;
@@ -84,6 +86,7 @@ export function FormPickDateTime<T extends FieldValues>({
         onConfirm={onDateTimeConfirm}
         onCancel={onDateTimeDismiss}
         display={Platform.OS === "ios" ? "inline" : "default"}
+        date={value ?? initDate}
       />
 
       {/* Error message */}
@@ -121,15 +124,5 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 4,
-  },
-});
-
-/**
- * --------------------------------------------
- */
-
-const imageStyles = StyleSheet.create({
-  icon: {
-    opacity: 0.5,
   },
 });

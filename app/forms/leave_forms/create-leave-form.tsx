@@ -14,7 +14,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { formatDateToLocalString } from "@/helper/date";
+import { defaultLeaveFormDateTime, formatDateToLocalString } from "@/helper/date";
 import { fetchListUserByRole } from "@/api/form";
 import { ROLE_CODE } from "@/constants/Misc";
 
@@ -157,6 +157,7 @@ export default function CreateLeaveForm() {
             required
             placeholder="Chọn ngày và giờ"
             leftIcon={<MaterialCommunityIcons name="calendar-start" size={18} color={Colors.light.inputIconNone} />}
+            initDate={defaultLeaveFormDateTime().startDate}
           />
           <FormPickDateTime
             useControllerProps={{ control: control, name: "endDate" }}
@@ -164,6 +165,7 @@ export default function CreateLeaveForm() {
             required
             placeholder="Chọn ngày và giờ"
             leftIcon={<MaterialCommunityIcons name="calendar-end" size={18} color={Colors.light.inputIconNone} />}
+            initDate={defaultLeaveFormDateTime().endDate}
           />
           <FormSelectV2
             useControllerProps={{ control: control, name: "leaveFormTypeId" }}

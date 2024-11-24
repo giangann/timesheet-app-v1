@@ -8,6 +8,7 @@ import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
 import { DutyFormCreateContext } from "@/contexts";
 import { getDistinctElements, hasNullishValue, pickProperties } from "@/helper/common";
+import { defaultDutyFormTime } from "@/helper/date";
 import { useCreateNewForm, useFetchSalaryCoefTypes, useUserApprovesByRole } from "@/hooks/form";
 import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
@@ -116,6 +117,7 @@ export default function CreateDutyForm() {
                   placeholder="Chọn giờ"
                   required
                   leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
+                  initTime={defaultDutyFormTime().startTime}
                 />
               </View>
               <View style={styles.timeRangeItem}>
@@ -125,6 +127,7 @@ export default function CreateDutyForm() {
                   placeholder="Chọn giờ"
                   required
                   leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
+                  initTime={defaultDutyFormTime().endTime}
                 />
               </View>
             </View>

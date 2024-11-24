@@ -15,6 +15,7 @@ type FormPickTimeProps<T extends FieldValues> = {
   leftIcon?: React.ReactNode;
   timeFormat?: string;
   locale?: string;
+  initTime?: Date;
 };
 
 function RawFormPickTime<T extends FieldValues>({
@@ -25,6 +26,7 @@ function RawFormPickTime<T extends FieldValues>({
   placeholder = "Select Date",
   timeFormat = "HH:mm",
   locale = "en",
+  initTime,
 }: FormPickTimeProps<T>) {
   const { field } = useController(useControllerProps);
   const { onChange, value } = field;
@@ -72,7 +74,7 @@ function RawFormPickTime<T extends FieldValues>({
       {/* date picker modal */}
       <DateTimePickerModal
         isVisible={showDatePicker}
-        date={value}
+        date={value ?? initTime}
         mode="time"
         onConfirm={onDateConfirm}
         onCancel={onDateDismiss}

@@ -257,3 +257,39 @@ export function isWeekend(dateString: string): boolean {
 
   return dayOfWeek === 6 || dayOfWeek === 0;
 }
+
+export function defaultLeaveFormDateTime() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const defaultDate = {
+    startDate: new Date(tomorrow.setHours(8, 0, 0, 0)),
+    endDate: new Date(tomorrow.setHours(17, 0, 0, 0)),
+  };
+  return defaultDate;
+}
+
+export function defaultOtFormDateTime() {
+  let date: Date;
+  const today = new Date();
+  const tomorrow = new Date(today.setDate(today.getDate() + 1));
+
+  if (Date.now() > today.setHours(17, 0, 0, 0)) date = tomorrow;
+  else date = today;
+
+  const defaultTime = {
+    date: date,
+    startTime: new Date(today.setHours(17, 0, 0, 0)),
+    endTime: new Date(today.setHours(21, 0, 0, 0)),
+  };
+  return defaultTime;
+}
+
+export function defaultDutyFormTime() {
+  const today = new Date();
+  const defaultTime = {
+    startTime: new Date(today.setHours(8, 0, 0, 0)),
+    endTime: new Date(today.setHours(17, 0, 0, 0)),
+  };
+  return defaultTime;
+}

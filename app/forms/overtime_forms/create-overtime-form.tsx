@@ -1,5 +1,4 @@
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import * as Progress from "react-native-progress";
+import { fetchListUserByRole } from "@/api/form";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
@@ -7,8 +6,10 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
+import { defaultOtFormDateTime } from "@/helper/date";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialIcons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -17,8 +18,8 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { fetchListUserByRole } from "@/api/form";
-import { ROLE_CODE } from "@/constants/Misc";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as Progress from "react-native-progress";
 
 type CreateItemForm = {
   date: Date | null;
@@ -168,7 +169,13 @@ export default function CreateOvertimeForm() {
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
+          <FormPickDate
+            useControllerProps={{ control: control, name: "date" }}
+            label="Ngày"
+            required
+            placeholder="Chọn ngày..."
+            initDate={defaultOtFormDateTime().date}
+          />
 
           <View style={styles.timeRangeContainer}>
             <View style={styles.timeRangeItem}>
@@ -178,6 +185,7 @@ export default function CreateOvertimeForm() {
                 placeholder="Chọn giờ"
                 required
                 leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
+                initTime={defaultOtFormDateTime().startTime}
               />
             </View>
             <View style={styles.timeRangeItem}>
@@ -187,6 +195,7 @@ export default function CreateOvertimeForm() {
                 placeholder="Chọn giờ"
                 required
                 leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
+                initTime={defaultOtFormDateTime().endTime}
               />
             </View>
           </View>
@@ -198,7 +207,7 @@ export default function CreateOvertimeForm() {
             placeholder="Chọn loại ngoài giờ"
             leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
 
-          //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
+            //   leftIcon={<MaterialCommunityIcons name="form-dropdown" size={18} color={Colors.light.inputIconNone} />}
           />
           <FormSelectV2
             useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
