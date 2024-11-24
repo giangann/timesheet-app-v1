@@ -62,6 +62,7 @@ function Root() {
                         {props.children}
                       </NunitoText>
                     ),
+                    headerBackButtonDisplayMode: "minimal",
                   }}
                 />
 
@@ -80,6 +81,7 @@ function Root() {
                         {props.children}
                       </NunitoText>
                     ),
+                    headerBackButtonDisplayMode: "minimal",
                   }}
                 />
               </Stack>
