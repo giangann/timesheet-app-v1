@@ -5,6 +5,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { TIMESHEET_FORM_TYPE, TIMESHEET_FORM_TYPE_COLOR, WORKING_TYPE, WORKING_TYPE_COLOR, WORKING_TYPE_NULL_COLOR } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { arrayStringToString } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
 import { SkeletonPostLoader } from "@/ui/skeletons";
 import { Ionicons } from "@expo/vector-icons";
@@ -150,10 +151,26 @@ const MarkedSymbolNote = () => {
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
             <NunitoText type="body4">24</NunitoText>
-            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT_OR_DUTY] }]} />
+            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT] }]} />
           </View>
-          <NunitoText type="subtitle2">Có đơn ngoài giờ </NunitoText>
+          <NunitoText type="subtitle2">Ngày tăng ca </NunitoText>
         </View>
+        <View style={styles.noteFormTypeRowItem}>
+          <View style={[styles.markDotBox]}>
+            <NunitoText type="body4">24</NunitoText>
+            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.DUTY] }]} />
+          </View>
+          <NunitoText type="subtitle2">Ngày trực </NunitoText>
+        </View>
+        <View style={styles.noteFormTypeRowItem}>
+          <View style={[styles.markDotBox]}>
+            <NunitoText type="body4">24</NunitoText>
+            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.LEAVE] }]} />
+          </View>
+          <NunitoText type="subtitle2">Ngày xin nghỉ</NunitoText>
+        </View>
+      </View>
+      {/* <View style={[styles.noteFormTypeRow, { justifyContent: "center" }]}>
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
             <NunitoText type="body4">24</NunitoText>
@@ -161,7 +178,7 @@ const MarkedSymbolNote = () => {
           </View>
           <NunitoText type="subtitle2">Có đơn xin nghỉ</NunitoText>
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -237,7 +254,7 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
 
 const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
   const router = useRouter();
-  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id} });
+  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id } });
 
   return (
     <View style={styles.formContainer}>
@@ -255,15 +272,13 @@ const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
 
       <View style={styles.formContentContainer}>
         <View style={styles.formContentItemLeft}>
-          <NunitoText type="body3">{dutyForm.dutyCalendar.dutyType.name}</NunitoText>
-          <NunitoText type="body3">{`${
-            dutyForm.dutyCalendar.salaryCoefficientType.name
-          } (x${dutyForm.dutyCalendar.salaryCoefficientType.coefficient.toFixed(2)}`}</NunitoText>
+          <NunitoText type="body3">{dutyTypesToDutyTypeNames(dutyForm.dutyTypes)}</NunitoText>
+          <NunitoText type="body3">{`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)}`}</NunitoText>
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(dutyForm.dutyCalendar.date).format("DD/MM/YYYY")}`}</NunitoText>
-          <NunitoText type="body4">{`${dutyForm.dutyCalendar.startTime} - ${dutyForm.dutyCalendar.endTime}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(dutyForm.date).format("DD/MM/YYYY")}`}</NunitoText>
+          <NunitoText type="body4">{`${dutyForm.startTime} - ${dutyForm.endTime}`}</NunitoText>
         </View>
       </View>
     </View>
@@ -322,7 +337,7 @@ const styles = StyleSheet.create({
   },
   noteContainer: {
     backgroundColor: "#EFF5FF",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 20,
     gap: 4,
   },
@@ -353,7 +368,7 @@ const styles = StyleSheet.create({
   noteFormTypeRowItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 2,
   },
   markDotBox: {
     alignItems: "center",
@@ -367,3 +382,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
 });
+
+function dutyTypesToDutyTypeNames(dutyTypes: TDutyFormDetail["dutyTypes"]) {
+  return dutyTypes.map((dutyType) => dutyType.dutyTypeName).join(", ");
+}

@@ -110,7 +110,8 @@ export const BasicCalendar = ({ onFetchForms }: { onFetchForms: (lfId: number | 
             // declare style for forms
             const dots: TIMESHEET_FORM_TYPE[] = [];
             if (dateLeaveFormId) dots.push(TIMESHEET_FORM_TYPE.LEAVE);
-            if (dateOtFormId || dateDutyFormId) dots.push(TIMESHEET_FORM_TYPE.OT_OR_DUTY);
+            if (dateOtFormId) dots.push(TIMESHEET_FORM_TYPE.OT);
+            if (dateDutyFormId) dots.push(TIMESHEET_FORM_TYPE.DUTY);
 
             // Extracting text color logic
             const isSelected = date?.dateString === selectedDate;
