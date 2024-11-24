@@ -6,6 +6,7 @@ export type TCredentials = {
 };
 
 export type TUserInfo = {
+  id: number;
   address: string;
   email: string;
   identifyCard: string;
@@ -14,9 +15,9 @@ export type TUserInfo = {
   roleCode: ROLE_CODE;
   roleName: string;
   team: {
-    id: number,
-    name: string,
-    code: string | null,
-    hotline: string | null
-  }
+    id: number;
+    name: string;
+    code: string | null;
+    hotline: string | null;
+  };
 };

@@ -1,17 +1,53 @@
 import { TDutyFormDetail } from "@/api/form/types";
+import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useSession } from "@/contexts";
 import { BoxStatus } from "@/ui/BoxStatus";
+import { MyToast } from "@/ui/MyToast";
+import { useRouter } from "expo-router";
 import moment from "moment";
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, useTheme } from "react-native-paper";
 import { DutyFormDetailDutyTypes } from "./DutyFormDetailDutyTypes";
 
 type DutyFormDetailProps = {
   form: TDutyFormDetail | null;
 };
 export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => {
+  const [openCfCancelModal, setOpenCfCancelModal] = useState(false);
+  const { session, userInfo } = useSession();
+  const router = useRouter();
+  const theme = useTheme();
+
+  const ableToDeleteOrCancel = userInfo?.id === form?.createdUserId;
+
+  const onDeleteForm = useCallback(async () => {
+    try {
+      const token = `Bearer ${session}`;
+
+      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const endpoint = `/duty-forms/${form?.id}`;
+      const url = `${baseUrl}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        credentials: "include",
+      });
+      const responseJson = await response.json();
+      if (responseJson.statusCode === 200) {
+        MyToast.success("Xóa thành công");
+        router.back();
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    }
+  }, [form, session]);
   return (
     <>
       {!form && (
@@ -36,6 +72,33 @@ export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => 
             {/* Attach Image */}
             <AttachImageFile path={form?.attachFileUrl} />
           </ScrollView>
+
+          {ableToDeleteOrCancel && (
+            <View style={styles.approveContainer}>
+              <Button
+                onPress={() => setOpenCfCancelModal(true)}
+                mode="contained"
+                icon="delete-alert"
+                buttonColor={theme.colors.error}
+                style={styles.buttonContained}
+              >
+                Xóa đơn
+              </Button>
+            </View>
+          )}
+
+          {openCfCancelModal && (
+            <MyModal
+              title={"Xác nhận xóa đơn"}
+              onClose={() => setOpenCfCancelModal(false)}
+              cb={onDeleteForm}
+              modalProps={{ animationType: "slide", transparent: true }}
+            >
+              <View>
+                <NunitoText type="body3">Bạn có chắc xóa đơn trực?</NunitoText>
+              </View>
+            </MyModal>
+          )}
         </View>
       )}
     </>
@@ -68,13 +131,13 @@ const AttachImageFile = ({ path }: { path: string | null | undefined }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
   listBox: {
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 100,
     gap: 20,
   },
   item: {
@@ -86,10 +149,9 @@ const styles = StyleSheet.create({
   approveContainer: {
     position: "absolute",
     bottom: 0,
-    left: 0,
+    // left: 0, // make button on the right
     right: 0,
     padding: 16,
-    backgroundColor: "white", // Optional: To give the button a distinct background
   },
   buttonContainer: {
     flexDirection: "row",
@@ -99,18 +161,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   buttonContained: {
-    justifyContent: "center",
-    alignItems: "center",
     height: 44,
-    backgroundColor: "#0B3A82",
-    borderRadius: 4,
-  },
-  buttonOutlined: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: 44,
-    borderColor: "#0B3A82",
-    borderWidth: 1,
-    borderRadius: 4,
   },
 });

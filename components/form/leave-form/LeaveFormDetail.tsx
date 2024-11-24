@@ -43,7 +43,9 @@ export const LeaveFormDetail: React.FC<LeaveFormDetailProps> = memo(({ form }) =
       } else {
         MyToast.error(responseJson.error);
       }
-    } catch (error) {}
+    } catch (error: any) {
+      MyToast.error(error.message)
+    }
   }, [form, session]);
 
   return (
