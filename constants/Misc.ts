@@ -8,6 +8,7 @@ export enum FORM_STATUS {
   WATING_APPROVE = 0,
   ACCEPTED = 1,
   REJECTED = 2,
+  CANCELED = 3,
 }
 
 export enum FORM_NOTI_TYPE {
@@ -30,6 +31,7 @@ export const FORM_STATUS_NAME = {
   [FORM_STATUS.WATING_APPROVE]: "Chờ phê duyệt",
   [FORM_STATUS.ACCEPTED]: "Chấp thuận",
   [FORM_STATUS.REJECTED]: "Từ chối",
+  [FORM_STATUS.CANCELED]: "Đã hủy",
 };
 
 export enum ROLE_CODE {

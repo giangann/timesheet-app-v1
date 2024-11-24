@@ -263,6 +263,28 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
           },
         },
       },
+
+      {
+        name: "Đã hủy",
+        status: [FORM_STATUS.CANCELED],
+        tabStyles: {
+          pressed: {
+            borderColor: "#000000",
+            backgroundColor: "#000000",
+          },
+          unpressed: {
+            borderColor: "#000000",
+          },
+        },
+        textStyles: {
+          pressed: {
+            color: "white",
+          },
+          unpressed: {
+            color: "#000000",
+          },
+        },
+      },
     ],
     []
   );
