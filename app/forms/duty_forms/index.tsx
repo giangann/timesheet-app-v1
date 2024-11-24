@@ -164,7 +164,7 @@ export default function DutyForms() {
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
-      <ApplyNewForm />
+      {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && <ApplyNewForm />}
     </View>
   );
 }
