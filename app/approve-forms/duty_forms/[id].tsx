@@ -124,17 +124,16 @@ export default function DetailForm() {
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.listBox}>
             <BoxStatus status={form.status} approveDate={form.approveDate} />
-
-            <BoxStatus status={form.status} approveDate={form.approveDate} />
             <Item title="Ngày trực" content={`${moment(form.date).format("DD/MM/YYYY")}`} />
             <Item title="Giờ trực" content={`${form.startTime} --> ${form.endTime}`} />
 
-            <Item title="Loại trực" content={<DutyFormDetailDutyTypes formDutyTypes={form.dutyTypes} />} />
+            <Item title="Loại trực và thành viên tham gia" content={<DutyFormDetailDutyTypes formDutyTypes={form.dutyTypes} />} />
             <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)})`} />
 
-            <Item title="Ghi chú" content={form.note ?? "Không có ghi chú"} />
-            <Item title="Người phê duyệt" content={`${form.approvedUserName}`} />
+            <Item title="Người tạo đơn" content={`${form.createdUserName}`} />
+            <Item title="Thời gian tạo đơn" content={`${moment(form.createdAt).format("DD/MM/YYYY HH:mm:ss")}`} />
 
+            <Item title="Ghi chú" content={form.note ?? "Không có ghi chú"} />
             {/* Attach Image */}
             <AttachImageFile path={form?.attachFileUrl} />
           </ScrollView>
@@ -197,7 +196,8 @@ const Item = ({ title, content }: { title: string; content: string | React.React
       <NunitoText type="body3" style={{ opacity: 0.5 }}>
         {title}
       </NunitoText>
-      <NunitoText type="body3">{content}</NunitoText>
+      {typeof content === "string" && <NunitoText type="body3">{content}</NunitoText>}
+      {typeof content === "object" && content}
     </View>
   );
 };
@@ -216,13 +216,13 @@ const AttachImageFile = ({ path }: { path: string | null | undefined }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
     backgroundColor: "white",
     minHeight: "100%",
   },
   listBox: {
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 100,
     gap: 20,
   },
   item: {
