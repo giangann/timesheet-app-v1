@@ -314,8 +314,8 @@ const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
                 isShowCheckbox={isEdit}
                 checkboxProps={{
                   status: isEdit ? (isChecked ? "checked" : "unchecked") : "indeterminate",
-                  onPress: () => onUpdate(user.id, !isChecked),
                 }}
+                onPress={() => onUpdate(user.id, !isChecked)}
                 key={user.id}
               />
             );

@@ -12,7 +12,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { List } from "react-native-paper";
+import { List, TouchableRipple } from "react-native-paper";
 
 type CreateItem = {
   dutyTypeName: string | undefined;
@@ -196,8 +196,8 @@ const TeamWithUsers: React.FC<TeamWithUsersProps> = ({ team, onUpdateMap1 }) => 
             }
             checkboxProps={{
               status: isChecked ? "checked" : "unchecked",
-              onPress: () => onUpdate(user.id, !isChecked),
             }}
+            onPress={() => onUpdate(user.id, !isChecked)}
             key={user.id}
           />
         );
