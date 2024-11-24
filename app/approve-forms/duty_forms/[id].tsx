@@ -1,9 +1,11 @@
+import { fetchDutyFormDetail } from "@/api/form";
 import { TDutyFormDetail } from "@/api/form/types";
 import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
+import { DutyFormDetailDutyTypes } from "@/components/form";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
+import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
@@ -94,19 +96,9 @@ export default function DetailForm() {
     onApproveAccept(formId as string);
   }, [formId, form]);
 
-  const fetchDutyFormDetail = async (formId: string) => {
-    const token = `Bearer ${session}`;
+  const onFetchDutyFormDetail = async (formId: string) => {
+    const responseJson = await fetchDutyFormDetail(session, parseInt(formId));
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = `/duty-forms/${formId}`;
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
     if (responseJson.statusCode === 200) {
       setForm(responseJson.data.dutyForm);
     } else {
@@ -116,7 +108,7 @@ export default function DetailForm() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchDutyFormDetail(formId as string);
+      onFetchDutyFormDetail(formId as string);
     }, [formId])
   );
 
@@ -133,40 +125,18 @@ export default function DetailForm() {
           <ScrollView contentContainerStyle={styles.listBox}>
             <BoxStatus status={form.status} approveDate={form.approveDate} />
 
-            {/* CASE 1: */}
-            {form.users.length === 1 && (
-              <>
-                <Item title="Nhân viên" content={`${form.users[0].name} (${form.users[0].roleName})`} />
-                <Item title="Phòng" content={form.userApproveTeam.name} />
-                <Item title="Liên hệ (phòng)" content={form.userApproveTeam.hotline} />
-              </>
-            )}
+            <BoxStatus status={form.status} approveDate={form.approveDate} />
+            <Item title="Ngày trực" content={`${moment(form.date).format("DD/MM/YYYY")}`} />
+            <Item title="Giờ trực" content={`${form.startTime} --> ${form.endTime}`} />
 
-            {/* CASE 2: */}
-            {form.users.length > 1 && (
-              <Item
-                title="Các thành viên trong đơn:"
-                content={form.users.map((user, index) => `(${index + 1}) ${user.name} (${user.roleName})`).join(", ")}
-              />
-            )}
+            <Item title="Loại trực" content={<DutyFormDetailDutyTypes formDutyTypes={form.dutyTypes} />} />
+            <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)})`} />
 
-            <View style={styles.dutyDateTimeContainer}>
-              <View style={styles.dutyDateTimeItem}>
-                <Item title="Ngày trực" content={`${moment(form.dutyCalendar.date).format("DD/MM/YYYY")}`} />
-              </View>
-              <View style={styles.dutyDateTimeItem}>
-                <Item title="Giờ trực" content={`${form.dutyCalendar.startTime} --> ${form.dutyCalendar.endTime}`} />
-              </View>
-            </View>
-            <Item title="Loại trực" content={form.dutyCalendar.dutyType.name} />
-            <Item
-              title="Loại ngoài giờ"
-              content={`${form.dutyCalendar.salaryCoefficientType.name} (x${form.dutyCalendar.salaryCoefficientType.coefficient.toFixed(2)})`}
-            />
+            <Item title="Ghi chú" content={form.note ?? "Không có ghi chú"} />
+            <Item title="Người phê duyệt" content={`${form.approvedUserName}`} />
 
-            <Item title="Ghi chú" content={form.note} />
             {/* Attach Image */}
-            <AttachImageFile path={form?.attachFile?.url} />
+            <AttachImageFile path={form?.attachFileUrl} />
           </ScrollView>
 
           {form.status === FORM_STATUS.WATING_APPROVE && (
@@ -221,7 +191,7 @@ export default function DetailForm() {
   );
 }
 
-const Item = ({ title, content }: { title: string; content: string | undefined | null }) => {
+const Item = ({ title, content }: { title: string; content: string | React.ReactNode }) => {
   return (
     <View style={styles.item}>
       <NunitoText type="body3" style={{ opacity: 0.5 }}>
