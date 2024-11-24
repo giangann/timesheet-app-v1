@@ -176,8 +176,6 @@ const TeamWithUsers: React.FC<TeamWithUsersProps> = ({ team, onUpdateMap1 }) => 
       key={team.id}
       customContainerStyles={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
       style={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
-      // customContainerStyles={{ backgroundColor: `#0B3A82${OPACITY_TO_HEX['15']}`, borderRadius: 4 }}
-      // style={{ backgroundColor: `#0B3A82${OPACITY_TO_HEX['15']}`, borderRadius: 4 }}
     >
       {team.users.map((user) => {
         const isChecked = checkedStatusMap.get(user.id.toString()) ?? false;

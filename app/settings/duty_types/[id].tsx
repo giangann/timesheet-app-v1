@@ -290,7 +290,7 @@ const Team: React.FC<TeamProps> = ({ team, isEdit, onUpdateMap1 }) => {
           id={team.id}
           key={team.id}
           customContainerStyles={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
-          style={{ backgroundColor: `red`, borderRadius: 4 }}
+          style={{ backgroundColor: `#EFF5FF`, borderRadius: 4 }}
           showDivide={true}
         >
           {users.map((user) => {
