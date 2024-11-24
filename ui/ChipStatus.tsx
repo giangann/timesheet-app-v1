@@ -18,6 +18,9 @@ export const ChipStatus: React.FC<Props> = ({ status }) => {
     case FORM_STATUS.REJECTED:
       color = "#C84851";
       break;
+    case FORM_STATUS.CANCELED:
+      color = "#000000";
+      break;
     default:
       color = "";
       break;

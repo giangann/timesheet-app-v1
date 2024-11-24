@@ -5,6 +5,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
 import { useSession } from "@/contexts";
+import { paramsObjectToQueryString } from "@/helper/common";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
 import { useRouter } from "expo-router";
@@ -28,11 +29,12 @@ export const LeaveFormDetail: React.FC<LeaveFormDetailProps> = memo(({ form }) =
       const token = `Bearer ${session}`;
 
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = `/leave-forms/${form.id}`;
-      const url = `${baseUrl}${endpoint}`;
+      const endpoint = `/leave-forms/cancel`;
+      const querystring = paramsObjectToQueryString({ id: form.id });
+      const url = `${baseUrl}${endpoint}${querystring}`;
 
       const response = await fetch(url, {
-        method: "DELETE",
+        method: "GET",
         headers: { "Content-Type": "application/json", Authorization: token },
         credentials: "include",
       });
@@ -44,7 +46,7 @@ export const LeaveFormDetail: React.FC<LeaveFormDetailProps> = memo(({ form }) =
         MyToast.error(responseJson.error);
       }
     } catch (error: any) {
-      MyToast.error(error.message)
+      MyToast.error(error.message);
     }
   }, [form, session]);
 

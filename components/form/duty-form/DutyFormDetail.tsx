@@ -12,6 +12,7 @@ import { memo, useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { DutyFormDetailDutyTypes } from "./DutyFormDetailDutyTypes";
+import { paramsObjectToQueryString } from "@/helper/common";
 
 type DutyFormDetailProps = {
   form: TDutyFormDetail | null;
@@ -29,11 +30,12 @@ export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => 
       const token = `Bearer ${session}`;
 
       const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = `/duty-forms/${form?.id}`;
-      const url = `${baseUrl}${endpoint}`;
+      const endpoint = `/duty-forms/cancel`;
+      const querystring = paramsObjectToQueryString({ id: form?.id });
+      const url = `${baseUrl}${endpoint}${querystring}`;
 
       const response = await fetch(url, {
-        method: "DELETE",
+        method: "GET",
         headers: { "Content-Type": "application/json", Authorization: token },
         credentials: "include",
       });
