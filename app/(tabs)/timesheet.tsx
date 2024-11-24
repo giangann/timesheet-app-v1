@@ -38,6 +38,20 @@ export default function Timesheet() {
             </View>
           </View>
         </Pressable>
+
+        <Pressable onPress={() => router.push("/timesheet/week-calendar")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <MaterialCommunityIcons name="airplane-clock" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+              </View>
+              <NunitoText type="body1">Lịch công tác đơn vị</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+            </View>
+          </View>
+        </Pressable>
       </ScrollView>
     </View>
   );
