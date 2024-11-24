@@ -6,17 +6,16 @@ import { CustomListAccordionWithCheckbox, CustomListItemWithCheckbox } from "@/c
 import { EditButton } from "@/components/button";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { _mockDutyTypeDetail } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { arrayObjectToMap, combineMaps, getMapKeysBySpecifyValue, getMapValues } from "@/helper/map";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, List, Text, TouchableRipple, useTheme } from "react-native-paper";
+import { Button, List } from "react-native-paper";
 
 type UpdateItem = {
   dutyTypeName: string | undefined;
