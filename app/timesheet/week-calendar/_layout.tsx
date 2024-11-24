@@ -41,7 +41,7 @@ const DrawerLayout = () => {
 
   return (
     <Drawer screenOptions={{ drawerType: "front" }} drawerContent={_renderDrawer}>
-      <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={{ viewMode: "week", numberOfDays: 1 }} />
+      <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={{ viewMode: "week", numberOfDays: 3 }} />
     </Drawer>
   );
 };

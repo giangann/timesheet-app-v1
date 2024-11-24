@@ -6,13 +6,14 @@ import type {
   EventItem,
   HeaderItemProps,
   LocaleConfigsProps,
+  OnEventResponse,
   ResourceItem,
   SelectedEventType,
   UnavailableHourProps,
 } from "@howljs/calendar-kit";
 import { CalendarBody, CalendarContainer, CalendarHeader, DraggingEvent, ResourceHeaderItem, parseDateTime } from "@howljs/calendar-kit";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View, useColorScheme } from "react-native";
 import { Text } from "react-native-paper";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
@@ -20,8 +21,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
-type Props = {};
-export const TeamWeekCalendar: React.FC<Props> = ({}) => {
+import { _mockEvents } from "@/constants/Misc";
+type Props = {
+  onEventSelected: (event: OnEventResponse) => void;
+};
+export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
   const [events, setEvents] = useState<EventItem[]>([]);
   const { bottom: safeBottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
@@ -221,10 +225,8 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
         onPressBackground={_onPressBackground}
         unavailableHours={unavailableHours}
         highlightDates={highlightDates}
-        events={events}
-        onPressEvent={(event) => {
-          console.log(event);
-        }}
+        events={_mockEvents}
+        onPressEvent={onEventSelected}
         dragToCreateMode={undefined}
         scrollToNow
         useHaptic
@@ -257,7 +259,7 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
       </CalendarContainer>
     </View>
   );
-};
+});
 // import { useAppContext } from "../../context/AppProvider";
 
 type SearchParams = { viewMode: string; numberOfDays: string };
@@ -308,264 +310,8 @@ const initialLocales: Record<string, Partial<LocaleConfigsProps>> = {
   },
 };
 
-const randomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
-const minDate = new Date(new Date().getFullYear(), new Date().getMonth() - 4, new Date().getDate());
-
-const allDayEvents: EventItem[] = [
-  {
-    id: "event_0",
-    start: {
-      date: "2024-09-14",
-    },
-    end: {
-      date: "2024-09-24",
-    },
-    title: "Event 0",
-    color: "#5428F2",
-  },
-  {
-    id: "event_0x",
-    start: {
-      dateTime: "2024-09-16T22:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-22T23:00:00.000+07:00",
-    },
-    title: "Event 0x",
-    color: "#5428F2",
-  },
-  {
-    id: "event_1",
-    start: {
-      dateTime: "2024-09-16T22:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-18T22:00:00.000+07:00",
-    },
-    title: "Event 1",
-    color: "#5428F2",
-  },
-  {
-    id: "event_1x",
-    start: {
-      dateTime: "2024-09-16T00:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-19T00:00:00.000+07:00",
-    },
-    title: "Event 1x",
-    color: "#5428F2",
-  },
-  {
-    id: "event_2",
-    start: {
-      dateTime: "2024-09-21T00:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-22T00:00:00.000+07:00",
-    },
-    title: "Event 2",
-    color: "#8EBB85",
-  },
-  {
-    id: "event_2x",
-    start: {
-      date: "2024-09-18",
-    },
-    end: {
-      date: "2024-09-21",
-    },
-    title: "Event 2x",
-    color: "#5428F2",
-  },
-  {
-    id: "event_3c",
-    start: {
-      date: "2024-09-16",
-    },
-    end: {
-      date: "2024-09-16",
-    },
-    title: "Event 3",
-    color: "#B70100",
-  },
-  {
-    id: "event_3xx",
-    start: {
-      dateTime: "2024-09-16T22:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-17T22:00:00.000+07:00",
-    },
-    title: "Event 3xx",
-    color: "#5428F2",
-  },
-  {
-    id: "event_3x",
-    start: {
-      dateTime: "2024-09-16T15:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-17T23:00:00.000+07:00",
-    },
-    title: "Event 3x",
-    color: "#5428F2",
-  },
-  {
-    id: "event_4",
-    start: {
-      dateTime: "2024-09-20T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-21T17:00:00.000Z",
-    },
-    title: "Event 4",
-    color: "#B70100",
-  },
-  {
-    id: "event_5",
-    start: {
-      dateTime: "2024-09-19T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-21T17:00:00.000Z",
-    },
-    title: "Event 5",
-    color: "#EAAB7E",
-  },
-  {
-    id: "event_6",
-    start: {
-      dateTime: "2024-09-17T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-18T17:00:00.000Z",
-    },
-    title: "Event 6x",
-    color: "#AC2A57",
-  },
-  {
-    id: "event_7",
-    start: {
-      dateTime: "2024-09-20T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-21T17:00:00.000Z",
-    },
-    title: "Event 7",
-    color: "#DC1F98",
-  },
-  {
-    id: "event_8",
-    start: {
-      dateTime: "2024-09-19T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-21T17:00:00.000Z",
-    },
-    title: "Event 8",
-    color: "#6E911C",
-  },
-  {
-    id: "event_9",
-    start: {
-      dateTime: "2024-09-20T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-22T17:00:00.000Z",
-    },
-    title: "Event 9",
-    color: "#BE1459",
-  },
-  {
-    id: "event_10",
-    start: {
-      dateTime: "2024-09-19T17:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-21T17:00:00.000Z",
-    },
-    title: "Event 10",
-    color: "#BA3D9D",
-  },
-  {
-    id: "event_11",
-    start: {
-      dateTime: "2024-09-20T00:00:00.000+07:00",
-    },
-    end: {
-      dateTime: "2024-09-26T00:00:00.000+07:00",
-    },
-    title: "Event 11",
-    color: "#BA3D9D",
-  },
-  {
-    id: "event_2xx3",
-    start: {
-      date: "2024-09-16",
-    },
-    end: {
-      date: "2024-09-17",
-    },
-    title: "All day Recurring",
-    color: "#BA3D9D",
-    recurrence: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,TH,FR",
-    excludeDates: ["2024-09-16", "2024-09-22"],
-  },
-  {
-    id: "event_26",
-    start: {
-      dateTime: "2024-09-16T05:00:00.000Z",
-    },
-    end: {
-      dateTime: "2024-09-16T07:00:00.000Z",
-    },
-    title: "Event Recurring",
-    color: "#BA3D9D",
-    recurrence: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,TH,FR",
-    excludeDates: ["2024-09-16T05:00:00.000Z", "2024-09-22T05:00:00.000Z", "2024-10-11T05:00:00.000Z"],
-  },
-];
-
 const TOTAL_RESOURCES = 3;
 
-// const generateEvents = () => {
-//   return new Array(500)
-//     .fill(0)
-//     .map((_, index) => {
-//       const randomDateByIndex = new Date(
-//         minDate.getFullYear(),
-//         minDate.getMonth(),
-//         minDate.getDate() + Math.floor(index / 2),
-//         Math.floor(Math.random() * 24),
-//         Math.round((Math.random() * 60) / 15) * 15
-//       );
-//       const duration = (Math.floor(Math.random() * 15) + 1) * 15 * 60 * 1000;
-//       const endDate = new Date(randomDateByIndex.getTime() + duration);
-
-//       return {
-//         id: `event_${index + 1}`,
-//         start: {
-//           dateTime: randomDateByIndex.toISOString(),
-//         },
-//         end: {
-//           dateTime: endDate.toISOString(),
-//         },
-//         title: `Event ${index + 1}`,
-//         color: randomColor(),
-//         resourceId: `resource_${Math.floor(Math.random() * TOTAL_RESOURCES) + 1}`,
-//       } as EventItem;
-//     })
-//     .concat(allDayEvents);
-// };
 const styles = StyleSheet.create({
   container: { flex: 1 },
   actions: { flexDirection: "row", gap: 10, padding: 10 },
