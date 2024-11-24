@@ -11,6 +11,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter();
 
   const _onPressItem = (viewMode: string, numberOfDays: number) => {
+    console.log({numberOfDays})
     router.setParams({ viewMode, numberOfDays: numberOfDays.toString() });
     props.navigation.closeDrawer();
   };
@@ -40,7 +41,7 @@ const DrawerLayout = () => {
 
   return (
     <Drawer screenOptions={{ drawerType: "front" }} drawerContent={_renderDrawer}>
-      <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={{ viewMode: "week", numberOfDays: 7 }} />
+      <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={{ viewMode: "week", numberOfDays: 1 }} />
     </Drawer>
   );
 };

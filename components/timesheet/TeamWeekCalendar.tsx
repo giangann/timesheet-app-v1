@@ -11,12 +11,12 @@ import type {
   UnavailableHourProps,
 } from "@howljs/calendar-kit";
 import { CalendarBody, CalendarContainer, CalendarHeader, DraggingEvent, ResourceHeaderItem, parseDateTime } from "@howljs/calendar-kit";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View, useColorScheme } from "react-native";
 import { Text } from "react-native-paper";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
 
 import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
@@ -193,6 +193,7 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
     return <DraggingEvent {...props} containerStyle={{ backgroundColor: "#1a73e8", opacity: 0.5 }} />;
   }, []);
 
+  console.log("re-render with new numberOfDays: ", params.numberOfDays);
   return (
     <View style={styles.container}>
       <Header currentDate={currentDate} onPressToday={_onPressToday} onPressPrevious={onPressPrevious} onPressNext={onPressNext} />
@@ -210,7 +211,7 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
         //   configs.themeMode === "auto" ? (colorScheme === "dark" ? CALENDAR_THEME.dark : CALENDAR_THEME.light) : CALENDAR_THEME[configs.themeMode]
         // }
         showWeekNumber={true}
-        allowPinchToZoom
+        allowPinchToZoom={false}
         onChange={_onChange}
         onDateChanged={console.log}
         minDate={MIN_DATE}
@@ -224,11 +225,11 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
         onPressEvent={(event) => {
           console.log(event);
         }}
-        dragToCreateMode={"date-time"}
+        dragToCreateMode={undefined}
         scrollToNow
         useHaptic
-        allowDragToEdit
-        allowDragToCreate
+        allowDragToEdit={false}
+        allowDragToCreate={false}
         useAllDayEvent
         rightEdgeSpacing={4}
         overlapEventsSpacing={1}
@@ -237,68 +238,15 @@ export const TeamWeekCalendar: React.FC<Props> = ({}) => {
             setSelectedEvent(undefined);
           }
         }}
-        onDragCreateEventStart={() => {
-          setSelectedEvent(undefined);
-        }}
         selectedEvent={selectedEvent}
-        start={60}
-        end={23 * 60}
+        start={8 * 60}
+        end={17 * 60}
         spaceFromBottom={safeBottom}
         defaultDuration={60}
-        onDragEventEnd={async (event) => {
-          console.log("onDragEventEnd", event);
-
-          const { originalRecurringEvent, ...rest } = event;
-          if (event.id) {
-            const filteredEvents = events.filter((item) => item.id !== event.id && item.id !== originalRecurringEvent?.id);
-            if (originalRecurringEvent) {
-              filteredEvents.push(originalRecurringEvent);
-            }
-            const newEvent = { ...rest, id: event.id };
-            filteredEvents.push(newEvent);
-            setEvents(filteredEvents);
-          }
-
-          setSelectedEvent(event);
-          await new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(true);
-            }, 100);
-          });
-        }}
-        onDragSelectedEventEnd={async (event) => {
-          console.log("onDragSelectedEventEnd", event);
-          const { originalRecurringEvent, ...rest } = event;
-          if (event.id) {
-            const filteredEvents = events.filter((item) => item.id !== event.id && item.id !== originalRecurringEvent?.id);
-            if (originalRecurringEvent) {
-              filteredEvents.push(originalRecurringEvent);
-            }
-            filteredEvents.push(rest as EventItem);
-            setEvents(filteredEvents);
-          }
-
-          setSelectedEvent(event);
-          await new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(true);
-            }, 100);
-          });
-        }}
+        onDragEventEnd={undefined}
+        onDragSelectedEventEnd={undefined}
         resources={isResourcesMode ? resources : undefined}
-        onDragCreateEventEnd={(event) => {
-          console.log("onDragCreateEventEnd", event);
-          const newEvent = {
-            ...event,
-            id: `event_${events.length + 1}`,
-            title: `Event ${events.length + 1}`,
-            color: "#23cfde",
-            resourceId: event.resourceId || `resource_${Math.floor(Math.random() * TOTAL_RESOURCES) + 1}`,
-          };
-          const newEvents = [...events, newEvent];
-          setEvents(newEvents);
-          setSelectedEvent(newEvent);
-        }}
+        onDragCreateEventEnd={undefined}
       >
         <CalendarHeader dayBarHeight={isResourcesMode ? 120 : 60} renderHeaderItem={isResourcesMode ? _renderResourceHeaderItem : undefined} />
         <CalendarBody
