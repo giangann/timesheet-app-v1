@@ -4,20 +4,16 @@ import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useDutyFormCreateContext } from "@/contexts";
 import { useDutyTypes } from "@/hooks/form";
-import { TDutyFormCreateFormField } from "@/types";
 import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { memo, useCallback, useState } from "react";
-import { Control } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 import { DutyTypeItem } from "./DutyTypeItem";
 
-type ChooseDutyTypesAndDutyTypeUsersProps = {
-  control: Control<TDutyFormCreateFormField>;
-};
+type ChooseDutyTypesAndDutyTypeUsersProps = {};
 
-export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({ control }) => {
+export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTypeUsersProps> = memo(({}) => {
   const [openSlideModal, setOpenSlideModal] = useState(false);
   const { isLoading: isFetchingDutyTypes, dutyTypes } = useDutyTypes();
 

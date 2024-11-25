@@ -140,7 +140,7 @@ export default function CreateDutyForm() {
               leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
             />
 
-            <ChooseDutyTypesAndDutyTypeUsers control={control} />
+            <ChooseDutyTypesAndDutyTypeUsers />
 
             {isFetchingUserApproves && <SkeletonRectangleLoader height={60} />}
             {!isFetchingUserApproves && (
