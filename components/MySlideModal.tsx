@@ -29,7 +29,7 @@ export function MySlideModal({ title, onClose, children, modalProps, modalContai
             </View>
           </View>
 
-          <ScrollView contentContainerStyle={styles.childrenContainer}>{children} </ScrollView>
+          <ScrollView contentContainerStyle={styles.childrenContainer}>{children}</ScrollView>
         </View>
       </View>
     </Modal>
