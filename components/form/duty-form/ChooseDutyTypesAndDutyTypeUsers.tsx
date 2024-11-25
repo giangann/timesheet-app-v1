@@ -6,7 +6,7 @@ import { useDutyFormCreateContext } from "@/contexts";
 import { useDutyTypes } from "@/hooks/form";
 import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 import { DutyTypeItem } from "./DutyTypeItem";
@@ -26,6 +26,13 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
     onAddDutyType({ dutyTypeId: dutyType.id, dutyTypeName: dutyType.dutyTypeName });
     onCloseDutyTypesModal();
   }, []);
+
+  const notSelectedDutyTypes = useMemo(() => {
+    return dutyTypes.filter((el) => {
+      const isSelected = formDutyTypes.some((selectedDutyType) => selectedDutyType.dutyTypeId === el.id);
+      return !isSelected;
+    });
+  }, [dutyTypes, formDutyTypes]);
 
   return (
     <View style={styles.dutyTypeFieldContainer}>
@@ -48,7 +55,7 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
               {isFetchingDutyTypes && <SkeletonRectangleLoader height={100} />}
               {!isFetchingDutyTypes && (
                 <>
-                  {dutyTypes.map((dutyType) => (
+                  {notSelectedDutyTypes.map((dutyType) => (
                     <Button key={dutyType.id} onPress={() => onSelectDutyType(dutyType)}>
                       {dutyType.dutyTypeName}
                     </Button>
