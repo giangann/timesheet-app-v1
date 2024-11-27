@@ -18,7 +18,6 @@ export default function TodayTimeKeeping() {
   const { tkMembers, isLoading, onFetchTimeKeepingMembers } = useFetchTimeKeepingMembers();
 
   const [memberList, setMemberList] = useState<TTimeKeepingMember[]>([]);
-  console.log({ tkMembers, isLoading, memberList });
   const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingCheckinUser[]>([]);
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
@@ -26,7 +25,7 @@ export default function TodayTimeKeeping() {
   const disabledUpdate = editTimeKeepingMembers.length <= 0 || isSaving;
   const [isSelectAll, setIsSelectAll] = useState(false);
 
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     try {
       setIsSaving(true);
       const bodyData = {
@@ -44,7 +43,7 @@ export default function TodayTimeKeeping() {
       const dateString = moment(Date.now()).format("YYYY-MM-DD");
       onFetchTimeKeepingMembers({ date: dateString });
     }
-  };
+  }, [setIsSaving, editTimeKeepingMembers, onSaveTimeKeeping, setEditTimeKeepingMembers, onFetchTimeKeepingMembers]);
 
   const onToggleEdit = () => {
     setIsEdit(!isEdit);
@@ -52,79 +51,91 @@ export default function TodayTimeKeeping() {
     setIsSelectAll(false);
   };
 
-  const onChooseSelectAll = () => {
+  const onChooseSelectAll = useCallback(() => {
     const newSelectedIdCards = memberList.map((member) => member.identifyCard);
     setSelectedIdCards([...newSelectedIdCards]);
 
     setIsSelectAll(true);
-  };
+  }, [memberList, setSelectedIdCards, setIsSelectAll]);
 
   const onChooseUnselectAll = () => {
     setSelectedIdCards([]);
     setIsSelectAll(false);
   };
 
-  const onEditTimeKeepingMember = (selectedWorkingTypeId: number) => {
-    // create Map to save current editedTimeKeepingMembers
-    const editedTKMap = new Map<string, TTimeKeepingCheckinUser>();
-    editTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
+  const onEditTimeKeepingMember = useCallback(
+    (selectedWorkingTypeId: number) => {
+      // create Map to save current editedTimeKeepingMembers
+      const editedTKMap = new Map<string, TTimeKeepingCheckinUser>();
+      editTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
 
-    // reflect selectedIdCards and workingTypeId to editTimeKeepingMembers
-    const newTimeKeepingMembers: TTimeKeepingCheckinUser[] = selectedIdCards.map((idCard) => ({
-      userIdentifyCard: idCard,
-      workingTypeId: selectedWorkingTypeId,
-    }));
-    newTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
+      // reflect selectedIdCards and workingTypeId to editTimeKeepingMembers
+      const newTimeKeepingMembers: TTimeKeepingCheckinUser[] = selectedIdCards.map((idCard) => ({
+        userIdentifyCard: idCard,
+        workingTypeId: selectedWorkingTypeId,
+      }));
+      newTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
 
-    // Convert the map back to an array and update the state
-    const newEditedTimeKeepingMembers: TTimeKeepingCheckinUser[] = Array.from(editedTKMap.values());
-    setEditTimeKeepingMembers([...newEditedTimeKeepingMembers]);
-  };
+      // Convert the map back to an array and update the state
+      const newEditedTimeKeepingMembers: TTimeKeepingCheckinUser[] = Array.from(editedTKMap.values());
+      setEditTimeKeepingMembers([...newEditedTimeKeepingMembers]);
+    },
+    [editTimeKeepingMembers, selectedIdCards, setEditTimeKeepingMembers]
+  );
 
-  const onUpdateMemberList = (selectedWorkingTypeId: number) => {
-    // Find the selected working type or default to a fallback
-    const selectedWorkingType: TWorkingType = workingTypes.find((wkType) => wkType.id === selectedWorkingTypeId) ?? {
-      id: -1,
-      name: "Unknown WkType",
-    };
-
-    // Create a map to store members by identifyCard
-    const memberListMap = new Map<string, TTimeKeepingMember>();
-    memberList.forEach((mem) => memberListMap.set(mem.identifyCard, mem));
-
-    // Update the members in the map with the new workingType
-    for (const idCard of selectedIdCards) {
-      const mem = memberListMap.get(idCard);
-      if (!mem) continue;
-
-      const memUpdated: TTimeKeepingMember = {
-        ...mem,
-        workingTypeId: selectedWorkingType.id,
-        workingTypeName: selectedWorkingType.name,
+  const onUpdateMemberList = useCallback(
+    (selectedWorkingTypeId: number) => {
+      // Find the selected working type or default to a fallback
+      const selectedWorkingType: TWorkingType = workingTypes.find((wkType) => wkType.id === selectedWorkingTypeId) ?? {
+        id: -1,
+        name: "Unknown WkType",
       };
-      memberListMap.set(idCard, memUpdated);
-    }
 
-    // Convert the map back to an array and update the state
-    const updatedMemList = Array.from(memberListMap.values());
-    setMemberList([...updatedMemList]);
-  };
+      // Create a map to store members by identifyCard
+      const memberListMap = new Map<string, TTimeKeepingMember>();
+      memberList.forEach((mem) => memberListMap.set(mem.identifyCard, mem));
 
-  const onMarkWkType = (chooseWkTypeId: number) => {
-    onEditTimeKeepingMember(chooseWkTypeId);
-    onUpdateMemberList(chooseWkTypeId);
-    onToggleEdit();
-  };
+      // Update the members in the map with the new workingType
+      for (const idCard of selectedIdCards) {
+        const mem = memberListMap.get(idCard);
+        if (!mem) continue;
 
-  const updateSelectedIdCards = (method: "add" | "remove", selectedIdCard: string) => {
-    if (method === "add") {
-      setSelectedIdCards([...selectedIdCards, selectedIdCard]);
-    }
-    if (method === "remove") {
-      const newSelectedIdCards = selectedIdCards.filter((idCard) => idCard !== selectedIdCard);
-      setSelectedIdCards([...newSelectedIdCards]);
-    }
-  };
+        const memUpdated: TTimeKeepingMember = {
+          ...mem,
+          workingTypeId: selectedWorkingType.id,
+          workingTypeName: selectedWorkingType.name,
+        };
+        memberListMap.set(idCard, memUpdated);
+      }
+
+      // Convert the map back to an array and update the state
+      const updatedMemList = Array.from(memberListMap.values());
+      setMemberList([...updatedMemList]);
+    },
+    [workingTypes, memberList, selectedIdCards, setMemberList]
+  );
+
+  const onMarkWkType = useCallback(
+    (chooseWkTypeId: number) => {
+      onEditTimeKeepingMember(chooseWkTypeId);
+      onUpdateMemberList(chooseWkTypeId);
+      onToggleEdit();
+    },
+    [onEditTimeKeepingMember, onUpdateMemberList, onToggleEdit]
+  );
+
+  const updateSelectedIdCards = useCallback(
+    (method: "add" | "remove", selectedIdCard: string) => {
+      if (method === "add") {
+        setSelectedIdCards([...selectedIdCards, selectedIdCard]);
+      }
+      if (method === "remove") {
+        const newSelectedIdCards = selectedIdCards.filter((idCard) => idCard !== selectedIdCard);
+        setSelectedIdCards([...newSelectedIdCards]);
+      }
+    },
+    [setSelectedIdCards, selectedIdCards]
+  );
 
   useFocusEffect(
     useCallback(() => {
