@@ -19,7 +19,7 @@ export const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ fieldArrayIndex
   const [openSelectUsersModal, setOpenSelectUsersModal] = useState(false);
 
   // Variables
-  const { updateUserApproves, onRemoveDutyType, onAddDutyType } = useDutyFormCreateContext();
+  const { onRemoveDutyType } = useDutyFormCreateContext();
   const isNoUser = useMemo(() => dutyTypeInfo.dutyTypeUsers.length <= 0, [dutyTypeInfo]);
 
   // Handlers
@@ -29,7 +29,6 @@ export const DutyTypeItem: React.FC<DutyTypeItemProps> = memo(({ fieldArrayIndex
   const openFullScrModal = () => setOpenSelectUsersModal(true);
   const closeFullScrModal = () => {
     setOpenSelectUsersModal(false);
-    updateUserApproves();
   };
 
   // press delete item of menu handler

@@ -28,7 +28,11 @@ export type TDutyForm = {
   salaryCoefficient: number;
   salaryCoefficientTypeName: string;
 
-  userNames: string[];
+  userNames: {
+    name: string;
+    roleCode: ROLE_CODE;
+    identifyCard: string;
+  }[];
 
   note: string;
   reason: string | null;
@@ -81,10 +85,10 @@ export type TDutyFormDetail = {
   createdUserName: string;
   approvedUserId: number;
   approvedUserName: string;
-  userApproveRoleCode: ROLE_CODE
+  userApproveRoleCode: ROLE_CODE;
   salaryCoefficientTypeId: number;
   salaryCoefficientTypeName: string;
-  salaryCoefficient:number;
+  salaryCoefficient: number;
   attachFileId: number | null;
   attachFilePath: string | null;
   attachFileUrl: string | null;

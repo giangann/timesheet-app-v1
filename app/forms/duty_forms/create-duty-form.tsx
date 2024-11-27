@@ -12,7 +12,6 @@ import { defaultDutyFormTime } from "@/helper/date";
 import { useCreateNewForm, useFetchSalaryCoefTypes, useUserApprovesByRole } from "@/hooks/form";
 import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
-import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useCallback } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -63,34 +62,14 @@ export default function CreateDutyForm() {
     [fields]
   );
 
-  const updateUserApproves = useCallback(() => {
-    // get teamIds from dutyTypes field of form
-    const teamIds: number[] = [];
-    getValues("dutyTypes").forEach((dutyType) => {
-      dutyType.dutyTypeUsers.forEach((user) => {
-        teamIds.push(user.teamId);
-      });
-    });
-    // refetch user apporves
-    onFetchUserApprovesInMultiTeams({ role: ROLE_CODE.TEAM_DIRECTOR, teamIds: getDistinctElements(teamIds) });
-  }, [getValues, onFetchUserApprovesInMultiTeams]);
-
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,
     label: `${name} (x${coefficient.toFixed(2)})`,
   }));
-  const userApproveOpts = users.map(({ identifyCard, name }) => ({ value: identifyCard, label: `${name}` }));
 
   const onSubmit = useCallback(async (values: TDutyFormCreateFormField) => {
     try {
-      const requiredValues = pickProperties(values, [
-        "date",
-        "startTime",
-        "endTime",
-        "salaryCoefficientTypeId",
-        "dutyTypes",
-        "userApproveIdentifyCard",
-      ]);
+      const requiredValues = pickProperties(values, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "dutyTypes"]);
       if (hasNullishValue(requiredValues)) {
         MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
         return;
@@ -102,9 +81,7 @@ export default function CreateDutyForm() {
     }
   }, []);
   return (
-    <DutyFormCreateContext.Provider
-      value={{ updateUserApproves, onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [] }}
-    >
+    <DutyFormCreateContext.Provider value={{ onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [] }}>
       <KeyboardAwareScrollView>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -141,18 +118,6 @@ export default function CreateDutyForm() {
             />
 
             <ChooseDutyTypesAndDutyTypeUsers />
-
-            {isFetchingUserApproves && <SkeletonRectangleLoader height={60} />}
-            {!isFetchingUserApproves && (
-              <FormSelectV2
-                useControllerProps={{ control: control, name: "userApproveIdentifyCard" }}
-                options={userApproveOpts}
-                label="Lãnh đạo phê duyệt"
-                required
-                placeholder="Chọn lãnh đạo phê duyệt"
-                leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
-              />
-            )}
 
             <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
             <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />

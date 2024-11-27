@@ -6,7 +6,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { arrayStringToString, omitNullishValues, omitProperties } from "@/helper/common";
+import { arrayStringToString, getUserNamesSummary, omitNullishValues, omitProperties } from "@/helper/common";
 import { formatRelativeTimeWithLongText } from "@/helper/date";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
@@ -423,19 +423,20 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
         <View style={styles.itemBoxSumary}>
           <View style={styles.infos}>
             <View style={styles.userInfo}>
-              <AvatarByRole role={dutyForm.userApproveRoleCode as ROLE_CODE} />
+              <View style={styles.userAvatarRow}>
+                {dutyForm.userNames.slice(0, 3).map((user, index) => (
+                  <AvatarByRole role={user.roleCode as ROLE_CODE} key={index} />
+                ))}
+              </View>
               <View style={{ gap: 4 }}>
-                <NunitoText type="body3">{dutyForm.userApproveName}</NunitoText>
-                <NunitoText type="body4" style={{ opacity: 0.75 }}>
-                  {dutyForm.userApproveRoleName}
-                </NunitoText>
+                <NunitoText type="body3">{getUserNamesSummary(dutyForm.userNames.map((user) => user.name))}</NunitoText>
               </View>
             </View>
             <View style={styles.formInfo}>
               <ChipStatus status={dutyForm.status} />
               <View>
                 <View>
-                  <NunitoText type="body4" style={{ opacity: 0.675 }}>
+                  <NunitoText type="body4" style={{ opacity: 0.675, textAlign: "right" }}>
                     {moment(dutyForm.date).format("DD/MM/YYYY")}
                   </NunitoText>
                   <NunitoText type="body4" style={{ opacity: 0.675 }}>
@@ -462,7 +463,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Thành viên: </NunitoText>
-            {arrayStringToString(dutyForm.userNames)}
+            {arrayStringToString(dutyForm.userNames.map((user) => user.name))}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
@@ -580,11 +581,10 @@ const styles = StyleSheet.create({
   userInfo: {
     justifyContent: "space-between",
     gap: 16,
+    maxWidth: 150,
   },
-  userAvatar: {
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: `${OPACITY_TO_HEX["15"]}`,
+  userAvatarRow: {
+    flexDirection: "row",
   },
   formInfo: {
     justifyContent: "space-between",

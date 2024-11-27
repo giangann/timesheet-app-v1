@@ -199,6 +199,27 @@ export function getUserSummaryString(users: TTeamUserSort[]): string {
   }
 }
 
+/**
+ *
+ * @param arrayOfString
+ * @returns
+ */
+
+export function getUserNamesSummary(userNames: string[]): string {
+  if (userNames.length === 0) {
+    return "No users available";
+  }
+
+  const displayedUsers = userNames.slice(0, 1).filter(Boolean);
+  const remainingCount = userNames.length - displayedUsers.length;
+
+  if (remainingCount > 0) {
+    return `${displayedUsers.join(", ")} và ${remainingCount} người khác`;
+  } else {
+    return displayedUsers.join(", ");
+  }
+}
+
 export function arrayStringToString(arrayOfString: string[]): string {
   return arrayOfString.join(", ");
 }

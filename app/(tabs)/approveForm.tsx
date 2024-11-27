@@ -41,7 +41,7 @@ export default function ApproveForm() {
           </View>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/approve-forms/duty_forms")}>
+        {/* <Pressable onPress={() => router.push("/approve-forms/duty_forms")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
@@ -53,7 +53,7 @@ export default function ApproveForm() {
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
-        </Pressable>
+        </Pressable> */}
       </ScrollView>
     </View>
   );
