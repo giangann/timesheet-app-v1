@@ -1,4 +1,5 @@
 import { TTimeKeepingCheckinUser, TTimeKeepingMember, TWorkingType } from "@/api/time-keeping";
+import { FormPickDate } from "@/components/FormPickDate";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useFetchTimeKeepingMembers, useFetchWorkingTypes, useUpdateTimeKeeping } from "@/hooks/time-keeping";
@@ -9,10 +10,13 @@ import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import * as Progress from "react-native-progress";
 
 export default function TodayTimeKeeping() {
+  const { watch, control } = useForm<{ date: Date }>({ defaultValues: { date: new Date() } });
+
   const { onSaveTimeKeeping } = useUpdateTimeKeeping();
   const { workingTypes } = useFetchWorkingTypes();
   const { tkMembers, isLoading, onFetchTimeKeepingMembers } = useFetchTimeKeepingMembers();
@@ -26,24 +30,26 @@ export default function TodayTimeKeeping() {
   const [isSelectAll, setIsSelectAll] = useState(false);
 
   const onSubmit = useCallback(async () => {
+    setIsSaving(true);
+
     try {
-      setIsSaving(true);
+      const dateString = moment(watch("date")).format("YYYY-MM-DD");
       const bodyData = {
-        date: moment(Date.now()).format("YYYY-MM-DD"),
+        date: dateString,
         users: [...editTimeKeepingMembers],
       };
 
-      onSaveTimeKeeping(bodyData);
+      await onSaveTimeKeeping(bodyData);
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
       setEditTimeKeepingMembers([]);
       setIsSaving(false);
 
-      const dateString = moment(Date.now()).format("YYYY-MM-DD");
+      const dateString = moment(watch("date")).format("YYYY-MM-DD");
       onFetchTimeKeepingMembers({ date: dateString });
     }
-  }, [setIsSaving, editTimeKeepingMembers, onSaveTimeKeeping, setEditTimeKeepingMembers, onFetchTimeKeepingMembers]);
+  }, [setIsSaving, editTimeKeepingMembers, onSaveTimeKeeping, setEditTimeKeepingMembers, onFetchTimeKeepingMembers, watch("date")]);
 
   const onToggleEdit = () => {
     setIsEdit(!isEdit);
@@ -139,9 +145,9 @@ export default function TodayTimeKeeping() {
 
   useFocusEffect(
     useCallback(() => {
-      const dateString = moment(Date.now()).format("YYYY-MM-DD");
+      const dateString = moment(watch("date")).format("YYYY-MM-DD");
       onFetchTimeKeepingMembers({ date: dateString });
-    }, [])
+    }, [watch("date")])
   );
 
   useEffect(() => {
@@ -153,7 +159,8 @@ export default function TodayTimeKeeping() {
       {/* option bar */}
       {!isEdit && (
         <View style={styles.optionBarDefault}>
-          <NunitoText type="body3">{moment(Date.now()).format("DD/MM/YYYY")}</NunitoText>
+          {/* <NunitoText type="body3">{moment(Date.now()).format("DD/MM/YYYY")}</NunitoText> */}
+          <FormPickDate useControllerProps={{control,name:'date'}}/>
           {editTimeKeepingMembers.length > 0 && <NunitoText>{`${editTimeKeepingMembers.length} đã sửa`}</NunitoText>}
           <Pressable onPress={onToggleEdit} style={styles.editPressable}>
             <NunitoText type="body3" lightColor="#0B3A82">
