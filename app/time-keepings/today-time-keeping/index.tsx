@@ -1,84 +1,48 @@
-import * as Progress from "react-native-progress";
-import { fetchTodayTimeKeeping, fetchWorkingTypes } from "@/api/time-keeping";
+import { TTimeKeepingCheckinUser, TTimeKeepingMember, TWorkingType } from "@/api/time-keeping";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { ROLE_CODE } from "@/constants/Misc";
-import { useSession } from "@/contexts/ctx";
+import { useFetchTimeKeepingMembers, useFetchWorkingTypes, useUpdateTimeKeeping } from "@/hooks/time-keeping";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyCheckRadio } from "@/ui/MyCheckRadio";
 import { MyToast } from "@/ui/MyToast";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
-import { SkeletonRectangleLoader } from "@/ui/skeletons";
-
-type TWorkingType = {
-  id: number;
-  name: string;
-};
-
-type TTimeKeepingMember = {
-  name: string;
-  identifyCard: string;
-  roleId: number;
-  roleName: string;
-  roleCode: ROLE_CODE;
-  workingTypeId: number | null;
-  workingTypeName: string | null;
-};
-
-type TTimeKeepingMemberEdit = {
-  userIdentifyCard: string;
-  workingTypeId: number;
-};
+import * as Progress from "react-native-progress";
 
 export default function TodayTimeKeeping() {
-  const [workingTypes, setWorkingTypes] = useState<TWorkingType[]>([]);
+  const { onSaveTimeKeeping } = useUpdateTimeKeeping();
+  const { workingTypes } = useFetchWorkingTypes();
+  const { tkMembers, isLoading, onFetchTimeKeepingMembers } = useFetchTimeKeepingMembers();
+
   const [memberList, setMemberList] = useState<TTimeKeepingMember[]>([]);
-  const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingMemberEdit[]>([]);
+  console.log({ tkMembers, isLoading, memberList });
+  const [editTimeKeepingMembers, setEditTimeKeepingMembers] = useState<TTimeKeepingCheckinUser[]>([]);
   const [selectedIdCards, setSelectedIdCards] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
   const disabledUpdate = editTimeKeepingMembers.length <= 0 || isSaving;
   const [isSelectAll, setIsSelectAll] = useState(false);
-  const { session } = useSession();
 
-  const onSaveTimeKeeping = async () => {
+  const onSubmit = async () => {
     try {
       setIsSaving(true);
       const bodyData = {
         date: moment(Date.now()).format("YYYY-MM-DD"),
         users: [...editTimeKeepingMembers],
       };
-      console.log(bodyData);
 
-      const token = `Bearer ${session}`;
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = "/timekeeping";
-      const url = `${baseUrl}${endpoint}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        body: JSON.stringify(bodyData),
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Thành công");
-      } else {
-        MyToast.error(responseJson.error);
-      }
+      onSaveTimeKeeping(bodyData);
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
       setEditTimeKeepingMembers([]);
       setIsSaving(false);
 
-      fetchTodayTk();
+      const dateString = moment(Date.now()).format("YYYY-MM-DD");
+      onFetchTimeKeepingMembers({ date: dateString });
     }
   };
 
@@ -102,18 +66,18 @@ export default function TodayTimeKeeping() {
 
   const onEditTimeKeepingMember = (selectedWorkingTypeId: number) => {
     // create Map to save current editedTimeKeepingMembers
-    const editedTKMap = new Map<string, TTimeKeepingMemberEdit>();
+    const editedTKMap = new Map<string, TTimeKeepingCheckinUser>();
     editTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
 
     // reflect selectedIdCards and workingTypeId to editTimeKeepingMembers
-    const newTimeKeepingMembers: TTimeKeepingMemberEdit[] = selectedIdCards.map((idCard) => ({
+    const newTimeKeepingMembers: TTimeKeepingCheckinUser[] = selectedIdCards.map((idCard) => ({
       userIdentifyCard: idCard,
       workingTypeId: selectedWorkingTypeId,
     }));
     newTimeKeepingMembers.forEach((tkMem) => editedTKMap.set(tkMem.userIdentifyCard, tkMem));
 
     // Convert the map back to an array and update the state
-    const newEditedTimeKeepingMembers: TTimeKeepingMemberEdit[] = Array.from(editedTKMap.values());
+    const newEditedTimeKeepingMembers: TTimeKeepingCheckinUser[] = Array.from(editedTKMap.values());
     setEditTimeKeepingMembers([...newEditedTimeKeepingMembers]);
   };
 
@@ -162,41 +126,16 @@ export default function TodayTimeKeeping() {
     }
   };
 
-  const fetchWKTypes = async () => {
-    const responseJson = await fetchWorkingTypes(session);
-    if (responseJson.statusCode === 200) {
-      setWorkingTypes(responseJson.data.workingTypes);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  };
-
   useFocusEffect(
     useCallback(() => {
-      fetchWKTypes();
+      const dateString = moment(Date.now()).format("YYYY-MM-DD");
+      onFetchTimeKeepingMembers({ date: dateString });
     }, [])
   );
 
-  const fetchTodayTk = async () => {
-    setIsLoading(true)
-    try {
-      const responseJson = await fetchTodayTimeKeeping(session);
-      if (responseJson.statusCode === 200) {
-        setMemberList(responseJson.data.timeKeeping.users);
-      } else {
-        MyToast.error(responseJson.error);
-      }
-    } catch (error: any) {
-      MyToast.error(error.message)
-    }
-    setIsLoading(false)
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchTodayTk();
-    }, [])
-  );
+  useEffect(() => {
+    setMemberList(tkMembers);
+  }, [tkMembers]);
 
   return (
     <View style={styles.container}>
@@ -247,13 +186,13 @@ export default function TodayTimeKeeping() {
 
       {/* member list */}
       {isLoading && <SkeletonRectangleLoader />}
-      {!isLoading &&
+      {!isLoading && (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {memberList.map((member, index) => (
             <MemberItem key={index} updateSelectedIdCards={updateSelectedIdCards} isEdit={isEdit} member={member} isSelectAll={isSelectAll} />
           ))}
         </ScrollView>
-      }
+      )}
 
       {/* action bar */}
       {isEdit && (
@@ -269,7 +208,7 @@ export default function TodayTimeKeeping() {
       )}
 
       {!isEdit && (
-        <TouchableOpacity onPress={onSaveTimeKeeping} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
+        <TouchableOpacity onPress={onSubmit} disabled={disabledUpdate} activeOpacity={0.8} style={styles.buttonContainer}>
           <View style={disabledUpdate ? [styles.button, styles.buttonDisabled] : styles.button}>
             {isSaving && <Progress.Circle indeterminate size={14} />}
             <NunitoText type="body3" style={disabledUpdate ? [styles.buttonText, styles.buttonTextDisabled] : styles.buttonText}>
