@@ -187,7 +187,7 @@ export function getUserSummaryString(users: TTeamUserSort[]): string {
   }
 
   const displayedUsers = users
-    .slice(0, 2)
+    // .slice(0, 2)
     .map((user) => user.name)
     .filter(Boolean);
   const remainingCount = users.length - displayedUsers.length;
