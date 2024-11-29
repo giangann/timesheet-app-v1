@@ -166,3 +166,21 @@ export async function fetchDutySuggestedUsers(
 
   return responseJson;
 }
+
+export async function deleteForm(session: string | null | undefined, formId: number) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = `/duty-forms/cancel`;
+  const querystring = paramsObjectToQueryString({ id: formId });
+  const url = `${baseUrl}${endpoint}${querystring}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json", Authorization: token },
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}

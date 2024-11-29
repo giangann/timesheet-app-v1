@@ -1,4 +1,4 @@
-import { createDutyForm, fetchDutySuggestedUsers } from "@/api/form";
+import { createDutyForm, deleteForm, fetchDutySuggestedUsers } from "@/api/form";
 import { TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser, TDutySuggestedUserFilterParams } from "@/api/form/types";
 import { fetchDutyTypes } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
@@ -59,7 +59,7 @@ export function useSuggestDutyUsers() {
     }
   }, []);
 
-  const onSearchLocalByUserName = useCallback((text:string)=>{},[])
+  const onSearchLocalByUserName = useCallback((text: string) => {}, []);
 
   return { users, isLoading, onFetchDutySuggestedUsers };
 }
@@ -114,4 +114,27 @@ export function useCreateNewForm() {
   );
 
   return { onCreate };
+}
+
+export function useDeleteForm() {
+  const { session } = useSession();
+
+  const onDelete = useCallback(
+    async (formId: number) => {
+      try {
+        const responseJson = await deleteForm(session, formId);
+        // process response
+        if (responseJson.statusCode === 200) {
+          MyToast.success("Thành công");
+        } else {
+          MyToast.error(responseJson.error ?? responseJson.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session]
+  );
+
+  return { onDelete };
 }

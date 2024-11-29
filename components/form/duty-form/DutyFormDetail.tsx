@@ -4,52 +4,29 @@ import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts";
+import { useDeleteForm } from "@/hooks/form";
 import { BoxStatus } from "@/ui/BoxStatus";
-import { MyToast } from "@/ui/MyToast";
-import { useRouter } from "expo-router";
 import moment from "moment";
 import { memo, useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { DutyFormDetailDutyTypes } from "./DutyFormDetailDutyTypes";
-import { paramsObjectToQueryString } from "@/helper/common";
 
 type DutyFormDetailProps = {
   form: TDutyFormDetail | null;
 };
 export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => {
   const [openCfCancelModal, setOpenCfCancelModal] = useState(false);
-  const { session, userInfo } = useSession();
-  const router = useRouter();
+  const { userInfo } = useSession();
+  const { onDelete } = useDeleteForm();
   const theme = useTheme();
 
   const ableToDeleteOrCancel = userInfo?.id === form?.createdUserId;
 
-  const onDeleteForm = useCallback(async () => {
-    try {
-      const token = `Bearer ${session}`;
-
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-      const endpoint = `/duty-forms/cancel`;
-      const querystring = paramsObjectToQueryString({ id: form?.id });
-      const url = `${baseUrl}${endpoint}${querystring}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Xóa thành công");
-        router.back();
-      } else {
-        MyToast.error(responseJson.error);
-      }
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  }, [form, session]);
+  const onDeleteForm = useCallback(() => {
+    onDelete(form?.id ?? 0);
+  }, [form]);
+  
   return (
     <>
       {!form && (
