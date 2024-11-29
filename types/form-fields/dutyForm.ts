@@ -27,3 +27,13 @@ export type TDutyFormCreateFormField = {
   salaryCoefficientTypeId: number;
   attachFile?: File | null;
 };
+
+export type TDutyFormEditFormField = {
+  date?: Date;
+  startTime?: Date;
+  endTime?: Date;
+  note?: string;
+  salaryCoefficientTypeId?: number;
+  attachFile?: File;
+  dutyTypes?: TDutyFormCreateDutyTypeFormField[];
+};

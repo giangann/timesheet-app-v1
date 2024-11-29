@@ -1,9 +1,16 @@
 import { createDutyForm, deleteForm, fetchDutySuggestedUsers } from "@/api/form";
-import { TDutyFormCreate, TDutyFormCreateDutyTypeField, TDutySuggestedUser, TDutySuggestedUserFilterParams } from "@/api/form/types";
+import {
+  TDutyFormCreate,
+  TDutyFormCreateDutyTypeField,
+  TDutyFormEdit,
+  TDutyFormEditDutyTypeField,
+  TDutySuggestedUser,
+  TDutySuggestedUserFilterParams,
+} from "@/api/form/types";
 import { fetchDutyTypes } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
 import { useSession } from "@/contexts/ctx";
-import { TDutyFormCreateFormField, TPagiParams } from "@/types";
+import { TDutyFormCreateFormField, TDutyFormEditFormField, TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
@@ -58,8 +65,6 @@ export function useSuggestDutyUsers() {
       setIsLoading(false);
     }
   }, []);
-
-  const onSearchLocalByUserName = useCallback((text: string) => {}, []);
 
   return { users, isLoading, onFetchDutySuggestedUsers };
 }
@@ -137,4 +142,72 @@ export function useDeleteForm() {
   );
 
   return { onDelete };
+}
+
+export function useEditDutyForm() {
+  const { session } = useSession();
+  const router = useRouter();
+  const { onUploadFile } = useUploadFile();
+
+  const onEdit = useCallback(
+    async (dutyFormId: number, fields: TDutyFormEditFormField) => {
+      try {
+        // process data from form
+        const bodyData: TDutyFormEdit = {};
+
+        if (fields.startTime) bodyData["startTime"] = moment(fields.startTime).format("HH:mm:ss");
+        if (fields.endTime) bodyData["endTime"] = moment(fields.endTime).format("HH:mm:ss");
+        if (fields.salaryCoefficientTypeId) bodyData["salaryCoefficientTypeId"] = fields.salaryCoefficientTypeId;
+        if (fields.dutyTypes) {
+          const dutyTypes: TDutyFormEditDutyTypeField[] = fields.dutyTypes.map((el) => ({
+            dutyTypeId: el.dutyTypeId,
+            userIds: el.dutyTypeUsers.map((user) => user.id),
+          })); // ok
+          bodyData["dutyTypes"] = dutyTypes;
+        }
+        if (fields.note) bodyData["note"] = fields.note;
+        if (fields.attachFile) {
+          // upload file, take file id
+          const uploadFileRes = await onUploadFile(fields.attachFile);
+          if (uploadFileRes !== 1) {
+            const uploadedFileId = uploadFileRes.data.attachFile.id;
+            bodyData["attachFileId"] = uploadedFileId;
+          }
+        }
+
+        console.log({ fields, bodyData });
+
+        // make request
+        const token = `Bearer ${session}`;
+        const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+        const endpoint = `/duty-forms?id=${dutyFormId}`;
+        const url = `${baseUrl}${endpoint}`;
+
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          }, // do not set content-type for formData, let browser do it automatically
+          body: JSON.stringify(bodyData),
+          credentials: "include",
+        });
+
+        const responseJson = await response.json();
+
+        // process response
+        if (responseJson.statusCode === 200) {
+          MyToast.success("Thành công");
+          router.back();
+        } else {
+          MyToast.error(responseJson.error ?? responseJson.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session]
+  );
+
+  return { onEdit };
 }

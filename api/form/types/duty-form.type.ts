@@ -90,7 +90,7 @@ export type TDutyFormDetail = {
   salaryCoefficientTypeName: string;
   salaryCoefficient: number;
   attachFileId: number | null;
-  attachFilePath: string | null;
+  attachFilePath: string;
   attachFileUrl: string | null;
   dutyTypes: TDutyFormDetailDutyType[];
 };
@@ -121,6 +121,20 @@ export type TDutyFormCreate = {
   salaryCoefficientTypeId: number;
   attachFileId?: number | null;
 };
+
+export type TDutyFormEditDutyTypeField = {
+  dutyTypeId: number;
+  userIds: number[];
+};
+export type TDutyFormEdit = {
+  startTime?: string;
+  endTime?: string;
+  note?: string;
+  salaryCoefficientTypeId?: number;
+  attachFileId?: number;
+  dutyTypes?: TDutyFormEditDutyTypeField[];
+};
+
 export type TDutyFormCreateNoti = {
   message: string;
   obj: {
