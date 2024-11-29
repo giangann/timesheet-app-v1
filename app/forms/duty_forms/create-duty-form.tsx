@@ -5,23 +5,21 @@ import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { ChooseDutyTypesAndDutyTypeUsers } from "@/components/form";
 import { Colors } from "@/constants/Colors";
-import { ROLE_CODE } from "@/constants/Misc";
 import { DutyFormCreateContext } from "@/contexts";
-import { getDistinctElements, hasNullishValue, pickProperties } from "@/helper/common";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { defaultDutyFormTime } from "@/helper/date";
-import { useCreateNewForm, useFetchSalaryCoefTypes, useUserApprovesByRole } from "@/hooks/form";
+import { useCreateNewForm, useFetchSalaryCoefTypes } from "@/hooks/form";
 import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useCallback } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useController, useFieldArray, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "react-native-paper";
 
 export default function CreateDutyForm() {
   const { salaryCoefficientTypes } = useFetchSalaryCoefTypes();
-  const { isLoading: isFetchingUserApproves, users, onFetchUserApprovesInMultiTeams } = useUserApprovesByRole();
   const { onCreate } = useCreateNewForm();
   const {
     control,
@@ -67,6 +65,9 @@ export default function CreateDutyForm() {
     label: `${name} (x${coefficient.toFixed(2)})`,
   }));
 
+  // const isDateDirty = useMemo(() => useController({ control, name: "date" }).fieldState.isDirty, [fields]);
+  const isDateDirty = useController({ control, name: "date" }).fieldState.isDirty;
+
   const onSubmit = useCallback(async (values: TDutyFormCreateFormField) => {
     try {
       const requiredValues = pickProperties(values, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "dutyTypes"]);
@@ -81,7 +82,9 @@ export default function CreateDutyForm() {
     }
   }, []);
   return (
-    <DutyFormCreateContext.Provider value={{ onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [] }}>
+    <DutyFormCreateContext.Provider
+      value={{ onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [], dutyDate: getValues("date") }}
+    >
       <KeyboardAwareScrollView>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -95,6 +98,7 @@ export default function CreateDutyForm() {
                   required
                   leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
                   initTime={defaultDutyFormTime().startTime}
+                  disabled={!isDateDirty}
                 />
               </View>
               <View style={styles.timeRangeItem}>
@@ -105,6 +109,7 @@ export default function CreateDutyForm() {
                   required
                   leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
                   initTime={defaultDutyFormTime().endTime}
+                  disabled={!isDateDirty}
                 />
               </View>
             </View>
@@ -115,12 +120,13 @@ export default function CreateDutyForm() {
               required
               placeholder="Chọn loại ngoài giờ"
               leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
+              disabled={!isDateDirty}
             />
 
             <ChooseDutyTypesAndDutyTypeUsers />
 
-            <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
-            <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
+            <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." disabled={!isDateDirty} />
+            <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} disabled={!isDateDirty} />
             <View style={styles.actionContainer}>
               <Button
                 onPress={handleSubmit(onSubmit)}

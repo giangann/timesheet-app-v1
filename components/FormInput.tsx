@@ -17,6 +17,7 @@ export type RawFormInputProps<T extends FieldValues> = TextInputProps &
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     rightIconEl?: React.ReactNode;
+    disabled?: boolean;
   };
 
 function RawFormInput<T extends FieldValues>({
@@ -26,6 +27,7 @@ function RawFormInput<T extends FieldValues>({
   rightIcon = <MaterialIcons name="clear" size={18} color={Colors.light.inputIconNone} />,
   rightIconEl,
   formInputProps,
+  disabled,
   ...rest
 }: RawFormInputProps<T>) {
   const { field, fieldState } = useController(formInputProps);
@@ -53,7 +55,7 @@ function RawFormInput<T extends FieldValues>({
           placeholderTextColor={`#000000${OPACITY_TO_HEX["50"]}`}
           value={value}
           onChangeText={onChange}
-          style={error ? inputStyles.error : inputStyles.default}
+          style={[inputStyles.default, error && inputStyles.error, disabled && inputStyles.disabled]}
           {...rest}
         />
 
@@ -112,6 +114,10 @@ const inputStyles = StyleSheet.create({
   error: {
     ...baseInputStyle,
     borderColor: `red`,
+  },
+  disabled: {
+    borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
+    backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
   },
 });
 

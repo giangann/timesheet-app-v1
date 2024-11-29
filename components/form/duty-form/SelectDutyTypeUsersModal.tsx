@@ -25,7 +25,7 @@ type SelectDutyTypeUsersModalProps = {
 type TFilterCheckStatus = "checked" | "all";
 type TUserWithCheckStatus = TDutySuggestedUser & { isChecked: boolean };
 export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> = memo(({ onClose, dutyType, fieldArrayIndex }) => {
-  const { formDutyTypes } = useDutyFormCreateContext();
+  const { formDutyTypes, dutyDate } = useDutyFormCreateContext();
   const { users: suggestedUsers, isLoading: isFetchingUsers, onFetchDutySuggestedUsers } = useSuggestDutyUsers();
 
   const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
@@ -66,7 +66,7 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
   }, []);
 
   useEffect(() => {
-    onFetchDutySuggestedUsers({ page: 0, size: 50 }, _defaultFilterParams(dutyType.dutyTypeId));
+    onFetchDutySuggestedUsers({ page: 0, size: 50 }, _defaultFilterParams(dutyType.dutyTypeId, moment(dutyDate).format("YYYY-MM-DD")));
   }, [onFetchDutySuggestedUsers, dutyType]);
 
   return (
@@ -115,7 +115,10 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
                         />
                       </View>
 
-                      <FilterUserForm onApply={onFilterApply} defaultFilterParmas={_defaultFilterParams(dutyType.dutyTypeId)} />
+                      <FilterUserForm
+                        onApply={onFilterApply}
+                        defaultFilterParmas={_defaultFilterParams(dutyType.dutyTypeId, moment(dutyDate).format("YYYY-MM-DD"))}
+                      />
                     </View>
                     {/* Search */}
                     <TextInput
@@ -198,9 +201,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const _defaultFilterParams = (dutyTypeId: number): TDutySuggestedUserFilterParams => ({
-  date: "1970-01-01",
+const _defaultFilterParams = (dutyTypeId: number, dutyDate: string): TDutySuggestedUserFilterParams => ({
+  date: dutyDate,
   startDate: moment().startOf("year").format("YYYY-MM-DD"),
   endDate: moment().endOf("year").format("YYYY-MM-DD"),
   dutyTypeId,
+  sort: sortOpts[0].value,
 });
+
+export const sortOpts = [
+  {
+    label: "Số lần trực tăng dần",
+    value: "numOnDuty,asc",
+  },
+  {
+    label: "Số lần trực giảm dần",
+    value: "numOnDuty,desc",
+  },
+];

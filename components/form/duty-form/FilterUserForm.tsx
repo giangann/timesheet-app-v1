@@ -1,11 +1,13 @@
 import { TDutySuggestedUserFilterParams, TDutySuggestedUserFilterParamsFormFields } from "@/api/form/types";
 import { FormPickDate } from "@/components/FormPickDate";
+import { FormSelectV2 } from "@/components/FormSelectV2";
 import { MySlideModal } from "@/components/MySlideModal";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
 import { Button, IconButton, useTheme } from "react-native-paper";
+import { sortOpts } from "./SelectDutyTypeUsersModal";
 
 type Props = {
   onApply: (params: TDutySuggestedUserFilterParams) => void;
@@ -18,15 +20,16 @@ export const FilterUserForm: React.FC<Props> = ({ onApply, defaultFilterParmas }
   const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
   const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
 
+  const theme = useTheme();
   const { control, handleSubmit, reset, getValues } = useForm<TDutySuggestedUserFilterParamsFormFields>({
     defaultValues: {
       date: new Date(defaultFilterParmas.date),
       startDate: new Date(defaultFilterParmas.startDate),
       endDate: new Date(defaultFilterParmas.endDate),
       dutyTypeId: defaultFilterParmas.dutyTypeId,
+      sort: defaultFilterParmas.sort,
     },
   });
-  const theme = useTheme();
 
   const onResetPressed = useCallback(() => {
     reset();
@@ -77,6 +80,7 @@ export const FilterUserForm: React.FC<Props> = ({ onApply, defaultFilterParmas }
             <View style={{ gap: 8 }}>
               <FormPickDate label="Từ ngày" useControllerProps={{ control, name: "startDate" }} />
               <FormPickDate label="Đến ngày" useControllerProps={{ control, name: "endDate" }} />
+              <FormSelectV2 label="Sắp xếp theo số lần trực" useControllerProps={{ control, name: "sort" }} options={sortOpts} />
             </View>
 
             <View style={styles.flexContainer}>
@@ -99,10 +103,9 @@ export const FilterUserForm: React.FC<Props> = ({ onApply, defaultFilterParmas }
 };
 
 const _isNotDefault = (defaultParams: TDutySuggestedUserFilterParams, nowParams: TDutySuggestedUserFilterParamsFormFields) => {
-  console.log({ defaultParams, nowParams });
-
   if (!moment(defaultParams.startDate).isSame(nowParams.startDate, "date")) return true;
   if (!moment(defaultParams.endDate).isSame(nowParams.endDate, "date")) return true;
+  if (defaultParams.sort !== nowParams.sort) return true;
 
   return false;
 };

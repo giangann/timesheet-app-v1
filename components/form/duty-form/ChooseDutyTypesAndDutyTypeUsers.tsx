@@ -8,7 +8,7 @@ import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { memo, useCallback, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import { DutyTypeItem } from "./DutyTypeItem";
 
 type ChooseDutyTypesAndDutyTypeUsersProps = {};
@@ -20,7 +20,7 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
   const onOpenDutyTypesModal = useCallback(() => setOpenSlideModal(true), [setOpenSlideModal]);
   const onCloseDutyTypesModal = useCallback(() => setOpenSlideModal(false), [setOpenSlideModal]);
 
-  const { onAddDutyType, formDutyTypes } = useDutyFormCreateContext();
+  const { onAddDutyType, formDutyTypes, dutyDate } = useDutyFormCreateContext();
 
   const onSelectDutyType = useCallback((dutyType: TDutyType) => {
     onAddDutyType({ dutyTypeId: dutyType.id, dutyTypeName: dutyType.dutyTypeName });
@@ -38,6 +38,10 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
     <View style={styles.dutyTypeFieldContainer}>
       {/*  */}
       <FieldLabel />
+
+      {/*  */}
+      {!dutyDate && <Text style={{ color: "red" }}>Hãy chọn Ngày</Text>}
+
       <View style={styles.dutyTypeGroup}>
         {formDutyTypes.map((selectedDutyType, index) => (
           <DutyTypeItem key={selectedDutyType.dutyTypeId} dutyTypeInfo={selectedDutyType} fieldArrayIndex={index} />
@@ -45,7 +49,7 @@ export const ChooseDutyTypesAndDutyTypeUsers: React.FC<ChooseDutyTypesAndDutyTyp
       </View>
 
       {/*  */}
-      <Button style={{ alignItems: "flex-start" }} onPress={onOpenDutyTypesModal} textColor="#0B3A82">
+      <Button style={[{ alignItems: "flex-start" }]} onPress={onOpenDutyTypesModal} textColor="#0B3A82" disabled={!dutyDate}>
         + thêm loại trực
       </Button>
       <>

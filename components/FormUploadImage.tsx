@@ -13,9 +13,16 @@ type FormUploadImageProps<T extends FieldValues> = {
   required?: boolean;
   useControllerProps: UseControllerProps<T>;
   defaultUri?: string;
+  disabled?: boolean;
 };
 
-export default function FormUploadImage<T extends FieldValues>({ label, required, useControllerProps, defaultUri }: FormUploadImageProps<T>) {
+export default function FormUploadImage<T extends FieldValues>({
+  label,
+  required,
+  useControllerProps,
+  defaultUri,
+  disabled,
+}: FormUploadImageProps<T>) {
   // Stores any error message
   const [error, setError] = useState(null);
   const [isWaiting, setIsWaiting] = useState(false);
@@ -83,7 +90,7 @@ export default function FormUploadImage<T extends FieldValues>({ label, required
         )}
         {!fileUri && (
           <TouchableOpacity onPress={pickImage}>
-            <View style={styles.imageBox}>
+            <View style={[styles.imageBox, disabled && styles.disabled]}>
               <View style={styles.placeholderWrapper}>
                 <Image source={AddImageIcon} />
                 <NunitoText type="body3">Bấm để chọn file</NunitoText>
@@ -164,5 +171,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: `#000000${OPACITY_TO_HEX["15"]}`,
+  },
+  disabled: {
+    borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
+    backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
   },
 });
