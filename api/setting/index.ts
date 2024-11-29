@@ -3,3 +3,4 @@ export * from "./salaryCoefType";
 export * from "./dutyType";
 export * from "./team";
 export * from "./leaveType";
+export * from "./exceptionDay";

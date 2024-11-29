@@ -52,3 +52,20 @@ export type TDutyTypeUpdate = {
   dutyTypeName: string;
   userIds: number[];
 };
+
+export type TExceptionDay = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;
+};
+export type TExceptionDayCreate = {
+  name: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;
+};
+export type TExceptionDayParams = {
+  year: string;
+};
