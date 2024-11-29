@@ -46,6 +46,7 @@ export type TLeaveForm = {
   createdAt: string;
   approveDate: string | null;
   reason: string | null;
+  leaveFormTypeIsDisplayedOnWeekCalendar: boolean;
 };
 
 export type TApproveLeaveForm = {
@@ -80,6 +81,7 @@ export type TApproveLeaveForm = {
     code: ROLE_CODE;
     name: string;
   };
+  leaveFormTypeIsDisplayedOnWeekCalendar: boolean;
 };
 
 export type TLeaveFormDetail = {
@@ -113,6 +115,7 @@ export type TLeaveFormDetail = {
   userApproveIdentifyCard: string;
   userApproveName: string;
   approveDate: string | null;
+  leaveFormTypeIsDisplayedOnWeekCalendar: boolean;
 };
 
 export type TLeaveFormCreateNoti = {

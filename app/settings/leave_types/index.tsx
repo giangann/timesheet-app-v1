@@ -13,6 +13,7 @@ const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 type TLeaveType = {
   id: number;
   name: string;
+  isDisplayedOnWeekCalendar: boolean | null;
 };
 
 export default function LeaveTypeList() {
@@ -87,7 +88,7 @@ type ItemProps = {
   leaveType: TLeaveType;
 };
 const Item: React.FC<ItemProps> = ({ leaveType }) => {
-  const { id, name } = leaveType;
+  const { id, name, isDisplayedOnWeekCalendar } = leaveType;
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
@@ -97,7 +98,7 @@ const Item: React.FC<ItemProps> = ({ leaveType }) => {
       </View>
       <View>
         <NunitoText type="body2"> {name}</NunitoText>
-        {id % 2 && <NunitoText type="body4"> Hiển thị trên lịch công tác</NunitoText>}
+        {isDisplayedOnWeekCalendar && <NunitoText type="body4"> Hiển thị trên lịch công tác</NunitoText>}
       </View>
     </View>
   );
@@ -142,41 +143,6 @@ const styles = StyleSheet.create({
     marginRight: 12 * UNIT_DIMENSION,
   },
 });
-
-const data: TLeaveType[] = [
-  {
-    id: 1,
-    name: "Nghỉ ốm",
-  },
-  {
-    id: 2,
-    name: "Nghỉ thai sản",
-  },
-  {
-    id: 3,
-    name: "Nghỉ công tác",
-  },
-  {
-    id: 4,
-    name: "Nghỉ việc riêng",
-  },
-  {
-    id: 5,
-    name: "Nghỉ việc riêng",
-  },
-  {
-    id: 6,
-    name: "Nghỉ việc riêng",
-  },
-  {
-    id: 7,
-    name: "Nghỉ việc riêng",
-  },
-  {
-    id: 8,
-    name: "Nghỉ việc riêng",
-  },
-];
 
 function addPrefix(num: number) {
   return num < 10 ? "0" + num : num;

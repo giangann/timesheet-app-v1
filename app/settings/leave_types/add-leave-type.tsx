@@ -30,7 +30,8 @@ export default function AddLeaveType() {
     const requestBody = {
       ...data,
       // handle isSwitchOn value here
-    }
+      isDisplayedOnWeekCalendar: isSwitchOn,
+    };
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: token },
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
   },
   formSwitch: {
     flexDirection: "row",
-    alignItems:'center',
-    justifyContent:'space-between'
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });
