@@ -1,6 +1,7 @@
-import { EditButton } from "@/components/button";
+import { EditButton, GoBackButton } from "@/components/button";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Stack, useRouter } from "expo-router";
+import { Platform } from "react-native";
 
 export default function TimeSheetLayout() {
   const router = useRouter();
@@ -23,11 +24,26 @@ export default function TimeSheetLayout() {
         ),
       }}
     >
-      <Stack.Screen name="my-timesheet/index" options={{ title: "Bảng chấm công của tôi" }} />
-      <Stack.Screen name="my-emp-owt/index" options={{ title: "Bảng ngoài giờ của tôi" }} />
+      <Stack.Screen
+        name="my-timesheet/index"
+        options={{
+          title: "Bảng chấm công của tôi",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+        }}
+      />
+      <Stack.Screen
+        name="my-emp-owt/index"
+        options={{
+          title: "Bảng ngoài giờ của tôi",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+        }}
+      />
       <Stack.Screen
         name="week-calendar"
-        options={{ title: "Lịch công tác", headerRight: () => <EditButton isEdit={true} onToggleEdit={customGoBackWeekCalendar} /> }}
+        options={{
+          title: "Lịch công tác",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+        }}
       />
     </Stack>
   );

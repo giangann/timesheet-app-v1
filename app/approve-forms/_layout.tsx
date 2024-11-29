@@ -1,5 +1,7 @@
+import { GoBackButton } from "@/components/button";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 
 export default function ApproveFormLayout() {
   return (
@@ -17,13 +19,31 @@ export default function ApproveFormLayout() {
         ),
       }}
     >
-      <Stack.Screen name="leave_forms/index" options={{ title: "Phê duyệt đơn xin nghỉ" }} />
+      <Stack.Screen
+        name="leave_forms/index"
+        options={{
+          title: "Phê duyệt đơn xin nghỉ",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+        }}
+      />
       <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn" }} />
 
-      <Stack.Screen name="overtime_forms/index" options={{ title: "Phê duyệt đơn tăng ca" }} />
+      <Stack.Screen
+        name="overtime_forms/index"
+        options={{
+          title: "Phê duyệt đơn tăng ca",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+        }}
+      />
       <Stack.Screen name="overtime_forms/[id]" options={{ title: "Chi tiết đơn" }} />
 
-      <Stack.Screen name="duty_forms/index" options={{ title: "Phê duyệt đơn trực" }} />
+      <Stack.Screen
+        name="duty_forms/index"
+        options={{
+          title: "Phê duyệt đơn trực",
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+        }}
+      />
       <Stack.Screen name="duty_forms/[id]" options={{ title: "Chi tiết đơn" }} />
     </Stack>
   );
