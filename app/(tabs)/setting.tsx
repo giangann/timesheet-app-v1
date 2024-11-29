@@ -55,7 +55,7 @@ export default function Settings() {
           </View>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/settings/holidays")}>
+        {/* <Pressable onPress={() => router.push("/settings/holidays")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
@@ -67,7 +67,7 @@ export default function Settings() {
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable onPress={() => router.push("/settings/duty_types")}>
           <View style={styles.itemBox}>
@@ -76,6 +76,20 @@ export default function Settings() {
                 <MaterialCommunityIcons name="clipboard-text-play-outline" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
               <NunitoText type="body1">Cài đặt loại trực</NunitoText>
+            </View>
+            <View style={styles.chip}>
+              <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+            </View>
+          </View>
+        </Pressable>
+
+        <Pressable onPress={() => router.push("/settings/exception_days")}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemBoxLeft}>
+              <View style={styles.iconBox}>
+                <MaterialCommunityIcons name="beach" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
+              </View>
+              <NunitoText type="body1">Cài đặt ngày ngoại lệ</NunitoText>
             </View>
             <View style={styles.chip}>
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
