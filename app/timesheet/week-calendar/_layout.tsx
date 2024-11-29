@@ -1,18 +1,17 @@
+import { TeamWeekCalendarProvider, defaultSearchParams, useTeamWeekCalendarProvider } from "@/providers";
 import type { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
 import Drawer from "expo-router/drawer";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
-  const router = useRouter();
+  const { onUpdateSearchParams } = useTeamWeekCalendarProvider();
 
   const _onPressItem = (viewMode: string, numberOfDays: number) => {
-    console.log({numberOfDays})
-    router.setParams({ viewMode, numberOfDays: numberOfDays.toString() });
+    onUpdateSearchParams({ viewMode, numberOfDays: numberOfDays.toString() });
     props.navigation.closeDrawer();
   };
 
@@ -40,9 +39,11 @@ const DrawerLayout = () => {
   const _renderDrawer = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
 
   return (
-    <Drawer screenOptions={{ drawerType: "front" }} drawerContent={_renderDrawer}>
-      <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={{ viewMode: "week", numberOfDays: 3 }} />
-    </Drawer>
+    <TeamWeekCalendarProvider>
+      <Drawer screenOptions={{ drawerType: "front" }} drawerContent={_renderDrawer}>
+        <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={defaultSearchParams} />
+      </Drawer>
+    </TeamWeekCalendarProvider>
   );
 };
 

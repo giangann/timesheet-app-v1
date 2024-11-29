@@ -12,16 +12,17 @@ import type {
   UnavailableHourProps,
 } from "@howljs/calendar-kit";
 import { CalendarBody, CalendarContainer, CalendarHeader, DraggingEvent, ResourceHeaderItem, parseDateTime } from "@howljs/calendar-kit";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View, useColorScheme } from "react-native";
 import { Text } from "react-native-paper";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { _mockEvents } from "@/constants/Misc";
+import { useTeamWeekCalendarProvider } from "@/providers";
 import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
-import { _mockEvents } from "@/constants/Misc";
 type Props = {
   onEventSelected: (event: OnEventResponse) => void;
 };
@@ -31,13 +32,14 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
   const colorScheme = useColorScheme();
   const calendarRef = useRef<CalendarKitHandle>(null);
   // const { configs } = useAppContext();
-  const params = useLocalSearchParams<SearchParams>();
   const router = useRouter();
   const currentDate = useSharedValue(INITIAL_DATE);
+  const { searchParams } = useTeamWeekCalendarProvider();
+
   const [selectedEvent, setSelectedEvent] = useState<SelectedEventType>();
   const [calendarWidth, setCalendarWidth] = useState(Dimensions.get("window").width);
 
-  const isResourcesMode = params.viewMode === "resources";
+  const isResourcesMode = searchParams.viewMode === "resources";
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener("change", ({ window }) => {
@@ -103,7 +105,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
     setSelectedEvent(undefined);
   };
 
-  const isWorkWeek = params.viewMode === "week" && params.numberOfDays === "5";
+  const isWorkWeek = searchParams.viewMode === "week" && searchParams.numberOfDays === "5";
   const hideWeekDays: number[] = [];
 
   const onPressPrevious = () => {
@@ -197,15 +199,15 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
     return <DraggingEvent {...props} containerStyle={{ backgroundColor: "#1a73e8", opacity: 0.5 }} />;
   }, []);
 
-  console.log("re-render with new numberOfDays: ", params.numberOfDays);
+  console.log("re-render with new numberOfDays: ", searchParams.numberOfDays);
   return (
     <View style={styles.container}>
       <Header currentDate={currentDate} onPressToday={_onPressToday} onPressPrevious={onPressPrevious} onPressNext={onPressNext} />
       <CalendarContainer
         ref={calendarRef}
         calendarWidth={calendarWidth}
-        numberOfDays={Number(params.numberOfDays)}
-        scrollByDay={Number(params.numberOfDays) < 5}
+        numberOfDays={Number(searchParams.numberOfDays)}
+        scrollByDay={Number(searchParams.numberOfDays) < 5}
         firstDay={1}
         hideWeekDays={hideWeekDays}
         initialLocales={initialLocales}
