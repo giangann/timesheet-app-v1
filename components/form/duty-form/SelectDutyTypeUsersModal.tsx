@@ -1,6 +1,5 @@
-import { TDutySuggestedUser } from "@/api/form/types";
+import { TDutySuggestedUser, TDutySuggestedUserFilterParams } from "@/api/form/types";
 import { Delayed } from "@/components/Delayed";
-import { MySlideModal } from "@/components/MySlideModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { useDutyFormCreateContext } from "@/contexts";
 import { useSuggestDutyUsers } from "@/hooks/form";
@@ -8,9 +7,11 @@ import { TDutyFormAttendanceInfo } from "@/types";
 import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign } from "@expo/vector-icons";
-import { memo, useEffect, useMemo, useState } from "react";
+import moment from "moment";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { AnimatedFAB, IconButton, SegmentedButtons, TextInput } from "react-native-paper";
+import { AnimatedFAB, SegmentedButtons, TextInput } from "react-native-paper";
+import { FilterUserForm } from "./FilterUserForm";
 import { SuggestUserCard } from "./SuggestdUserCard";
 
 type SelectDutyTypeUsersModalProps = {
@@ -29,10 +30,6 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
 
   const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
   const [text, setText] = useState("");
-  const [openFilterUserModal, setOpenFilterUserModal] = useState(false);
-
-  const onOpenFilterUserModal = () => setOpenFilterUserModal(true);
-  const onCloseFilterUserModal = () => setOpenFilterUserModal(false);
 
   const selectedUsers: TDutyFormAttendanceInfo[] = useMemo(() => {
     const users: TDutyFormAttendanceInfo[] = [];
@@ -60,16 +57,17 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
     [selectedUsers, usersWithCheckStatus, filterCheckStatus]
   );
 
+  const onFilterApply = useCallback((params: TDutySuggestedUserFilterParams) => {
+    onFetchDutySuggestedUsers({ page: 0, size: 50 }, params);
+  }, []);
+
   useEffect(() => {
-    onFetchDutySuggestedUsers(
-      { page: 0, size: 50 },
-      { date: "1970-01-01", dutyTypeId: dutyType.dutyTypeId, startDate: "2024-01-01", endDate: "2024-12-30" }
-    );
-  }, [onFetchDutySuggestedUsers]);
+    onFetchDutySuggestedUsers({ page: 0, size: 50 }, _defaultFilterParams(dutyType.dutyTypeId));
+  }, [onFetchDutySuggestedUsers, dutyType]);
 
   return (
     <Modal transparent animationType="slide">
-      <SafeAreaView style={{flex:1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.modalContainer}>
           <Delayed waitBeforeShow={100}>
             <>
@@ -112,15 +110,8 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
                           style={{ marginLeft: -1 }}
                         />
                       </View>
-                      <IconButton
-                        style={{ margin: 0 }}
-                        icon="tune-variant"
-                        size={24}
-                        mode="outlined"
-                        rippleColor={"grey"}
-                        onPress={onOpenFilterUserModal}
-                        animated
-                      />
+
+                      <FilterUserForm onApply={onFilterApply} defaultFilterParmas={_defaultFilterParams(dutyType.dutyTypeId)} />
                     </View>
                     {/* Search */}
                     <TextInput
@@ -151,12 +142,6 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
                 iconMode={"static"}
                 style={[styles.fabStyle]}
               />
-
-              {openFilterUserModal && (
-                <MySlideModal onClose={onCloseFilterUserModal}>
-                  <NunitoText>Filter users modal</NunitoText>
-                </MySlideModal>
-              )}
             </>
           </Delayed>
         </View>
@@ -207,4 +192,11 @@ const styles = StyleSheet.create({
     right: 16,
     position: "absolute",
   },
+});
+
+const _defaultFilterParams = (dutyTypeId: number): TDutySuggestedUserFilterParams => ({
+  date: "1970-01-01",
+  startDate: moment().startOf("year").format("YYYY-MM-DD"),
+  endDate: moment().endOf("year").format("YYYY-MM-DD"),
+  dutyTypeId,
 });

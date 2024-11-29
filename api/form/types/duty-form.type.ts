@@ -171,3 +171,11 @@ export type TDutySuggestedUserFilterParams = {
   dutyTypeId: number;
   sort?: string;
 };
+
+export type TDutySuggestedUserFilterParamsFormFields = {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  date: Date | undefined;
+  dutyTypeId: number;
+  sort?: string;
+};
