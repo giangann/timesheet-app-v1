@@ -88,7 +88,9 @@ export const DutyFormEdit: React.FC<Props> = memo(({ form }) => {
         }
 
         const editedFields = dirtyValues(dirtyFields, values);
-        await onEdit(form.id, editedFields);
+
+        // gửi hết values lên, kễ cả not dirty field (do dutytypes bị bug)
+        await onEdit(form.id, values);
       } catch (error: any) {
         MyToast.error(error.message);
       }
