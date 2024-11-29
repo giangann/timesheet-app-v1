@@ -57,6 +57,10 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
     [selectedUsers, usersWithCheckStatus, filterCheckStatus]
   );
 
+  const searchedUsers = useMemo(() => {
+    return users.filter((user) => user.name.toLowerCase().includes(text.toLowerCase()));
+  }, [text, users]);
+
   const onFilterApply = useCallback((params: TDutySuggestedUserFilterParams) => {
     onFetchDutySuggestedUsers({ page: 0, size: 50 }, params);
   }, []);
@@ -83,7 +87,7 @@ export const SelectDutyTypeUsersModal: React.FC<SelectDutyTypeUsersModalProps> =
 
               {/* Content */}
               <FlatList
-                data={users}
+                data={searchedUsers}
                 renderItem={({ item: user }) => (
                   <SuggestUserCard
                     fieldArrayIndex={fieldArrayIndex}

@@ -59,6 +59,8 @@ export function useSuggestDutyUsers() {
     }
   }, []);
 
+  const onSearchLocalByUserName = useCallback((text:string)=>{},[])
+
   return { users, isLoading, onFetchDutySuggestedUsers };
 }
 
