@@ -3,10 +3,10 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
+import { Switch } from "react-native-paper";
 
 type CreateItem = {
   name: string;
@@ -17,6 +17,9 @@ export default function AddLeaveType() {
   const { session } = useSession();
   const router = useRouter();
 
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+
   const onCreate = async (data: CreateItem) => {
     const token = `Bearer ${session}`;
 
@@ -24,10 +27,14 @@ export default function AddLeaveType() {
     const endpoint = "/leave-form-types";
     const url = `${baseUrl}${endpoint}`;
 
+    const requestBody = {
+      ...data,
+      // handle isSwitchOn value here
+    }
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(data),
+      body: JSON.stringify(requestBody),
       credentials: "include",
     });
     const responseJson = await response.json();
@@ -46,6 +53,12 @@ export default function AddLeaveType() {
         {/* Your scrollable form inputs go here */}
         <FormInput formInputProps={{ control: control, name: "name" }} label="Tên loại nghỉ" required placeholder="Nhập tên loại nghỉ..." />
         {/* Add more FormInput components as needed */}
+        <View style={styles.formSwitch}>
+          <NunitoText type="body2" style={{ marginRight: 6 }}>
+            Hiển thị lên lịch công tác
+          </NunitoText>
+          <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />;
+        </View>
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>
         <View style={styles.button}>
@@ -67,6 +80,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
+    gap: 4,
   },
   buttonContainer: {
     position: "absolute",
@@ -82,5 +96,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B3A82",
     height: 44,
     borderRadius: 4,
+  },
+  formSwitch: {
+    flexDirection: "row",
+    alignItems:'center',
+    justifyContent:'space-between'
   },
 });

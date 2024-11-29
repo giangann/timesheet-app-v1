@@ -95,7 +95,10 @@ const Item: React.FC<ItemProps> = ({ leaveType }) => {
           {addPrefix(id)}
         </NunitoText>
       </View>
-      <NunitoText type="body2"> {name}</NunitoText>
+      <View>
+        <NunitoText type="body2"> {name}</NunitoText>
+        {id % 2 && <NunitoText type="body4"> Hiển thị trên lịch công tác</NunitoText>}
+      </View>
     </View>
   );
 };
