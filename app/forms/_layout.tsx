@@ -1,7 +1,15 @@
+import { EditButton } from "@/components/button";
 import { NunitoText } from "@/components/text/NunitoText";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
+import { Platform } from "react-native";
 
 export default function FormLayout() {
+  const router = useRouter();
+
+  const customGoBackPrevNavigator = () => {
+    router.navigate("/form");
+  };
+
   return (
     <Stack
       screenOptions={{
@@ -17,7 +25,13 @@ export default function FormLayout() {
         ),
       }}
     >
-      <Stack.Screen name="leave_forms/index" options={{ title: "Đơn xin nghỉ" }} />
+      <Stack.Screen
+        name="leave_forms/index"
+        options={{
+          title: "Đơn xin nghỉ",
+          headerLeft: Platform.OS === "ios" ? () => <EditButton isEdit={true} onToggleEdit={customGoBackPrevNavigator} /> : undefined, // Do not render on Android
+        }}
+      />
       <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn xin nghỉ" }} />
       <Stack.Screen name="leave_forms/create-leave-form" options={{ title: "Tạo đơn xin nghỉ" }} />
 
