@@ -69,7 +69,7 @@ const DrawerLayout = () => {
               <EditButton
                 isEdit={true}
                 onToggleEdit={() => {
-                  router.navigate("/timesheet/week-calendar/create-event");
+                  router.navigate("/timesheet/week-calendar/create-week-calendar");
                 }}
               />
             ),
@@ -77,7 +77,7 @@ const DrawerLayout = () => {
           initialParams={defaultSearchParams}
         />
         <Drawer.Screen
-          name="create-event"
+          name="create-week-calendar"
           options={{
             title: "Thêm sự kiện mới",
             headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android

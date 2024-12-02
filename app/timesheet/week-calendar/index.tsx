@@ -18,7 +18,7 @@ export default function WeekCalendar() {
       headerRight: () => (
         <CreateNewButton
           onPressedButton={() => {
-            router.navigate("/timesheet/week-calendar/create-event");
+            router.navigate("/timesheet/week-calendar/create-week-calendar");
           }}
         />
       ),
