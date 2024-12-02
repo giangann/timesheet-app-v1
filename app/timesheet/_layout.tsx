@@ -41,8 +41,7 @@ export default function TimeSheetLayout() {
       <Stack.Screen
         name="week-calendar"
         options={{
-          title: "Lịch công tác",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+          headerShown: false,
         }}
       />
     </Stack>

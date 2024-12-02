@@ -1,24 +1,32 @@
+import { CreateNewButton } from "@/components/button";
 import { TeamWeekCalendar } from "@/components/timesheet";
-import { EventDetailModal } from "@/components/timesheet/EventDetailModal";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
-import { useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import { useLayoutEffect, useState } from "react";
 
 export default function WeekCalendar() {
-  const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>();
-
-  const onCloseModal = () => setOpenModal(false);
-  const onOpenModal = () => setOpenModal(true);
+  const navigation = useNavigation();
+  const router = useRouter();
 
   const onEventSelected = (event: OnEventResponse) => {
     console.log("Selected Event:", event); // Debugging line
-    // onOpenModal();
-    // setSelectedEvent(event);
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <CreateNewButton
+          onPressedButton={() => {
+            router.navigate("/timesheet/week-calendar/create-event");
+          }}
+        />
+      ),
+    });
+  }, []);
   return (
     <>
       <TeamWeekCalendar onEventSelected={onEventSelected} />
-      {openModal && <EventDetailModal event={selectedEvent} onClose={onCloseModal} />}
     </>
   );
 }

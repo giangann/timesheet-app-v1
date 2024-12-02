@@ -1,10 +1,13 @@
+import { EditButton, GoBackButton } from "@/components/button";
+import { NunitoText } from "@/components/text/NunitoText";
 import { TeamWeekCalendarProvider, defaultSearchParams, useTeamWeekCalendarProvider } from "@/providers";
 import type { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import Drawer from "expo-router/drawer";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
@@ -36,12 +39,50 @@ const styles = StyleSheet.create({
 });
 
 const DrawerLayout = () => {
+  const router = useRouter();
   const _renderDrawer = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
 
   return (
     <TeamWeekCalendarProvider>
-      <Drawer screenOptions={{ drawerType: "front" }} drawerContent={_renderDrawer}>
-        <Drawer.Screen name="index" options={{ headerShown: false }} initialParams={defaultSearchParams} />
+      <Drawer
+        screenOptions={{
+          drawerType: "front",
+          headerStyle: {
+            backgroundColor: "#0B3A82",
+          },
+          headerTintColor: "white",
+          headerTitleAlign: "center",
+          headerTitle: (props) => (
+            <NunitoText type="heading3" style={{ color: props.tintColor }}>
+              {props.children}
+            </NunitoText>
+          ),
+        }}
+        drawerContent={_renderDrawer}
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            title: "Lịch công tác",
+            headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" />, // Do not render on Android
+            headerRight: () => (
+              <EditButton
+                isEdit={true}
+                onToggleEdit={() => {
+                  router.navigate("/timesheet/week-calendar/create-event");
+                }}
+              />
+            ),
+          }}
+          initialParams={defaultSearchParams}
+        />
+        <Drawer.Screen
+          name="create-event"
+          options={{
+            title: "Thêm sự kiện mới",
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android
+          }}
+        />
       </Drawer>
     </TeamWeekCalendarProvider>
   );
