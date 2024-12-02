@@ -65,8 +65,8 @@ type ListProps = {
 const List: React.FC<ListProps> = ({ days }) => {
   return (
     <>
-      {days.map((day) => (
-        <Item key={day.id} day={day} />
+      {days.map((day, index) => (
+        <Item key={day.id} day={day} index={index + 1} />
       ))}
     </>
   );
@@ -74,14 +74,15 @@ const List: React.FC<ListProps> = ({ days }) => {
 
 type ItemProps = {
   day: TExceptionDay;
+  index: number;
 };
-const Item: React.FC<ItemProps> = ({ day }) => {
+const Item: React.FC<ItemProps> = ({ day, index }) => {
   const { name: dayName, startDate, endDate } = day;
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
         <NunitoText type="body2" lightColor="white" darkColor="white">
-          {"09"}
+          {index < 10 ? `0${index}` : index}
         </NunitoText>
       </View>
       <View>
