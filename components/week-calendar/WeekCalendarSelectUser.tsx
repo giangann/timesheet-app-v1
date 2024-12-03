@@ -1,14 +1,16 @@
+import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useGroupUser } from "@/hooks/user";
+import { useWeekCalendarCreateProvider } from "@/providers";
+import { TWeekCalendarCreateFormFieldsUser } from "@/types";
+import { NoData } from "@/ui/NoData";
+import { SkeletonRectangleLoader } from "@/ui/skeletons";
+import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState } from "react";
 import { FlatList, Modal, SafeAreaView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { AnimatedFAB, Button, SegmentedButtons, TextInput } from "react-native-paper";
 import { Delayed } from "../Delayed";
 import { NunitoText } from "../text/NunitoText";
-import { AntDesign, Entypo } from "@expo/vector-icons";
-import { NoData } from "@/ui/NoData";
-import { SkeletonRectangleLoader } from "@/ui/skeletons";
-import { AnimatedFAB, Button, SegmentedButtons, TextInput } from "react-native-paper";
-import { useGroupUser } from "@/hooks/user";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { GroupUserCard } from "./GroupUserCard";
 
 type TFilterCheckStatus = "checked" | "all";
@@ -17,6 +19,8 @@ export const WeekCalendarSelectUser = () => {
   const [open, setOpen] = useState(false);
   const [filterCheckStatus, setFilterCheckStatus] = useState<TFilterCheckStatus>("all");
   const [text, setText] = useState("");
+
+  const { useFieldArrayReturn } = useWeekCalendarCreateProvider();
 
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
@@ -30,7 +34,9 @@ export const WeekCalendarSelectUser = () => {
       <FieldLabel />
 
       {/*  */}
-      <UserItem />
+      {useFieldArrayReturn?.fields.map((field) => (
+        <UserItem key={field.id} userInfo={field} />
+      ))}
 
       {/*  */}
       <Button style={[{ alignItems: "flex-start" }]} onPress={onOpen} textColor="#0B3A82">
@@ -57,7 +63,10 @@ export const WeekCalendarSelectUser = () => {
                   {/* Content */}
                   <FlatList
                     data={users}
-                    renderItem={({ item: user }) => <GroupUserCard isChecked={true} />}
+                    renderItem={({ item: user }) => {
+                      const isChecked = useFieldArrayReturn?.fields?.some((field) => field.userId === user.id) ?? false;
+                      return <GroupUserCard key={user.id} isChecked={isChecked} user={user} />;
+                    }}
                     ListHeaderComponent={
                       <View style={{ gap: 2 }}>
                         <View style={styles.filterContainer}>
@@ -124,16 +133,16 @@ const FieldLabel: React.FC = () => (
   </View>
 );
 
-const UserItem: React.FC = () => {
+const UserItem: React.FC<{ userInfo: TWeekCalendarCreateFormFieldsUser }> = ({ userInfo }) => {
   return (
     <View style={styles.userItemBox}>
       {/* User info */}
       <View style={styles.userInfoContainer}>
         <NunitoText type="body3" style={styles.userName}>
-          {`${"Đặng Minh Chính"} - ${"Lãnh đạo phòng"}`}
+          {`${userInfo.name} - ${userInfo.teamName}`}
         </NunitoText>
         <NunitoText type="body4" style={styles.userTeamName}>
-          {"Phòng Lãnh Đạo"}
+          {userInfo.roleName}
         </NunitoText>
       </View>
 

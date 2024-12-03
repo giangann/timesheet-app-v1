@@ -55,7 +55,7 @@ export type TWeekCalendarUser = {
   team: {
     id: number;
     name: string;
-    code: string |null;
-    hotline: string |null;
+    code: string | null;
+    hotline: string | null;
   };
 };

@@ -1,35 +1,25 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Switch } from "react-native-paper";
 import { FormInput } from "../FormInput";
-import { useFieldArray, useForm } from "react-hook-form";
-import { TWeekCalendarCreateFormFields, TWeekCalendarCreateFormFieldsUser } from "@/types";
 import { FormPickDate } from "../FormPickDate";
-import { FormPickTime } from "../FormPickTime";
-import { useCallback, useState } from "react";
 import { FormPickDateTime } from "../FormPickDateTime";
 import { NunitoText } from "../text/NunitoText";
-import { Switch } from "react-native-paper";
 import { WeekCalendarSelectUser } from "./WeekCalendarSelectUser";
+import { useWeekCalendarCreateProvider } from "@/providers";
 
 export const WeekCalendarCreate = () => {
   const [isAllDay, setIsAllDay] = useState<boolean>(false);
-  const { handleSubmit, control } = useForm<TWeekCalendarCreateFormFields>();
-  const { fields, append, update, remove } = useFieldArray({ name: "users", control: control });
+  const { useFormReturn } = useWeekCalendarCreateProvider();
 
   const onToggleSwitch = () => setIsAllDay(!isAllDay);
-
-  const onAddUser = useCallback(
-    (user: TWeekCalendarCreateFormFieldsUser) => {
-      append(user);
-    },
-    [append]
-  );
 
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <FormInput formInputProps={{ control: control, name: "title" }} label="Tiêu đề" placeholder="Nhập tiêu đề..." required />
+          <FormInput formInputProps={{ control: useFormReturn?.control, name: "title" }} label="Tiêu đề" placeholder="Nhập tiêu đề..." required />
 
           <View style={styles.formSwitch}>
             <NunitoText type="body2" style={{ marginRight: 6 }}>
@@ -40,19 +30,19 @@ export const WeekCalendarCreate = () => {
 
           {!isAllDay && (
             <View style={{ gap: 12 }}>
-              <FormPickDateTime useControllerProps={{ control: control, name: "startDate" }} label="Ngày và giờ bắt đầu" />
-              <FormPickDateTime useControllerProps={{ control: control, name: "endDate" }} label="Ngày và giờ kết thúc" />
+              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "startDate" }} label="Ngày và giờ bắt đầu" />
+              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày và giờ kết thúc" />
             </View>
           )}
           {isAllDay && (
             <>
-              <FormPickDate useControllerProps={{ control: control, name: "startDate" }} label="Ngày bắt đầu" />
-              <FormPickDate useControllerProps={{ control: control, name: "endDate" }} label="Ngày kết thúc" />
+              <FormPickDate useControllerProps={{ control: useFormReturn?.control, name: "startDate" }} label="Ngày bắt đầu" />
+              <FormPickDate useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày kết thúc" />
             </>
           )}
 
-          <WeekCalendarSelectUser/>
-          <FormInput formInputProps={{ control: control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
+          <WeekCalendarSelectUser />
+          <FormInput formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
         </ScrollView>
       </View>
     </KeyboardAwareScrollView>

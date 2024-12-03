@@ -7,7 +7,8 @@ export type TWeekCalendarCreateFormFields = {
   users: TWeekCalendarCreateFormFieldsUser[];
 };
 export type TWeekCalendarCreateFormFieldsUser = {
-  id: number;
-  identifyCard: string;
+  userId: number;
   name: string;
+  roleName: string;
+  teamName: string;
 };
