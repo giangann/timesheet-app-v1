@@ -1,19 +1,40 @@
-import { useState } from "react";
+import { hasNullishValue, pickProperties } from "@/helper/common";
+import { useWeekCalendar } from "@/hooks/week-calendar";
+import { useWeekCalendarCreateProvider } from "@/providers";
+import { TWeekCalendarCreateFormFields } from "@/types";
+import { MyToast } from "@/ui/MyToast";
+import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Switch } from "react-native-paper";
+import { Button, Switch } from "react-native-paper";
 import { FormInput } from "../FormInput";
 import { FormPickDate } from "../FormPickDate";
 import { FormPickDateTime } from "../FormPickDateTime";
 import { NunitoText } from "../text/NunitoText";
 import { WeekCalendarSelectUser } from "./WeekCalendarSelectUser";
-import { useWeekCalendarCreateProvider } from "@/providers";
 
 export const WeekCalendarCreate = () => {
   const [isAllDay, setIsAllDay] = useState<boolean>(false);
   const { useFormReturn } = useWeekCalendarCreateProvider();
-
+  const { onCreate } = useWeekCalendar();
   const onToggleSwitch = () => setIsAllDay(!isAllDay);
+
+  const onSubmit = useCallback(
+    async (values: TWeekCalendarCreateFormFields) => {
+      try {
+        const requiredValues = pickProperties(values, ["startDate", "endDate", "title"]);
+        if (hasNullishValue(requiredValues)) {
+          MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+          return;
+        }
+
+        await onCreate({ ...values, isAllDay: isAllDay });
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [onCreate, isAllDay]
+  );
 
   return (
     <KeyboardAwareScrollView>
@@ -30,8 +51,8 @@ export const WeekCalendarCreate = () => {
 
           {!isAllDay && (
             <View style={{ gap: 12 }}>
-              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "startDate" }} label="Ngày và giờ bắt đầu" />
-              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày và giờ kết thúc" />
+              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "startDate" }} label="Ngày và giờ bắt đầu" required />
+              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày và giờ kết thúc" required/>
             </View>
           )}
           {isAllDay && (
@@ -43,6 +64,18 @@ export const WeekCalendarCreate = () => {
 
           <WeekCalendarSelectUser />
           <FormInput formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
+
+          <View style={styles.actionContainer}>
+            <Button
+              onPress={useFormReturn?.handleSubmit(onSubmit)}
+              mode="contained"
+              icon="content-save-all-outline"
+              loading={useFormReturn?.formState.isSubmitting}
+              style={styles.buttonContained}
+            >
+              Lưu
+            </Button>
+          </View>
         </ScrollView>
       </View>
     </KeyboardAwareScrollView>

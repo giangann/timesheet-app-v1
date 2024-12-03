@@ -125,10 +125,7 @@ export const WeekCalendarSelectUser = () => {
 const FieldLabel: React.FC = () => (
   <View style={styles.labelWrapper}>
     <NunitoText type="body2" style={{ marginRight: 6 }}>
-      Loại trực và thành viên tham gia
-    </NunitoText>
-    <NunitoText type="body1" style={{ color: "red" }}>
-      *
+     Thành viên tham gia
     </NunitoText>
   </View>
 );
