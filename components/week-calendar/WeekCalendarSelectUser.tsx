@@ -6,12 +6,13 @@ import { NoData } from "@/ui/NoData";
 import { SkeletonRectangleLoader } from "@/ui/skeletons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FlatList, Modal, SafeAreaView, StyleSheet, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { AnimatedFAB, Button, SegmentedButtons, TextInput } from "react-native-paper";
 import { Delayed } from "../Delayed";
 import { NunitoText } from "../text/NunitoText";
 import { GroupUserCard } from "./GroupUserCard";
+import { MyModal } from "../MyModal";
 
 type TFilterCheckStatus = "checked" | "all";
 
@@ -25,17 +26,24 @@ export const WeekCalendarSelectUser = () => {
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
 
-  const onDeleteButtonPressed = () => {};
-
   const { users, isLoading: isFetchingUsers } = useGroupUser();
+
+  const searchedUsers = useMemo(() => users.filter((user) => user.name.toLowerCase().includes(text.toLowerCase())), [users, text]);
+
+  const selectedUsers = useMemo(
+    () => searchedUsers.filter((user) => useFieldArrayReturn?.fields?.some((field) => field.userId === user.id)),
+    [useFieldArrayReturn, searchedUsers]
+  );
+
+  const listUsers = useMemo(() => (filterCheckStatus === "all" ? searchedUsers : selectedUsers), [filterCheckStatus, searchedUsers, selectedUsers]);
   return (
     <>
       {/*  */}
       <FieldLabel />
 
       {/*  */}
-      {useFieldArrayReturn?.fields.map((field) => (
-        <UserItem key={field.id} userInfo={field} />
+      {useFieldArrayReturn?.fields.map((field, index) => (
+        <UserItem key={field.id} userInfo={field} fieldArrayId={index} />
       ))}
 
       {/*  */}
@@ -62,7 +70,7 @@ export const WeekCalendarSelectUser = () => {
 
                   {/* Content */}
                   <FlatList
-                    data={users}
+                    data={listUsers}
                     renderItem={({ item: user }) => {
                       const isChecked = useFieldArrayReturn?.fields?.some((field) => field.userId === user.id) ?? false;
                       return <GroupUserCard key={user.id} isChecked={isChecked} user={user} />;
@@ -125,12 +133,19 @@ export const WeekCalendarSelectUser = () => {
 const FieldLabel: React.FC = () => (
   <View style={styles.labelWrapper}>
     <NunitoText type="body2" style={{ marginRight: 6 }}>
-     Thành viên tham gia
+      Thành viên tham gia
     </NunitoText>
   </View>
 );
 
-const UserItem: React.FC<{ userInfo: TWeekCalendarCreateFormFieldsUser }> = ({ userInfo }) => {
+const UserItem: React.FC<{ userInfo: TWeekCalendarCreateFormFieldsUser; fieldArrayId: number }> = ({ userInfo, fieldArrayId }) => {
+  const [openCfModal, setOpenCfModal] = useState(false);
+  const { useFieldArrayReturn } = useWeekCalendarCreateProvider();
+  const onDelete = () => {
+    useFieldArrayReturn?.remove(fieldArrayId);
+  };
+
+  const onDeletePressed = () => setOpenCfModal(true);
   return (
     <View style={styles.userItemBox}>
       {/* User info */}
@@ -145,10 +160,24 @@ const UserItem: React.FC<{ userInfo: TWeekCalendarCreateFormFieldsUser }> = ({ u
 
       {/* Delete Button */}
       <View style={styles.deleteButtonAbsBox}>
-        <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={() => {}} style={styles.deleteButton}>
+        <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={onDeletePressed} style={styles.deleteButton}>
           <MaterialCommunityIcons name="delete" size={18} color="black" />
         </TouchableHighlight>
       </View>
+
+      {/* Confirm Modal */}
+      {openCfModal && (
+        <MyModal
+          title={"Xác nhận thao tác"}
+          onClose={() => setOpenCfModal(false)}
+          cb={onDelete}
+          modalProps={{ animationType: "slide", transparent: true }}
+        >
+          <View>
+            <NunitoText type="body3">Bạn muốn xóa thành viên {useFieldArrayReturn?.fields[fieldArrayId].name}?</NunitoText>
+          </View>
+        </MyModal>
+      )}
     </View>
   );
 };

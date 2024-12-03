@@ -29,11 +29,13 @@ export const WeekCalendarCreate = () => {
         }
 
         await onCreate({ ...values, isAllDay: isAllDay });
+
+        useFormReturn?.reset({ description: undefined, endDate: undefined, startDate: undefined, isAllDay: false, title: undefined, users: [] });
       } catch (error: any) {
         MyToast.error(error.message);
       }
     },
-    [onCreate, isAllDay]
+    [onCreate, isAllDay, useFormReturn]
   );
 
   return (
@@ -52,7 +54,7 @@ export const WeekCalendarCreate = () => {
           {!isAllDay && (
             <View style={{ gap: 12 }}>
               <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "startDate" }} label="Ngày và giờ bắt đầu" required />
-              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày và giờ kết thúc" required/>
+              <FormPickDateTime useControllerProps={{ control: useFormReturn?.control, name: "endDate" }} label="Ngày và giờ kết thúc" required />
             </View>
           )}
           {isAllDay && (
