@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { FormPickDateTime } from "../FormPickDateTime";
 import { NunitoText } from "../text/NunitoText";
 import { Switch } from "react-native-paper";
+import { WeekCalendarSelectUser } from "./WeekCalendarSelectUser";
 
 export const WeekCalendarCreate = () => {
   const [isAllDay, setIsAllDay] = useState<boolean>(false);
@@ -49,6 +50,8 @@ export const WeekCalendarCreate = () => {
               <FormPickDate useControllerProps={{ control: control, name: "endDate" }} label="Ngày kết thúc" />
             </>
           )}
+
+          <WeekCalendarSelectUser/>
           <FormInput formInputProps={{ control: control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
         </ScrollView>
       </View>
