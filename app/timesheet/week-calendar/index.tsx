@@ -1,5 +1,6 @@
 import { CreateNewButton } from "@/components/button";
 import { TeamWeekCalendar } from "@/components/timesheet";
+import { EVENT_ITEM_PREFIX } from "@/constants/Misc";
 import { weekCalendarToEventItems } from "@/helper/transform-data";
 import { useFetchWeekCalendar, useWeekCalendar } from "@/hooks/week-calendar";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
@@ -17,6 +18,11 @@ export default function WeekCalendar() {
 
   const onEventSelected = (event: OnEventResponse) => {
     console.log("Selected Event:", event); // Debugging line
+
+    // analyst eventId
+    if (event.id.split('-')?.[0] === EVENT_ITEM_PREFIX.CALENDAR){
+      router.navigate('/timesheet/week-calendar/create-week-calendar')
+    }
   };
 
   useLayoutEffect(() => {

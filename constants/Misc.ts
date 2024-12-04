@@ -85,6 +85,12 @@ export enum EVENT_ITEM_PREFIX {
   LEAVE_FORM = "LEAVE_FORM",
 }
 
+export const EVENT_COLOR = {
+  [EVENT_ITEM_PREFIX.CALENDAR]: "#067D4E",
+  [EVENT_ITEM_PREFIX.DUTY_FORM]: "#C60C6E",
+  [EVENT_ITEM_PREFIX.LEAVE_FORM]: "#447AC9",
+};
+
 export const _mockEvents: EventItem[] = [
   {
     id: "0",

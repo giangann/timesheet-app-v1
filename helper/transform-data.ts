@@ -1,5 +1,5 @@
 import { TWeekCalendar } from "@/api/timesheet/type";
-import { EVENT_ITEM_PREFIX } from "@/constants/Misc";
+import { EVENT_COLOR, EVENT_ITEM_PREFIX } from "@/constants/Misc";
 import { EventItem } from "@howljs/calendar-kit";
 import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
@@ -28,6 +28,7 @@ export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventI
     const eventItem: EventItem = {
       id: `${EVENT_ITEM_PREFIX.CALENDAR}-${calendar.id}`,
       title: `${calendar.title}: ${calendar.description}`,
+      color: EVENT_COLOR[EVENT_ITEM_PREFIX.CALENDAR],
       ...evenTime,
     };
 

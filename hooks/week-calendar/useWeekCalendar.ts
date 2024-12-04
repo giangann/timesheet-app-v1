@@ -59,7 +59,7 @@ export function useFetchWeekCalendar() {
 
       // handle response
       if (responseJson.statusCode === 200) {
-        setWeekCalendars(responseJson.data.setWeekCalendar);
+        setWeekCalendars(responseJson.data.weekCalendars);
       } else {
         MyToast.error(responseJson.error ?? responseJson.message);
       }
