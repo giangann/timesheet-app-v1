@@ -1,8 +1,11 @@
+import { TWeekCalendarDetail } from "@/api/timesheet/type";
 import { hasNullishValue, pickProperties } from "@/helper/common";
-import { useWeekCalendar } from "@/hooks/week-calendar";
+import { weekCalendarUsersToUserFields } from "@/helper/transform-data";
+import { useFetchWeekCalendarDetail, useWeekCalendar } from "@/hooks/week-calendar";
 import { useWeekCalendarCreateProvider } from "@/providers";
 import { TWeekCalendarCreateFormFields } from "@/types";
 import { MyToast } from "@/ui/MyToast";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -13,10 +16,14 @@ import { FormPickDateTime } from "../FormPickDateTime";
 import { NunitoText } from "../text/NunitoText";
 import { WeekCalendarSelectUser } from "./WeekCalendarSelectUser";
 
-export const WeekCalendarCreate = () => {
+type Props = {
+  calendarId?: number;
+};
+export const WeekCalendarCreate = ({ calendarId }: Props) => {
   const [isAllDay, setIsAllDay] = useState<boolean>(false);
   const { useFormReturn } = useWeekCalendarCreateProvider();
-  const { onCreate } = useWeekCalendar();
+  const { onCreate, onUpdate } = useWeekCalendar();
+  const { onFetchWeekCalendarDetail } = useFetchWeekCalendarDetail();
   const onToggleSwitch = () => setIsAllDay(!isAllDay);
 
   const onSubmit = useCallback(
@@ -28,14 +35,37 @@ export const WeekCalendarCreate = () => {
           return;
         }
 
-        await onCreate({ ...values, isAllDay: isAllDay });
+        if (calendarId) {
+          await onUpdate(calendarId, { ...values, isAllDay: isAllDay });
+        } else {
+          await onCreate({ ...values, isAllDay: isAllDay });
+        }
 
         useFormReturn?.reset({ description: undefined, endDate: undefined, startDate: undefined, isAllDay: false, title: undefined, users: [] });
       } catch (error: any) {
         MyToast.error(error.message);
       }
     },
-    [onCreate, isAllDay, useFormReturn]
+    [onCreate, onUpdate, isAllDay, useFormReturn, calendarId]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchDetail() {
+        if (calendarId) {
+          const formDetail: TWeekCalendarDetail = await onFetchWeekCalendarDetail(calendarId);
+          useFormReturn?.setValue("startDate", new Date(formDetail.startDate));
+          useFormReturn?.setValue("endDate", new Date(formDetail.endDate));
+          useFormReturn?.setValue("title", formDetail.title);
+          useFormReturn?.setValue("isAllDay", formDetail.isAllDay);
+          useFormReturn?.setValue("description", formDetail.description);
+          useFormReturn?.setValue("users", weekCalendarUsersToUserFields(formDetail.users));
+          setIsAllDay(formDetail.isAllDay);
+        }
+      }
+
+      fetchDetail();
+    }, [useFormReturn, calendarId, setIsAllDay])
   );
 
   return (

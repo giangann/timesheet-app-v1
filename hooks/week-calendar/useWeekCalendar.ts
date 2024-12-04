@@ -1,5 +1,5 @@
-import { createWeekCalendar, fetchWeekCalendar, fetchWeekCalendarDetail } from "@/api/timesheet";
-import { TWeekCalendar, TWeekCalendarCreate, TWeekCalendarDetail } from "@/api/timesheet/type";
+import { createWeekCalendar, fetchWeekCalendar, fetchWeekCalendarDetail, updateWeekCalendar } from "@/api/timesheet";
+import { TWeekCalendar, TWeekCalendarCreate, TWeekCalendarDetail, TWeekCalendarUpdate } from "@/api/timesheet/type";
 import { useSession } from "@/contexts";
 import { formatDateToISOString } from "@/helper/date";
 import { TWeekCalendarCreateFormFields } from "@/types";
@@ -43,7 +43,39 @@ export function useWeekCalendar() {
     [session]
   );
 
-  return { onCreate };
+  const onUpdate = useCallback(
+    async (calendarId: number, fields: TWeekCalendarCreateFormFields) => {
+      try {
+        // process data from form
+        const userIds: TWeekCalendarCreate["userIds"] = fields.users.map((field) => field.userId); // ok
+
+        const reqBodyData: TWeekCalendarUpdate = {
+          userIds: userIds,
+          startDate: formatDateToISOString(fields.startDate ?? new Date()),
+          endDate: formatDateToISOString(fields.endDate ?? new Date()),
+          title: fields.title ?? "",
+          description: fields.description ?? "",
+          isAllDay: fields.isAllDay,
+        };
+
+        // make request
+        const updateResult = await updateWeekCalendar(session, calendarId, reqBodyData);
+
+        // process response
+        if (updateResult.statusCode === 200) {
+          MyToast.success("Thành công");
+          router.back();
+        } else {
+          MyToast.error(updateResult.error ?? updateResult.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    },
+    [session]
+  );
+
+  return { onCreate, onUpdate };
 }
 
 export function useFetchWeekCalendar() {
@@ -79,12 +111,12 @@ export function useFetchWeekCalendar() {
   return { weekCalendars, refetch: onFetchWeekCalendars, isLoading: loading };
 }
 
-export function useFetchWeekCalendarDetail(calendarId: number) {
+export function useFetchWeekCalendarDetail() {
   const [weekCalendar, setWeekCalendar] = useState<TWeekCalendarDetail | null>(null);
   const { session } = useSession();
   const [loading, setLoading] = useState(false);
 
-  const onFetchWeekCalendarDetail = async () => {
+  const onFetchWeekCalendarDetail = async (calendarId: number) => {
     try {
       setLoading(true);
       // create http request
@@ -93,6 +125,7 @@ export function useFetchWeekCalendarDetail(calendarId: number) {
       // handle response
       if (responseJson.statusCode === 200) {
         setWeekCalendar(responseJson.data.weekCalendar);
+        return responseJson.data.weekCalendar;
       } else {
         MyToast.error(responseJson.error ?? responseJson.message);
       }
@@ -103,11 +136,5 @@ export function useFetchWeekCalendarDetail(calendarId: number) {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      onFetchWeekCalendarDetail();
-    }, [session, calendarId])
-  );
-
-  return { weekCalendar, refetch: onFetchWeekCalendarDetail, isLoading: loading };
+  return { weekCalendar, onFetchWeekCalendarDetail, isLoading: loading };
 }

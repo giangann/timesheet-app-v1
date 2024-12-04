@@ -1,5 +1,5 @@
 import { paramsObjectToQueryString } from "@/helper/common";
-import { TWeekCalendarCreate } from "./type";
+import { TWeekCalendarCreate, TWeekCalendarUpdate } from "./type";
 
 export async function fetchWeekCalendar(session: string | undefined | null) {
   const token = `Bearer ${session}`;
@@ -46,6 +46,28 @@ export async function createWeekCalendar(session: string | undefined | null, bod
 
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify(bodyData),
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
+export async function updateWeekCalendar(session: string | undefined | null, calendarId: number, bodyData: TWeekCalendarUpdate) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/week-calendars";
+  const querystring = paramsObjectToQueryString({ id: calendarId });
+  const url = `${baseUrl}${endpoint}${querystring}`;
+
+  const response = await fetch(url, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: token,

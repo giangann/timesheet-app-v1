@@ -1,8 +1,9 @@
-import { TWeekCalendar } from "@/api/timesheet/type";
+import { TWeekCalendar, TWeekCalendarDetail } from "@/api/timesheet/type";
 import { EVENT_COLOR, EVENT_ITEM_PREFIX } from "@/constants/Misc";
 import { EventItem } from "@howljs/calendar-kit";
 import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
+import { TWeekCalendarCreateFormFieldsUser } from "@/types";
 
 export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventItem[] {
   const res: EventItem[] = [];
@@ -35,5 +36,20 @@ export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventI
     res.push(eventItem);
   });
 
+  return res;
+}
+
+export function weekCalendarUsersToUserFields(weekCalendarUsers: TWeekCalendarDetail["users"]): TWeekCalendarCreateFormFieldsUser[] {
+  const res: TWeekCalendarCreateFormFieldsUser[] = [];
+
+  weekCalendarUsers.forEach((user) => {
+    const field: TWeekCalendarCreateFormFieldsUser = {
+      name: user.name,
+      roleName: user.roleName,
+      teamName: user.team.name,
+      userId: user.id,
+    };
+    res.push(field)
+  });
   return res;
 }

@@ -83,6 +83,14 @@ const DrawerLayout = () => {
             headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android
           }}
         />
+
+        <Drawer.Screen
+          name="[id]"
+          options={{
+            title: "Chi tiết lịch",
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android
+          }}
+        />
       </Drawer>
     </TeamWeekCalendarProvider>
   );

@@ -32,6 +32,15 @@ export type TWeekCalendarCreate = {
   userIds: number[];
 };
 
+export type TWeekCalendarUpdate = {
+  startDate?: string;
+  endDate?: string;
+  title?: string;
+  description?: string;
+  isAllDay?: boolean;
+  userIds?: number[];
+};
+
 export type TWeekCalendarDetail = {
   id: number;
   startDate: string;
