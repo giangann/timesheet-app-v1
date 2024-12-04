@@ -1,3 +1,4 @@
+import { paramsObjectToQueryString } from "@/helper/common";
 import { TWeekCalendarCreate } from "./type";
 
 export async function fetchWeekCalendar(session: string | undefined | null) {
@@ -17,7 +18,25 @@ export async function fetchWeekCalendar(session: string | undefined | null) {
   return responseJson;
 }
 
-export async function createWeekCalendar(session: string | undefined | null, bodyData:TWeekCalendarCreate ){
+export async function fetchWeekCalendarDetail(session: string | undefined | null, calendarId: number) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/week-calendars";
+  const querystring = paramsObjectToQueryString({ id: calendarId });
+  const url = `${baseUrl}${endpoint}${querystring}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json", Authorization: token },
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
+export async function createWeekCalendar(session: string | undefined | null, bodyData: TWeekCalendarCreate) {
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
@@ -29,7 +48,7 @@ export async function createWeekCalendar(session: string | undefined | null, bod
     headers: {
       "Content-Type": "application/json",
       Authorization: token,
-    }, 
+    },
     body: JSON.stringify(bodyData),
     credentials: "include",
   });

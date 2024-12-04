@@ -25,9 +25,9 @@ import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
 type Props = {
   onEventSelected: (event: OnEventResponse) => void;
+  events: EventItem[];
 };
-export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
-  const [events, setEvents] = useState<EventItem[]>([]);
+export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events }) => {
   const { bottom: safeBottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const calendarRef = useRef<CalendarKitHandle>(null);
@@ -227,7 +227,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected }) => {
         onPressBackground={_onPressBackground}
         unavailableHours={unavailableHours}
         highlightDates={highlightDates}
-        events={_mockEvents}
+        events={events}
         onPressEvent={onEventSelected}
         dragToCreateMode={undefined}
         scrollToNow

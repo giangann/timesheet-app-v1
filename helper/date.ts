@@ -306,3 +306,12 @@ export function formatDateToISOString(date: Date) {
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
+
+export function formatToISOWithMilliseconds(dateString: string) {
+  // Parse the input date string into a JavaScript Date object
+  const date = new Date(dateString);
+
+  // Convert the Date object to ISO string with milliseconds
+  return date.toISOString();
+}
+  

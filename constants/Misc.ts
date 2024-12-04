@@ -79,6 +79,12 @@ export const DEFAULT_DATE_RANGE_DUTY_CALENDAR = {
   endDate: "2030-12-31",
 };
 
+export enum EVENT_ITEM_PREFIX {
+  CALENDAR = "CALENDAR",
+  DUTY_FORM = "DUTY_FORM",
+  LEAVE_FORM = "LEAVE_FORM",
+}
+
 export const _mockEvents: EventItem[] = [
   {
     id: "0",
