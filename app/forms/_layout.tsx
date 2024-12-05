@@ -23,7 +23,7 @@ export default function FormLayout() {
         name="leave_forms/index"
         options={{
           title: "Đơn xin nghỉ",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" title="Đơn của tôi"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn xin nghỉ" }} />
@@ -33,7 +33,7 @@ export default function FormLayout() {
         name="overtime_forms/index"
         options={{
           title: "Đơn tăng ca",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" title="Đơn của tôi"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="overtime_forms/[id]" options={{ title: "Chi tiết đơn tăng ca" }} />
@@ -43,7 +43,7 @@ export default function FormLayout() {
         name="duty_forms/index"
         options={{
           title: "Đơn trực",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/form" title="Đơn của tôi"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="duty_forms/[id]" options={{ title: "Chi tiết đơn trực" }} />
