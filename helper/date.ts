@@ -274,13 +274,13 @@ export function defaultOtFormDateTime() {
   const today = new Date();
   const tomorrow = new Date(today.setDate(today.getDate() + 1));
 
-  if (Date.now() > today.setHours(17, 0, 0, 0)) date = tomorrow;
+  if (Date.now() > today.setHours(8, 0, 0, 0)) date = tomorrow;
   else date = today;
 
   const defaultTime = {
     date: date,
-    startTime: new Date(today.setHours(17, 0, 0, 0)),
-    endTime: new Date(today.setHours(21, 0, 0, 0)),
+    startTime: new Date(today.setHours(8, 0, 0, 0)),
+    endTime: new Date(today.setHours(17, 0, 0, 0)),
   };
   return defaultTime;
 }

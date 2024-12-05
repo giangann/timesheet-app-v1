@@ -5,7 +5,7 @@ import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
 import { TWeekCalendarCreateFormFieldsUser } from "@/types";
 import { TDutyForm, TLeaveForm } from "@/api/form/types";
-import { combineDateAndTimeToDateObject } from "./common";
+import { arrayStringToString, combineDateAndTimeToDateObject } from "./common";
 
 export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventItem[] {
   const res: EventItem[] = [];
@@ -47,9 +47,7 @@ export function dutyFormToEventItems(dutyForms: TDutyForm[]): EventItem[] {
   dutyForms.forEach((form) => {
     const eventItem: EventItem = {
       id: `${EVENT_ITEM_PREFIX.DUTY_FORM}-${form.id}`,
-      title: `${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)}); ${form.dutyTypeNames.join("+ ")}; ${form.userNames.join(
-        ", "
-      )}`,
+      title: `${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)}); ${form.dutyTypeNames.join("+ ")}; ${arrayStringToString(form.userNames.map((user) => user.name))}`,
       color: EVENT_COLOR[EVENT_ITEM_PREFIX.DUTY_FORM],
       start: { dateTime: combineDateAndTimeToDateObject(form.date, form.startTime).toISOString() },
       end: { dateTime: combineDateAndTimeToDateObject(form.date, form.endTime).toISOString() },

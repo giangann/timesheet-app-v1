@@ -109,7 +109,7 @@ export async function fetchGroupDutyForms(session: string | undefined | null, pa
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/duty-forms/filter/user";
+  const endpoint = "/duty-forms/filter/all";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
   const { page, size } = paginationParams;
