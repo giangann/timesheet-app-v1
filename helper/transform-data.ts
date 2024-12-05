@@ -4,6 +4,8 @@ import { EventItem } from "@howljs/calendar-kit";
 import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
 import { TWeekCalendarCreateFormFieldsUser } from "@/types";
+import { TDutyForm } from "@/api/form/types";
+import { combineDateAndTimeToDateObject } from "./common";
 
 export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventItem[] {
   const res: EventItem[] = [];
@@ -39,6 +41,25 @@ export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventI
   return res;
 }
 
+export function dutyFormToEventItems(dutyForms: TDutyForm[]): EventItem[] {
+  const res: EventItem[] = [];
+
+  dutyForms.forEach((form) => {
+    const eventItem: EventItem = {
+      id: `${EVENT_ITEM_PREFIX.DUTY_FORM}-${form.id}`,
+      title: `${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)}); ${form.dutyTypeNames.join("+ ")}; ${form.userNames.join(
+        ", "
+      )}`,
+      color: EVENT_COLOR[EVENT_ITEM_PREFIX.DUTY_FORM],
+      start: { dateTime: combineDateAndTimeToDateObject(form.date, form.startTime).toISOString() },
+      end: { dateTime: combineDateAndTimeToDateObject(form.date, form.endTime).toISOString() },
+    };
+
+    res.push(eventItem);
+  });
+
+  return res;
+}
 export function weekCalendarUsersToUserFields(weekCalendarUsers: TWeekCalendarDetail["users"]): TWeekCalendarCreateFormFieldsUser[] {
   const res: TWeekCalendarCreateFormFieldsUser[] = [];
 
@@ -49,7 +70,7 @@ export function weekCalendarUsersToUserFields(weekCalendarUsers: TWeekCalendarDe
       teamName: user.team.name,
       userId: user.id,
     };
-    res.push(field)
+    res.push(field);
   });
   return res;
 }

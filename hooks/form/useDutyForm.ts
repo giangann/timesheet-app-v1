@@ -1,5 +1,6 @@
-import { createDutyForm, deleteForm, fetchDutySuggestedUsers } from "@/api/form";
+import { createDutyForm, deleteForm, fetchDutySuggestedUsers, fetchGroupDutyForms } from "@/api/form";
 import {
+  TDutyForm,
   TDutyFormCreate,
   TDutyFormCreateDutyTypeField,
   TDutyFormEdit,
@@ -17,6 +18,36 @@ import moment from "moment";
 import { useCallback, useState } from "react";
 import { useUploadFile } from "./useFile";
 
+export function useFetchGroupDutyForms() {
+  const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { session } = useSession();
+
+  const onFetchDutyForms = async (pagiParams?: TPagiParams) => {
+    setIsLoading(true);
+    try {
+      const responseJson = await fetchGroupDutyForms(session, pagiParams);
+      if (responseJson.statusCode === 200) {
+        setDutyForms(responseJson.data.dutyForms);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    } catch (error: any) {
+      MyToast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      onFetchDutyForms({ page: 0, size: 50 });
+    }, [session])
+  );
+
+  return { dutyForms, isLoading, onFetchDutyForms };
+}
 export function useDutyTypes() {
   const [dutyTypes, setDutyTypes] = useState<TDutyType[]>([]);
   const [isLoading, setIsLoading] = useState(false);

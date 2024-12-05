@@ -1,7 +1,8 @@
 import { CreateNewButton } from "@/components/button";
 import { TeamWeekCalendar } from "@/components/timesheet";
 import { EVENT_ITEM_PREFIX } from "@/constants/Misc";
-import { weekCalendarToEventItems } from "@/helper/transform-data";
+import { dutyFormToEventItems, weekCalendarToEventItems } from "@/helper/transform-data";
+import { useFetchGroupDutyForms } from "@/hooks/form";
 import { useFetchWeekCalendar } from "@/hooks/week-calendar";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
 import { useNavigation, useRouter } from "expo-router";
@@ -13,8 +14,12 @@ export default function WeekCalendar() {
   const router = useRouter();
 
   const { weekCalendars } = useFetchWeekCalendar();
+  const { dutyForms } = useFetchGroupDutyForms();
 
   const weekCalendarEventItems = useMemo(() => weekCalendarToEventItems(weekCalendars), [weekCalendars]);
+  const dutyEventItems = useMemo(() => dutyFormToEventItems(dutyForms), [dutyForms]);
+
+  const allEvents = useMemo(() => [...weekCalendarEventItems, ...dutyEventItems], [weekCalendarEventItems, dutyEventItems]);
 
   const onEventSelected = (event: OnEventResponse) => {
     console.log("Selected Event:", event); // Debugging line
@@ -24,6 +29,12 @@ export default function WeekCalendar() {
     if (prefix === EVENT_ITEM_PREFIX.CALENDAR) {
       router.navigate({
         pathname: "/timesheet/week-calendar/[id]",
+        params: { id: id },
+      });
+    }
+    if (prefix === EVENT_ITEM_PREFIX.DUTY_FORM) {
+      router.navigate({
+        pathname: "/forms/duty_forms/[id]",
         params: { id: id },
       });
     }
@@ -42,7 +53,7 @@ export default function WeekCalendar() {
   }, []);
   return (
     <>
-      <TeamWeekCalendar onEventSelected={onEventSelected} events={weekCalendarEventItems} />
+      <TeamWeekCalendar onEventSelected={onEventSelected} events={allEvents} />
     </>
   );
 }

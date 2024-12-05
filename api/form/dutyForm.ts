@@ -105,6 +105,37 @@ export async function fetchUserCreateDutyForms(session: string | undefined | nul
   return responseJson;
 }
 
+export async function fetchGroupDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
+  const token = `Bearer ${session}`;
+
+  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const endpoint = "/duty-forms/filter/user";
+
+  const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
+  const { page, size } = paginationParams;
+  const queryString = `?page=${page}&size=${size}&sort=id,desc`;
+
+  const url = `${baseUrl}${endpoint}${queryString}`;
+
+  const bodyFilterParams = { ...filterParams };
+  if (bodyFilterParams?.startCreatedAt) {
+    bodyFilterParams.startCreatedAt = moment(bodyFilterParams?.startCreatedAt).format("YYYY-MM-DD");
+  }
+  if (bodyFilterParams?.endCreatedAt) {
+    bodyFilterParams.endCreatedAt = moment(bodyFilterParams?.endCreatedAt).format("YYYY-MM-DD");
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(bodyFilterParams),
+    headers: { "Content-Type": "application/json", Authorization: token },
+    credentials: "include",
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
 export async function fetchDutyFormDetail(session: string | undefined | null, formId: number) {
   const token = `Bearer ${session}`;
 
