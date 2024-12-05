@@ -212,27 +212,6 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
         },
       },
       {
-        name: "Chờ phê duyệt",
-        status: [FORM_STATUS.WATING_APPROVE],
-        tabStyles: {
-          pressed: {
-            borderColor: "#F2A900",
-            backgroundColor: "#F2A900",
-          },
-          unpressed: {
-            borderColor: "#F2A900",
-          },
-        },
-        textStyles: {
-          pressed: {
-            color: "white",
-          },
-          unpressed: {
-            color: "#F2A900",
-          },
-        },
-      },
-      {
         name: "Chấp thuận",
         status: [FORM_STATUS.ACCEPTED],
         tabStyles: {
@@ -250,27 +229,6 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
           },
           unpressed: {
             color: "#067D4E",
-          },
-        },
-      },
-      {
-        name: "Từ chối",
-        status: [FORM_STATUS.REJECTED],
-        tabStyles: {
-          pressed: {
-            borderColor: "#C84851",
-            backgroundColor: "#C84851",
-          },
-          unpressed: {
-            borderColor: "#C84851",
-          },
-        },
-        textStyles: {
-          pressed: {
-            color: "white",
-          },
-          unpressed: {
-            color: "#C84851",
           },
         },
       },
