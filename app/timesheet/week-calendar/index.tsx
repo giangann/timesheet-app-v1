@@ -1,8 +1,8 @@
 import { CreateNewButton } from "@/components/button";
 import { TeamWeekCalendar } from "@/components/timesheet";
 import { EVENT_ITEM_PREFIX } from "@/constants/Misc";
-import { dutyFormToEventItems, weekCalendarToEventItems } from "@/helper/transform-data";
-import { useFetchGroupDutyForms } from "@/hooks/form";
+import { dutyFormToEventItems, leaveFormToEventItems, weekCalendarToEventItems } from "@/helper/transform-data";
+import { useFetchGroupDutyForms, useFetchLeaveFormsInWeekCalendar } from "@/hooks/form";
 import { useFetchWeekCalendar } from "@/hooks/week-calendar";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
 import { useNavigation, useRouter } from "expo-router";
@@ -15,11 +15,13 @@ export default function WeekCalendar() {
 
   const { weekCalendars } = useFetchWeekCalendar();
   const { dutyForms } = useFetchGroupDutyForms();
+  const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
 
   const weekCalendarEventItems = useMemo(() => weekCalendarToEventItems(weekCalendars), [weekCalendars]);
   const dutyEventItems = useMemo(() => dutyFormToEventItems(dutyForms), [dutyForms]);
+  const leaveEventItems = useMemo(() => leaveFormToEventItems(leaveForms), [leaveForms]);
 
-  const allEvents = useMemo(() => [...weekCalendarEventItems, ...dutyEventItems], [weekCalendarEventItems, dutyEventItems]);
+  const allEvents = useMemo(() => [...weekCalendarEventItems, ...dutyEventItems, ...leaveEventItems], [weekCalendarEventItems, dutyEventItems]);
 
   const onEventSelected = (event: OnEventResponse) => {
     console.log("Selected Event:", event); // Debugging line
@@ -35,6 +37,12 @@ export default function WeekCalendar() {
     if (prefix === EVENT_ITEM_PREFIX.DUTY_FORM) {
       router.navigate({
         pathname: "/forms/duty_forms/[id]",
+        params: { id: id },
+      });
+    }
+    if (prefix === EVENT_ITEM_PREFIX.LEAVE_FORM) {
+      router.navigate({
+        pathname: "/forms/leave_forms/[id]",
         params: { id: id },
       });
     }

@@ -4,7 +4,7 @@ import { EventItem } from "@howljs/calendar-kit";
 import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
 import { TWeekCalendarCreateFormFieldsUser } from "@/types";
-import { TDutyForm } from "@/api/form/types";
+import { TDutyForm, TLeaveForm } from "@/api/form/types";
 import { combineDateAndTimeToDateObject } from "./common";
 
 export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventItem[] {
@@ -53,6 +53,24 @@ export function dutyFormToEventItems(dutyForms: TDutyForm[]): EventItem[] {
       color: EVENT_COLOR[EVENT_ITEM_PREFIX.DUTY_FORM],
       start: { dateTime: combineDateAndTimeToDateObject(form.date, form.startTime).toISOString() },
       end: { dateTime: combineDateAndTimeToDateObject(form.date, form.endTime).toISOString() },
+    };
+
+    res.push(eventItem);
+  });
+
+  return res;
+}
+
+export function leaveFormToEventItems(dutyForms: TLeaveForm[]): EventItem[] {
+  const res: EventItem[] = [];
+
+  dutyForms.forEach((form) => {
+    const eventItem: EventItem = {
+      id: `${EVENT_ITEM_PREFIX.DUTY_FORM}-${form.id}`,
+      title: `${form.leaveFormTypeName} - ${form.userName}, P.${form.userTeam.name} ${form.note ?? `- ${form.note}`}`,
+      color: EVENT_COLOR[EVENT_ITEM_PREFIX.DUTY_FORM],
+      start: { date: moment(form.startDate).format("YYYY-MM-DD") },
+      end: { date: moment(form.endDate).format("YYYY-MM-DD") },
     };
 
     res.push(eventItem);

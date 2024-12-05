@@ -1,8 +1,9 @@
-import { fetchLeaveFormDetail } from "@/api/form";
-import { TLeaveFormDetail, TLeaveFormEditFormFields } from "@/api/form/types";
+import { fetchLeaveFormDetail, fetchLeaveFormsInWeekCalendar } from "@/api/form";
+import { TLeaveForm, TLeaveFormDetail, TLeaveFormEditFormFields } from "@/api/form/types";
 import { useSession } from "@/contexts";
 import { logFormData } from "@/helper/common";
 import { formatDateToLocalString } from "@/helper/date";
+import { TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -96,4 +97,37 @@ export function useDetailLeaveForm() {
   );
 
   return { isLoading: loading, form, refetch: onFetchFormDetail };
+}
+
+export function useFetchLeaveFormsInWeekCalendar() {
+  const [leaveForms, setLeaveForms] = useState<TLeaveForm[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { session } = useSession();
+
+  const onFetchLeaveForms = useCallback(
+    async (pagiParams?: TPagiParams) => {
+      setLoading(true);
+      try {
+        const responseJson = await fetchLeaveFormsInWeekCalendar(session, pagiParams);
+
+        if (responseJson.statusCode === 200) {
+          setLeaveForms(responseJson.data.leaveForms);
+        } else {
+          MyToast.error(responseJson.error ?? responseJson.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      onFetchLeaveForms({ page: 0, size: 50 });
+    }, [session])
+  );
+  return { isLoading: loading, leaveForms, refetch: onFetchLeaveForms };
 }
