@@ -23,7 +23,7 @@ export default function ApproveFormLayout() {
         name="leave_forms/index"
         options={{
           title: "Phê duyệt đơn xin nghỉ",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" title="Phê duyệt đơn" /> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="leave_forms/[id]" options={{ title: "Chi tiết đơn" }} />
@@ -32,7 +32,7 @@ export default function ApproveFormLayout() {
         name="overtime_forms/index"
         options={{
           title: "Phê duyệt đơn tăng ca",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" title="Phê duyệt đơn" /> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="overtime_forms/[id]" options={{ title: "Chi tiết đơn" }} />
@@ -41,7 +41,7 @@ export default function ApproveFormLayout() {
         name="duty_forms/index"
         options={{
           title: "Phê duyệt đơn trực",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" title="Phê duyệt đơn" /> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen name="duty_forms/[id]" options={{ title: "Chi tiết đơn" }} />

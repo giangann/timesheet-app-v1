@@ -23,7 +23,7 @@ export default function TimeKeepingLayout() {
         name="today-time-keeping/index"
         options={{
           title: "Chấm công hôm nay",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen
@@ -31,7 +31,7 @@ export default function TimeKeepingLayout() {
         options={{
           title: "Ngoài giờ đơn vị",
 
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen
@@ -39,7 +39,7 @@ export default function TimeKeepingLayout() {
         options={{
           title: "Ngoài giờ cá nhân",
 
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen
@@ -47,7 +47,7 @@ export default function TimeKeepingLayout() {
         options={{
           title: "Bảng chấm công đơn vị",
 
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timeKeeping" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
     </Stack>

@@ -22,7 +22,7 @@ export const GoBackButton: React.FC<Props> = ({ destRoute, title, customContaine
     <TouchableRipple onPress={onPress} rippleColor="rgba(0, 0, 0, .32)" borderless={true}>
       <View style={[styles.container, customContainerStyles]}>
         <MaterialIcons name="chevron-left" size={24} color="white" />
-        {title && <NunitoText type="body3">{title}</NunitoText>}
+        {title && <NunitoText type="body3" style={styles.title}>{title}</NunitoText>}
       </View>
     </TouchableRipple>
   );
@@ -32,8 +32,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
-    gap: 4,
+    padding: 0,
   },
   title: {
     color: "white",

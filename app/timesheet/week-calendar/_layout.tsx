@@ -80,7 +80,7 @@ const DrawerLayout = () => {
           name="create-week-calendar"
           options={{
             title: "Thêm sự kiện mới",
-            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác"/>, // Do not render on Android
           }}
         />
 
@@ -88,7 +88,7 @@ const DrawerLayout = () => {
           name="[id]"
           options={{
             title: "Chi tiết lịch",
-            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" />, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác"/>, // Do not render on Android
           }}
         />
       </Drawer>

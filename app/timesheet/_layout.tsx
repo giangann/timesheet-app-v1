@@ -28,14 +28,14 @@ export default function TimeSheetLayout() {
         name="my-timesheet/index"
         options={{
           title: "Bảng chấm công của tôi",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen
         name="my-emp-owt/index"
         options={{
           title: "Bảng ngoài giờ của tôi",
-          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" /> : undefined, // Do not render on Android
+          headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/timesheet" title="Quản lý công"/> : undefined, // Do not render on Android
         }}
       />
       <Stack.Screen
