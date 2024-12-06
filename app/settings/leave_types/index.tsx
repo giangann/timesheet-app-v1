@@ -1,11 +1,15 @@
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { useDeleteLeaveType } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
+import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
@@ -51,7 +55,7 @@ export default function LeaveTypeList() {
     <View style={styles.container}>
       <ToolBar />
       <ScrollView contentContainerStyle={styles.listBox}>
-        <List leaveTypes={leaveTypes} />
+        <List refetch={fetchLeaveTypes} leaveTypes={leaveTypes} />
       </ScrollView>
     </View>
   );
@@ -73,34 +77,86 @@ const ToolBar = () => {
 
 type ListProps = {
   leaveTypes: TLeaveType[];
+  refetch: () => void;
 };
-const List: React.FC<ListProps> = ({ leaveTypes }) => {
+const List: React.FC<ListProps> = ({ leaveTypes, refetch }) => {
   return (
     <>
       {leaveTypes.map((leaveType) => (
-        <Item key={leaveType.id} leaveType={leaveType} />
+        <Item key={leaveType.id} refetch={refetch} leaveType={leaveType} />
       ))}
     </>
   );
 };
 
 type ItemProps = {
+  refetch: () => void;
   leaveType: TLeaveType;
 };
-const Item: React.FC<ItemProps> = ({ leaveType }) => {
+const Item: React.FC<ItemProps> = ({ leaveType, refetch }) => {
   const { id, name, isDisplayedOnWeekCalendar } = leaveType;
+
+  const [visible, setVisible] = useState(false);
+  const [openCfModal, setOpenCfModal] = useState(false);
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  const { onDeleteLeaveType } = useDeleteLeaveType();
+
+  const onPressDelete = useCallback(() => {
+    setOpenCfModal(true);
+    setVisible(false);
+  }, [setOpenCfModal, setVisible]);
+
+  const onConfirmDelete = useCallback(() => {
+    onDeleteLeaveType(id);
+    refetch();
+  }, [id, onDeleteLeaveType, refetch]);
   return (
-    <View style={styles.itemBox}>
-      <View style={styles.indexBox}>
-        <NunitoText type="body2" lightColor="white" darkColor="white">
-          {addPrefix(id)}
-        </NunitoText>
+    <>
+      <View style={styles.itemBox}>
+        {/* Info */}
+        <View style={styles.indexBox}>
+          <NunitoText type="body2" lightColor="white" darkColor="white">
+            {addPrefix(id)}
+          </NunitoText>
+        </View>
+        <View>
+          <NunitoText type="body2"> {name}</NunitoText>
+          {isDisplayedOnWeekCalendar && <NunitoText type="body4"> Hiển thị trên lịch công tác</NunitoText>}
+        </View>
+
+        {/* Menu */}
+        <View style={styles.iconThreeDotsAbsBox}>
+          <Menu
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={
+              <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={openMenu} style={styles.iconThreeDotsBtn}>
+                <Entypo name="dots-three-vertical" size={18} color="black" />
+              </TouchableHighlight>
+            }
+          >
+            <Menu.Item onPress={onPressDelete} title="Xóa" />
+          </Menu>
+        </View>
+
+        {/* Modal */}
+        {openCfModal && (
+          <MyModal
+            title={"Xác nhận xóa loại nghỉ"}
+            onClose={() => setOpenCfModal(false)}
+            cb={onConfirmDelete}
+            modalProps={{ animationType: "fade", transparent: true }}
+          >
+            <View>
+              <NunitoText type="body3">Xóa loại nghỉ: {name}?</NunitoText>
+            </View>
+          </MyModal>
+        )}
       </View>
-      <View>
-        <NunitoText type="body2"> {name}</NunitoText>
-        {isDisplayedOnWeekCalendar && <NunitoText type="body4"> Hiển thị trên lịch công tác</NunitoText>}
-      </View>
-    </View>
+    </>
   );
 };
 
@@ -135,12 +191,23 @@ const styles = StyleSheet.create({
 
     flexDirection: "row",
     alignItems: "center",
+
+    position: "relative",
   },
   indexBox: {
     backgroundColor: `#0B3A82`,
     padding: 10 * UNIT_DIMENSION,
     borderRadius: 8 * UNIT_DIMENSION,
     marginRight: 12 * UNIT_DIMENSION,
+  },
+  iconThreeDotsAbsBox: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  iconThreeDotsBtn: {
+    padding: 12,
+    borderRadius: 20,
   },
 });
 
