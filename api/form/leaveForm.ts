@@ -91,7 +91,7 @@ export async function fetchLeaveFormsInWeekCalendar(session: string | undefined 
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/leave-forms/filter/user";
+  const endpoint = "/leave-forms/filter/all";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
   const { page, size } = paginationParams;
