@@ -6,7 +6,8 @@ import { useFetchGroupDutyForms, useFetchLeaveFormsInWeekCalendar } from "@/hook
 import { useFetchWeekCalendar } from "@/hooks/week-calendar";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
 import { useNavigation, useRouter } from "expo-router";
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function WeekCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>();
@@ -59,6 +60,27 @@ export default function WeekCalendar() {
       ),
     });
   }, []);
+
+  useEffect(() => {
+    const landscapes = [ScreenOrientation.Orientation.LANDSCAPE_LEFT, ScreenOrientation.Orientation.LANDSCAPE_RIGHT];
+    const onOrientationChange: ScreenOrientation.OrientationChangeListener = (event) => {
+      if (landscapes.includes(event.orientationInfo.orientation)) {
+        navigation.setOptions({
+          headerShown: false,
+        });
+      } else {
+        navigation.setOptions({
+          headerShown: true,
+        });
+      }
+    };
+    const orientationChangeSubcribtion = ScreenOrientation.addOrientationChangeListener(onOrientationChange);
+
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(orientationChangeSubcribtion);
+    };
+  }, []);
+
   return (
     <>
       <TeamWeekCalendar onEventSelected={onEventSelected} events={allEvents} />
