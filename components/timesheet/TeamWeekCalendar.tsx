@@ -235,7 +235,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events
         allowDragToEdit={false}
         allowDragToCreate={false}
         useAllDayEvent
-        rightEdgeSpacing={4}
+        rightEdgeSpacing={1}
         overlapEventsSpacing={1}
         onLongPressEvent={(event) => {
           if (event.id !== selectedEvent?.id) {
@@ -251,6 +251,9 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events
         onDragSelectedEventEnd={undefined}
         resources={isResourcesMode ? resources : undefined}
         onDragCreateEventEnd={undefined}
+
+        overlapType="overlap"
+        minStartDifference={0}
       >
         <CalendarHeader dayBarHeight={isResourcesMode ? 120 : 60} renderHeaderItem={isResourcesMode ? _renderResourceHeaderItem : undefined} />
         <CalendarBody
