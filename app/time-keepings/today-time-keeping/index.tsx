@@ -1,7 +1,8 @@
-import { TTimeKeepingCheckinUser, TTimeKeepingMember, TWorkingType } from "@/api/time-keeping";
+import { TTimeKeepingCheckinFormFields, TTimeKeepingCheckinUser, TTimeKeepingMember, TWorkingType } from "@/api/time-keeping";
 import { FormPickDate } from "@/components/FormPickDate";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
+import { useSession } from "@/contexts";
 import { useFetchTimeKeepingMembers, useFetchWorkingTypes, useUpdateTimeKeeping } from "@/hooks/time-keeping";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { MyCheckRadio } from "@/ui/MyCheckRadio";
@@ -15,6 +16,7 @@ import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle } 
 import * as Progress from "react-native-progress";
 
 export default function TodayTimeKeeping() {
+  const { userInfo } = useSession();
   const { watch, control } = useForm<{ date: Date }>({ defaultValues: { date: new Date() } });
 
   const { onSaveTimeKeeping } = useUpdateTimeKeeping();
@@ -33,13 +35,16 @@ export default function TodayTimeKeeping() {
     setIsSaving(true);
 
     try {
+      // process data
       const dateString = moment(watch("date")).format("YYYY-MM-DD");
-      const bodyData = {
+      const fieldValues: TTimeKeepingCheckinFormFields = {
         date: dateString,
         users: [...editTimeKeepingMembers],
+        teamId: userInfo?.team.id,
       };
 
-      await onSaveTimeKeeping(bodyData);
+      // make api call
+      await onSaveTimeKeeping(fieldValues);
     } catch (error: any) {
       MyToast.error(error.message);
     } finally {
@@ -47,7 +52,7 @@ export default function TodayTimeKeeping() {
       setIsSaving(false);
 
       const dateString = moment(watch("date")).format("YYYY-MM-DD");
-      onFetchTimeKeepingMembers({ date: dateString });
+      onFetchTimeKeepingMembers({ date: dateString, teamId: userInfo?.team.id });
     }
   }, [setIsSaving, editTimeKeepingMembers, onSaveTimeKeeping, setEditTimeKeepingMembers, onFetchTimeKeepingMembers, watch("date")]);
 
@@ -146,7 +151,7 @@ export default function TodayTimeKeeping() {
   useFocusEffect(
     useCallback(() => {
       const dateString = moment(watch("date")).format("YYYY-MM-DD");
-      onFetchTimeKeepingMembers({ date: dateString });
+      onFetchTimeKeepingMembers({ date: dateString, teamId: userInfo?.team.id });
     }, [watch("date")])
   );
 
@@ -160,7 +165,7 @@ export default function TodayTimeKeeping() {
       {!isEdit && (
         <View style={styles.optionBarDefault}>
           {/* <NunitoText type="body3">{moment(Date.now()).format("DD/MM/YYYY")}</NunitoText> */}
-          <FormPickDate useControllerProps={{control,name:'date'}}/>
+          <FormPickDate useControllerProps={{ control, name: "date" }} />
           {editTimeKeepingMembers.length > 0 && <NunitoText>{`${editTimeKeepingMembers.length} đã sửa`}</NunitoText>}
           <Pressable onPress={onToggleEdit} style={styles.editPressable}>
             <NunitoText type="body3" lightColor="#0B3A82">

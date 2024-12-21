@@ -139,6 +139,14 @@ export default function AppLayout() {
             href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/approveForm",
           }}
         />
+        <Tabs.Screen
+          name="timeKeepingTeam"
+          options={{
+            title: "Chấm công",
+            tabBarIcon: ({ color }) => <Octicons name="checklist" size={22} color={color} />,
+            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/timeKeepingTeam",
+          }}
+        />
       </Tabs>
 
       <StatusBar style="light" />

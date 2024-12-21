@@ -16,6 +16,7 @@ export type TTimeKeepingMember = {
 };
 export type TTimeKeepingMemberParams = {
   date: string;
+  teamId?: number;
 };
 
 export type TTimeKeepingCheckinUserFormFields = {
@@ -23,6 +24,7 @@ export type TTimeKeepingCheckinUserFormFields = {
   workingTypeId: number;
 };
 export type TTimeKeepingCheckinFormFields = {
+  teamId?: number;
   date: string;
   users: TTimeKeepingCheckinUserFormFields[];
 };
@@ -34,5 +36,5 @@ export type TTimeKeepingCheckinUser = {
 export type TTimeKeepingCheckin = {
   date: string;
   users: TTimeKeepingCheckinUser[];
+  teamId?: number;
 };
-
