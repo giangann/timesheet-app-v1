@@ -1,4 +1,4 @@
-import { fetchSalaryCoefTypes } from "@/api/setting";
+import { deleteSalaryCoefType, fetchSalaryCoefTypes } from "@/api/setting";
 import { TSalaryCoefficientType } from "@/api/setting/type";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
@@ -33,4 +33,29 @@ export function useFetchSalaryCoefTypes() {
   );
 
   return { isLoading: loading, salaryCoefficientTypes, refetch: onFetchSalaryCoefTypes };
+}
+
+export function useDeleteSalaryCoefType() {
+  const [loading, setLoading] = useState(false);
+  const { session } = useSession();
+
+  const onDeleteSalaryCoefType = useCallback(
+    async (salaryCoefTypeId: number) => {
+      try {
+        setLoading(true);
+        const responseJson = await deleteSalaryCoefType(session, salaryCoefTypeId);
+        if (responseJson.statusCode === 200) {
+          MyToast.success("Xóa thành công");
+        } else {
+          MyToast.error(responseJson.error);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session]
+  );
+  return { loading, onDeleteSalaryCoefType };
 }
