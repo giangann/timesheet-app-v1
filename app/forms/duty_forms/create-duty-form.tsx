@@ -70,7 +70,7 @@ export default function CreateDutyForm() {
 
   const onSubmit = useCallback(async (values: TDutyFormCreateFormField) => {
     try {
-      const requiredValues = pickProperties(values, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "dutyTypes"]);
+      const requiredValues = pickProperties(values, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "dutyTypes", "note"]);
       if (hasNullishValue(requiredValues)) {
         MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
         return;
@@ -125,7 +125,13 @@ export default function CreateDutyForm() {
 
             <ChooseDutyTypesAndDutyTypeUsers />
 
-            <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." disabled={!isDateDirty} />
+            <FormInput
+              formInputProps={{ control: control, name: "note" }}
+              label="Nội dung công việc"
+              placeholder="Nhập nội dung..."
+              disabled={!isDateDirty}
+              required
+            />
             <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} disabled={!isDateDirty} />
             <View style={styles.actionContainer}>
               <Button

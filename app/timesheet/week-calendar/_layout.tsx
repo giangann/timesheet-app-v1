@@ -64,7 +64,7 @@ const DrawerLayout = () => {
           name="index"
           options={{
             title: "Lịch công tác",
-            headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" customContainerStyles={{paddingVertical:0}} title="Công đơn vị" />, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" customContainerStyles={{paddingVertical:0}} title="Quản lý công" />, // Do not render on Android
             headerRight: () => (
               <EditButton
                 isEdit={true}

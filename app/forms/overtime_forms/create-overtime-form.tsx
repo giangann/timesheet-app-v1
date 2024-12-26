@@ -70,7 +70,7 @@ export default function CreateOvertimeForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
-      const requiredValues = pickProperties(value, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "userApproveIdentifyCard"]);
+      const requiredValues = pickProperties(value, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "userApproveIdentifyCard", "note"]);
       if (hasNullishValue(requiredValues)) {
         MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
         return;
@@ -218,9 +218,8 @@ export default function CreateOvertimeForm() {
             leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
           />
 
+          <FormInput formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập nội dung..." required />
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
-
-          <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
           <View style={styles.button}>
