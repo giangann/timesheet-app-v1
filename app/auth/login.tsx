@@ -93,6 +93,8 @@ const Login = () => {
                     formInputProps={{ control: control, name: "identifyCard" }}
                     placeholder="Nhập số CCCD..."
                     leftIcon={<AntDesign name="idcard" size={18} color={Colors.light.inputIconNone} />}
+                    textContentType="username"
+                    autoComplete="username"
                   />
                   {/* Input_2 - Password */}
                   <FormInput
@@ -107,6 +109,8 @@ const Login = () => {
                         </View>
                       </Pressable>
                     }
+                    textContentType="password"
+                    autoComplete="password"
                   />
                 </View>
 
