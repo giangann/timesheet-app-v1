@@ -314,4 +314,25 @@ export function formatToISOWithMilliseconds(dateString: string) {
   // Convert the Date object to ISO string with milliseconds
   return date.toISOString();
 }
-  
+
+export function getDaysBetween(startDate: Date, endDate: Date) {
+  if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+    throw new Error("Both startDate and endDate must be valid Date objects.");
+  }
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = endDate.getTime() - startDate.getTime();
+
+  // Convert milliseconds to days
+  const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+  return Math.ceil(daysDifference);
+}
+
+export function isMoreThanOneDay(startDate: Date | undefined, endDate: Date | undefined) {
+  if (startDate && endDate) {
+    if (getDaysBetween(startDate, endDate) >= 2) return true;
+  }
+
+  return false
+}

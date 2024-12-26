@@ -17,6 +17,7 @@ type FormPickDateTimeProps<T extends FieldValues> = {
   timeFormat?: string;
   errorMessage?: string;
   initDate?: Date;
+  onDateTimeChange?: (date: Date) => void;
 };
 
 export function FormPickDateTime<T extends FieldValues>({
@@ -29,6 +30,7 @@ export function FormPickDateTime<T extends FieldValues>({
   timeFormat = "HH:mm:ss",
   errorMessage,
   initDate,
+  onDateTimeChange,
 }: FormPickDateTimeProps<T>) {
   const { field, fieldState } = useController(useControllerProps);
   const { onChange, value } = field;
@@ -42,6 +44,8 @@ export function FormPickDateTime<T extends FieldValues>({
     (newValue: Date) => {
       onHideDatePicker();
       onChange(newValue);
+      
+      if (onDateTimeChange) onDateTimeChange(newValue);
     },
     [onHideDatePicker, onChange]
   );

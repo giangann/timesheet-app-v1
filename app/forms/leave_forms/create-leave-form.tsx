@@ -1,26 +1,27 @@
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import * as Progress from "react-native-progress";
+import { fetchListUserByRole } from "@/api/form";
 import { FormInput } from "@/components/FormInput";
 import { FormPickDateTime } from "@/components/FormPickDateTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
+import { ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { fakeDelay, hasNullishValue, pickProperties } from "@/helper/common";
+import { hasNullishValue, pickProperties } from "@/helper/common";
+import { defaultLeaveFormDateTime, formatDateToLocalString, isMoreThanOneDay } from "@/helper/date";
+import { useLeaveType } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { defaultLeaveFormDateTime, formatDateToLocalString } from "@/helper/date";
-import { fetchListUserByRole } from "@/api/form";
-import { ROLE_CODE } from "@/constants/Misc";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as Progress from "react-native-progress";
 
 type CreateItemForm = {
-  startDate: string | Date;
-  endDate: string | Date;
+  startDate: Date;
+  endDate: Date;
   leaveFormTypeId: number;
   userApproveIdentifyCard: number;
   attachFile: File | null;
@@ -36,9 +37,9 @@ type TUserApprove = {
   name: string;
 };
 export default function CreateLeaveForm() {
-  const [leaveTypes, setLeaveTypes] = useState<TLeaveType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
 
+  const { leaveTypes } = useLeaveType();
   const { session, userInfo } = useSession();
   const router = useRouter();
 
@@ -46,12 +47,47 @@ export default function CreateLeaveForm() {
     control,
     handleSubmit,
     formState: { isSubmitting },
+    getValues,
   } = useForm<CreateItemForm>({
     defaultValues: { startDate: undefined, endDate: undefined },
   });
 
   const leaveTypeOpts = leaveTypes.map((leaveType) => ({ value: leaveType.id, label: leaveType.name }));
   const userApproveOpts = userApproves.map((user) => ({ value: user.identifyCard, label: user.name }));
+
+  const fetchUserApproves = useCallback(
+    async (role: ROLE_CODE) => {
+      const responseJson = await fetchListUserByRole(session, { role, teamId: userInfo?.team?.id ?? -1 });
+
+      if (responseJson.statusCode === 200) {
+        setUserApproves(responseJson.data.users);
+      } else {
+        MyToast.error(responseJson.error);
+      }
+    },
+    [session, userInfo, setUserApproves]
+  );
+
+  const onStartDateTimeChange = useCallback(
+    (newStartDateTime: Date) => {
+      const endDate = getValues("endDate");
+      if (isMoreThanOneDay(newStartDateTime, endDate)) {
+        fetchUserApproves(ROLE_CODE.DEPARTMENT_DIRECTOR);
+      }
+    },
+    [getValues, fetchUserApproves]
+  );
+
+  const onEndDateTimeChange = useCallback(
+    (newEndDateTime: Date) => {
+      const startDate = getValues("startDate");
+
+      if (isMoreThanOneDay(startDate, newEndDateTime)) {
+        fetchUserApproves(ROLE_CODE.DEPARTMENT_DIRECTOR);
+      }
+    },
+    [getValues, fetchUserApproves]
+  );
 
   const onCreate = async (value: CreateItemForm) => {
     try {
@@ -104,46 +140,9 @@ export default function CreateLeaveForm() {
     }
   };
 
-  const fetchLeaveTypes = async () => {
-    const token = `Bearer ${session}`;
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/leave-form-types";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-
-    if (responseJson.statusCode === 200) {
-      setLeaveTypes(responseJson.data.leaveFormTypes);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  };
-
-  const fetchUserApproves = async () => {
-    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.TEAM_DIRECTOR, teamId: userInfo?.team?.id ?? -1 });
-
-    if (responseJson.statusCode === 200) {
-      setUserApproves(responseJson.data.users);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  };
-
   useFocusEffect(
     useCallback(() => {
-      fetchLeaveTypes();
-    }, [])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchUserApproves();
+      fetchUserApproves(ROLE_CODE.TEAM_DIRECTOR);
     }, [])
   );
 
@@ -158,6 +157,7 @@ export default function CreateLeaveForm() {
             placeholder="Chọn ngày và giờ"
             leftIcon={<MaterialCommunityIcons name="calendar-start" size={18} color={Colors.light.inputIconNone} />}
             initDate={defaultLeaveFormDateTime().startDate}
+            onDateTimeChange={onStartDateTimeChange}
           />
           <FormPickDateTime
             useControllerProps={{ control: control, name: "endDate" }}
@@ -166,6 +166,7 @@ export default function CreateLeaveForm() {
             placeholder="Chọn ngày và giờ"
             leftIcon={<MaterialCommunityIcons name="calendar-end" size={18} color={Colors.light.inputIconNone} />}
             initDate={defaultLeaveFormDateTime().endDate}
+            onDateTimeChange={onEndDateTimeChange}
           />
           <FormSelectV2
             useControllerProps={{ control: control, name: "leaveFormTypeId" }}
