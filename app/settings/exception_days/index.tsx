@@ -1,13 +1,17 @@
 import { fetchExceptionDays } from "@/api/setting";
 import { TExceptionDay } from "@/api/setting/type";
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts";
+import { useDeleteExceptionDay } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
+import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
@@ -39,7 +43,7 @@ export default function ExceptionDays() {
     <View style={styles.container}>
       <ToolBar />
       <ScrollView contentContainerStyle={styles.listBox}>
-        <List days={days} />
+        <List days={days} refetch={onFetchDays} />
       </ScrollView>
     </View>
   );
@@ -61,12 +65,13 @@ const ToolBar = () => {
 
 type ListProps = {
   days: TExceptionDay[];
+  refetch: () => void;
 };
-const List: React.FC<ListProps> = ({ days }) => {
+const List: React.FC<ListProps> = ({ days, refetch }) => {
   return (
     <>
       {days.map((day, index) => (
-        <Item key={day.id} day={day} index={index + 1} />
+        <Item key={day.id} day={day} index={index + 1} refetch={refetch} />
       ))}
     </>
   );
@@ -75,11 +80,31 @@ const List: React.FC<ListProps> = ({ days }) => {
 type ItemProps = {
   day: TExceptionDay;
   index: number;
+  refetch: () => void;
 };
-const Item: React.FC<ItemProps> = ({ day, index }) => {
-  const { name: dayName, startDate, endDate } = day;
+const Item: React.FC<ItemProps> = ({ day, index, refetch }) => {
+  const { name: dayName, startDate, endDate, id } = day;
+
+  const [visible, setVisible] = useState(false);
+  const [openCfModal, setOpenCfModal] = useState(false);
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  const { onDeleteExceptionDay } = useDeleteExceptionDay();
+
+  const onPressDelete = useCallback(() => {
+    setOpenCfModal(true);
+    setVisible(false);
+  }, [setOpenCfModal, setVisible]);
+
+  const onConfirmDelete = useCallback(() => {
+    onDeleteExceptionDay(id);
+    refetch();
+  }, [id, onDeleteExceptionDay, refetch]);
   return (
     <View style={styles.itemBox}>
+      {/* Info */}
       <View style={styles.indexBox}>
         <NunitoText type="body2" lightColor="white" darkColor="white">
           {index < 10 ? `0${index}` : index}
@@ -89,6 +114,35 @@ const Item: React.FC<ItemProps> = ({ day, index }) => {
         <NunitoText type="body2"> {dayName}</NunitoText>
         <NunitoText type="subtitle2">{`${moment(startDate).format("DD/MM/YYYY")} - ${moment(endDate).format("DD/MM/YYYY")}`}</NunitoText>
       </View>
+
+      {/* Menu */}
+      <View style={styles.iconThreeDotsAbsBox}>
+        <Menu
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={openMenu} style={styles.iconThreeDotsBtn}>
+              <Entypo name="dots-three-vertical" size={18} color="black" />
+            </TouchableHighlight>
+          }
+        >
+          <Menu.Item onPress={onPressDelete} title="Xóa" />
+        </Menu>
+      </View>
+
+      {/* Modal */}
+      {openCfModal && (
+        <MyModal
+          title={"Xác nhận xóa ngày ngoại lệ"}
+          onClose={() => setOpenCfModal(false)}
+          cb={onConfirmDelete}
+          modalProps={{ animationType: "fade", transparent: true }}
+        >
+          <View>
+            <NunitoText type="body3">Xóa ngày ngoại lệ: {dayName}?</NunitoText>
+          </View>
+        </MyModal>
+      )}
     </View>
   );
 };
@@ -132,11 +186,22 @@ const styles = StyleSheet.create({
 
     flexDirection: "row",
     alignItems: "center",
+
+    position: "relative",
   },
   indexBox: {
     backgroundColor: `#0B3A82`,
     padding: 10,
     borderRadius: 8,
     marginRight: 12,
+  },
+  iconThreeDotsAbsBox: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  iconThreeDotsBtn: {
+    padding: 12,
+    borderRadius: 20,
   },
 });
