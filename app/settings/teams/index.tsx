@@ -1,11 +1,15 @@
+import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
+import { useDeleteTeam } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
+import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
@@ -51,7 +55,7 @@ export default function TeamList() {
     <View style={styles.container}>
       <ToolBar />
       <ScrollView contentContainerStyle={styles.listBox}>
-        <List teams={teams} />
+        <List teams={teams} refetch={fetchTeams} />
       </ScrollView>
     </View>
   );
@@ -73,31 +77,83 @@ const ToolBar = () => {
 
 type ListProps = {
   teams: TTeam[];
+  refetch: () => void;
 };
-const List: React.FC<ListProps> = ({ teams }) => {
+const List: React.FC<ListProps> = ({ teams, refetch }) => {
   return (
     <>
-      {teams.map((leaveType) => (
-        <Item key={leaveType.id} leaveType={leaveType} />
+      {teams.map((team) => (
+        <Item key={team.id} refetch={refetch} team={team} />
       ))}
     </>
   );
 };
 
 type ItemProps = {
-  leaveType: TTeam;
+  refetch: () => void;
+  team: TTeam;
 };
-const Item: React.FC<ItemProps> = ({ leaveType }) => {
-  const { id, name } = leaveType;
+const Item: React.FC<ItemProps> = ({ team, refetch }) => {
+  const { id, name } = team;
+
+  const [visible, setVisible] = useState(false);
+  const [openCfModal, setOpenCfModal] = useState(false);
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  const { onDeleteTeam } = useDeleteTeam();
+
+  const onPressDelete = useCallback(() => {
+    setOpenCfModal(true);
+    setVisible(false);
+  }, [setOpenCfModal, setVisible]);
+
+  const onConfirmDelete = useCallback(() => {
+    onDeleteTeam(id);
+    refetch();
+  }, [id, onDeleteTeam, refetch]);
   return (
-    <View style={styles.itemBox}>
-      <View style={styles.indexBox}>
-        <NunitoText type="body2" lightColor="white" darkColor="white">
-          {addPrefix(id)}
-        </NunitoText>
+    <>
+      {/* Info */}
+      <View style={styles.itemBox}>
+        <View style={styles.indexBox}>
+          <NunitoText type="body2" lightColor="white" darkColor="white">
+            {addPrefix(id)}
+          </NunitoText>
+        </View>
+        <NunitoText type="body2"> {name}</NunitoText>
+
+        {/* Menu */}
+        <View style={styles.iconThreeDotsAbsBox}>
+          <Menu
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={
+              <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={openMenu} style={styles.iconThreeDotsBtn}>
+                <Entypo name="dots-three-vertical" size={18} color="black" />
+              </TouchableHighlight>
+            }
+          >
+            <Menu.Item onPress={onPressDelete} title="Xóa" />
+          </Menu>
+        </View>
+
+        {/* Modal */}
+        {openCfModal && (
+          <MyModal
+            title={"Xác nhận xóa phòng ban"}
+            onClose={() => setOpenCfModal(false)}
+            cb={onConfirmDelete}
+            modalProps={{ animationType: "fade", transparent: true }}
+          >
+            <View>
+              <NunitoText type="body3">Xóa phòng ban: {name}?</NunitoText>
+            </View>
+          </MyModal>
+        )}
       </View>
-      <NunitoText type="body2"> {name}</NunitoText>
-    </View>
+    </>
   );
 };
 
@@ -132,12 +188,23 @@ const styles = StyleSheet.create({
 
     flexDirection: "row",
     alignItems: "center",
+
+    position: "relative",
   },
   indexBox: {
     backgroundColor: `#0B3A82`,
     padding: 10 * UNIT_DIMENSION,
     borderRadius: 8 * UNIT_DIMENSION,
     marginRight: 12 * UNIT_DIMENSION,
+  },
+  iconThreeDotsAbsBox: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  iconThreeDotsBtn: {
+    padding: 12,
+    borderRadius: 20,
   },
 });
 

@@ -1,5 +1,5 @@
 import { TLeaveType } from "@/api/form/types";
-import { deleteLeaveType, fetchLeaveTypes, fetchSalaryCoefTypes } from "@/api/setting";
+import { deleteLeaveType, fetchLeaveTypes } from "@/api/setting";
 import { useSession } from "@/contexts/ctx";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
