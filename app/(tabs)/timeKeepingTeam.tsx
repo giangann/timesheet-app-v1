@@ -17,7 +17,7 @@ export default function TimeKeepingTeam() {
               <View style={styles.iconBox}>
                 <Feather name="check-circle" size={20} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
-              <NunitoText type="body1">Chấm công đơn vị hôm nay</NunitoText>
+              <NunitoText type="body1">Chấm công phòng ban hôm nay</NunitoText>
             </View>
             <View style={styles.chip}>
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />

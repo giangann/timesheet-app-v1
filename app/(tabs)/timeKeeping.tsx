@@ -12,7 +12,7 @@ export default function TimeKeeping() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listBox}>
-        <Pressable onPress={() => router.push("/time-keepings/today-time-keeping")}>
+        {/* <Pressable onPress={() => router.push("/time-keepings/today-time-keeping")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
@@ -24,7 +24,7 @@ export default function TimeKeeping() {
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable onPress={() => router.push("/time-keepings/team-owt")}>
           <View style={styles.itemBox}>
