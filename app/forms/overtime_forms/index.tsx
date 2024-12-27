@@ -456,7 +456,7 @@ const Item: React.FC<ItemProps> = ({ overtimeForm }) => {
           </NunitoText>
 
           <NunitoText type="body4">
-            <NunitoText type="body2">Ghi chú: </NunitoText>
+            <NunitoText type="body2">Nội dung công việc: </NunitoText>
             {overtimeForm.note}
           </NunitoText>
 

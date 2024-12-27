@@ -138,7 +138,7 @@ export const DutyFormEdit: React.FC<Props> = memo(({ form }) => {
 
             <ChooseDutyTypesAndDutyTypeUsers />
 
-            <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+            <FormInput formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập dữ liệu..." />
             <FormUploadImage
               defaultUri={form.attachFileUrl ?? ""}
               label="Ảnh đính kèm"

@@ -432,7 +432,7 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
             {`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)})`}
           </NunitoText>
           <NunitoText type="body4">
-            <NunitoText type="body2">Ghi chú: </NunitoText>
+            <NunitoText type="body2">Nội dung công việc: </NunitoText>
             {dutyForm.note}
           </NunitoText>
           {dutyForm.approveDate && (

@@ -133,7 +133,7 @@ export default function DetailForm() {
             <Item title="Người tạo đơn" content={`${form.createdUserName}`} />
             <Item title="Thời gian tạo đơn" content={`${moment(form.createdAt).format("DD/MM/YYYY HH:mm:ss")}`} />
 
-            <Item title="Ghi chú" content={form.note ?? "Không có ghi chú"} />
+            <Item title="Nội dung công việc" content={form.note ?? "Không có dữ liệu"} />
             {/* Attach Image */}
             <AttachImageFile path={form?.attachFileUrl} />
           </ScrollView>

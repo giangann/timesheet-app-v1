@@ -26,7 +26,7 @@ export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => 
   const onDeleteForm = useCallback(() => {
     onDelete(form?.id ?? 0);
   }, [form]);
-  
+
   return (
     <>
       {!form && (
@@ -45,7 +45,7 @@ export const DutyFormDetail: React.FC<DutyFormDetailProps> = memo(({ form }) => 
             <Item title="Loại trực" content={<DutyFormDetailDutyTypes formDutyTypes={form.dutyTypes} />} />
             <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientTypeName} (x${form.salaryCoefficient.toFixed(2)})`} />
 
-            <Item title="Ghi chú" content={form.note ?? "Không có ghi chú"} />
+            <Item title="Nội dung công việc" content={form.note ?? "Không có dữ liệu"} />
 
             {/* Attach Image */}
             <AttachImageFile path={form?.attachFileUrl} />

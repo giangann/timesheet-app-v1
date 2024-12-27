@@ -139,7 +139,7 @@ export default function DetailForm() {
             <Item title="Liên hệ (phòng)" content={form.userTeam.hotline} />
             <Item title="Thời gian" content={`${moment(form.date).format("DD/MM/YYYY")} (${form.startTime} --> ${form.endTime})`} />
             <Item title="Loại ngoài giờ" content={`${form.salaryCoefficientType.name} (x${form.salaryCoefficientType.coefficient.toFixed(2)})`} />
-            <Item title="Ghi chú" content={form.note} />
+            <Item title="Nội dung công việc" content={form.note} />
             {/* Attach Image */}
             <AttachImageFile path={form.attachFilePath} />
           </ScrollView>

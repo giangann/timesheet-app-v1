@@ -37,8 +37,8 @@ export const OvertimeFormEdit: React.FC<OvertimeFormEditProps> = memo(({ form })
   } = useForm<TOvertimeFormEditFormFields>({
     defaultValues: {
       date: new Date(form.date),
-      startTime: combineDateAndTimeToDateObject(form.date,form.startTime),
-      endTime: combineDateAndTimeToDateObject(form.date,form.endTime),
+      startTime: combineDateAndTimeToDateObject(form.date, form.startTime),
+      endTime: combineDateAndTimeToDateObject(form.date, form.endTime),
       salaryCoefficientTypeId: form.salaryCoefficientType.id,
       userApproveIdentifyCard: form.userApproveIdentifyCard,
       note: form.note,
@@ -129,7 +129,7 @@ export const OvertimeFormEdit: React.FC<OvertimeFormEditProps> = memo(({ form })
 
           <FormUploadImage defaultUri={form.attachFilePath} label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
 
-          <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+          <FormInput formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập dữ liệu..." />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
           <View style={styles.button}>
