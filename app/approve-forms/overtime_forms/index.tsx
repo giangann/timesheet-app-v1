@@ -2,6 +2,7 @@ import { fetchApproveOvertimeForms } from "@/api/form";
 import { TApproveOvertimeForm, TApproveOvertimeFormFilterParams } from "@/api/form/types";
 import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS } from "@/constants/Misc";
@@ -20,7 +21,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function ApproveOvertimeForms() {
   const [overtimeForms, setOvertimeForms] = useState<TApproveOvertimeForm[]>([]);
@@ -85,18 +86,22 @@ export default function ApproveOvertimeForms() {
       MyToast.error(error.message);
     }
   };
+
+  const onFetchAndOverrideListForms = () => {
+    // Fetch list only when navigating back to this screen, not on first render
+    if (isFirstRender.current === false) {
+      // Calculate pagi params
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
+
+      // Fetch and override list with pagi params
+      fetchAndOverrideListForms(overridePagiParams);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      // Fetch notifications only when navigating back to this screen, not on first render
-      if (isFirstRender.current === false) {
-        // Calculate pagi params
-        const { page: currentPage, size } = pagiParamsRef.current;
-        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
-
-        // Fetch and override list with pagi params
-        fetchAndOverrideListForms(overridePagiParams);
-      }
-      // We still want to update the callback when pagiParams changes, but not trigger it
+      onFetchAndOverrideListForms();
     }, [session]) // Only depend on `session` here, or any other non-changing dependencies
   );
 
@@ -142,7 +147,7 @@ export default function ApproveOvertimeForms() {
     <View style={styles.container}>
       <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} onFilterFieldsChange={onFilterFieldsChange} />
 
-      <FlatList
+      <MyFlatListRefreshable
         data={overtimeForms}
         renderItem={({ item }) => <Item overtimeForm={item} />}
         keyExtractor={(item) => item.id.toString()}
@@ -151,6 +156,7 @@ export default function ApproveOvertimeForms() {
         ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : null}
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
+        onPullDown={onFetchAndOverrideListForms}
       />
     </View>
   );

@@ -2,8 +2,8 @@ import { fetchMyDutyForms, fetchUserCreateDutyForms } from "@/api/form";
 import { TDutyForm, TDutyFormFilterParams } from "@/api/form/types";
 import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { arrayStringToString, getUserNamesSummary, omitNullishValues, omitProperties } from "@/helper/common";
@@ -20,7 +20,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function DutyForms() {
   const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
@@ -96,18 +96,21 @@ export default function DutyForms() {
       MyToast.error(error.message);
     }
   };
+  const onFetchAndOverrideListForms = () => {
+    // Fetch list only when navigating back to this screen, not on first render
+    if (isFirstRender.current === false) {
+      // Calculate pagi params
+      const { page: currentPage, size } = pagiParamsRef.current;
+      const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
+
+      // Fetch and override list with pagi params
+      fetchAndOverrideListForms(overridePagiParams);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      // Fetch notifications only when navigating back to this screen, not on first render
-      if (isFirstRender.current === false) {
-        // Calculate pagi params
-        const { page: currentPage, size } = pagiParamsRef.current;
-        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
-
-        // Fetch and override list with pagi params
-        fetchAndOverrideListForms(overridePagiParams);
-      }
-      // We still want to update the callback when pagiParams changes, but not trigger it
+      onFetchAndOverrideListForms();
     }, [session]) // Only depend on `session` here, or any other non-changing dependencies
   );
 
@@ -152,7 +155,7 @@ export default function DutyForms() {
   return (
     <View style={styles.container}>
       <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} onFilterFieldsChange={onFilterFieldsChange} />
-      <FlatList
+      <MyFlatListRefreshable
         data={dutyForms}
         renderItem={({ item }) => <Item dutyForm={item} />}
         keyExtractor={(item) => item.id.toString()}
@@ -163,6 +166,7 @@ export default function DutyForms() {
         }
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
+        onPullDown={onFetchAndOverrideListForms}
       />
       {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && <ApplyNewForm />}
     </View>
