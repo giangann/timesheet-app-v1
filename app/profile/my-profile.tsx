@@ -20,7 +20,7 @@ export default function MyProfile() {
   const [openCfLogout, setOpenCfLogout] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
-  const { userInfo, signOut, session } = useSession();
+  const { userInfo, signOut, session, verifySessionToken } = useSession();
   const router = useRouter();
 
   const { control, handleSubmit } = useForm<TChangePassword>();
@@ -69,7 +69,10 @@ export default function MyProfile() {
     <>
       <MyFlatListRefreshable
         data={[profileData]}
-        onPullDown={onFetchProfileData}
+        onPullDown={() => {
+          onFetchProfileData();
+          verifySessionToken(session ?? "");
+        }}
         renderItem={() => (
           <View style={styles.container}>
             {/*  */}
