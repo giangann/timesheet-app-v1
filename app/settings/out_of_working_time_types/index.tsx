@@ -1,14 +1,16 @@
 import { MyModal } from "@/components/MyModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { useDeleteSalaryCoefType } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
@@ -54,9 +56,13 @@ export default function OutOfWorkingTimeType() {
   return (
     <View style={styles.container}>
       <ToolBar />
-      <ScrollView contentContainerStyle={styles.listBox}>
-        <List salaryCoefficientTypes={salaryCoefficientTypes} refetch={fetchSalaryCoefTypes} />
-      </ScrollView>
+      <MyFlatListRefreshable
+        data={salaryCoefficientTypes}
+        renderItem={({ item: salaryCoefType }) => <Item salaryCoefType={salaryCoefType} refetch={fetchSalaryCoefTypes} />}
+        ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
+        contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
+        onPullDown={fetchSalaryCoefTypes}
+      />
     </View>
   );
 }
@@ -75,24 +81,12 @@ const ToolBar = () => {
   );
 };
 
-type ListProps = {
-  salaryCoefficientTypes: TSalaryCoefficientType[];
+type ItemProps = {
   refetch: () => void;
+  salaryCoefType: TSalaryCoefficientType;
 };
-const List: React.FC<ListProps> = ({ salaryCoefficientTypes, refetch }) => {
-  return (
-    <>
-      {salaryCoefficientTypes.map((leaveType) => (
-        <Item key={leaveType.id} {...leaveType} refetch={refetch} />
-      ))}
-    </>
-  );
-};
-
-type ItemProps = TSalaryCoefficientType & {
-  refetch: () => void;
-};
-const Item: React.FC<ItemProps> = ({ id, name, coefficient, refetch }) => {
+const Item: React.FC<ItemProps> = ({ salaryCoefType, refetch }) => {
+  const { id, name, coefficient } = salaryCoefType;
   const [visible, setVisible] = useState(false);
   const [openCfModal, setOpenCfModal] = useState(false);
 
@@ -161,8 +155,7 @@ const Item: React.FC<ItemProps> = ({ id, name, coefficient, refetch }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
+    paddingTop: 16,
     backgroundColor: "white",
     minHeight: "100%",
     height: "100%",
@@ -173,6 +166,7 @@ const styles = StyleSheet.create({
      */
   },
   toolbar: {
+    paddingHorizontal: 16,
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 4,

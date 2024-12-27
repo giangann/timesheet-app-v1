@@ -1,16 +1,18 @@
 import { fetchExceptionDays } from "@/api/setting";
 import { TExceptionDay } from "@/api/setting/type";
 import { MyModal } from "@/components/MyModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { useSession } from "@/contexts";
 import { useDeleteExceptionDay } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
@@ -42,9 +44,13 @@ export default function ExceptionDays() {
   return (
     <View style={styles.container}>
       <ToolBar />
-      <ScrollView contentContainerStyle={styles.listBox}>
-        <List days={days} refetch={onFetchDays} />
-      </ScrollView>
+      <MyFlatListRefreshable
+        data={days}
+        renderItem={({ item: exceptionDay, index }) => <Item day={exceptionDay} refetch={onFetchDays} index={index + 1} />}
+        ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
+        contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
+        onPullDown={onFetchDays}
+      />
     </View>
   );
 }
@@ -60,20 +66,6 @@ const ToolBar = () => {
         <Image source={AddNewIconImage} />
       </Pressable>
     </View>
-  );
-};
-
-type ListProps = {
-  days: TExceptionDay[];
-  refetch: () => void;
-};
-const List: React.FC<ListProps> = ({ days, refetch }) => {
-  return (
-    <>
-      {days.map((day, index) => (
-        <Item key={day.id} day={day} index={index + 1} refetch={refetch} />
-      ))}
-    </>
   );
 };
 
@@ -148,8 +140,7 @@ const Item: React.FC<ItemProps> = ({ day, index, refetch }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
+    paddingTop: 16,
     backgroundColor: `white`,
     minHeight: "100%",
     height: "100%",
@@ -160,6 +151,7 @@ const styles = StyleSheet.create({
      */
   },
   toolbar: {
+    paddingHorizontal: 16,
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 4,

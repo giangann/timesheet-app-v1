@@ -1,14 +1,16 @@
 import { MyModal } from "@/components/MyModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { useDeleteTeam } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
+import { NoData } from "@/ui/NoData";
 import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
@@ -54,9 +56,16 @@ export default function TeamList() {
   return (
     <View style={styles.container}>
       <ToolBar />
-      <ScrollView contentContainerStyle={styles.listBox}>
+      <MyFlatListRefreshable
+        data={teams}
+        renderItem={({ item: team }) => <Item team={team} refetch={fetchTeams} />}
+        ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
+        contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
+        onPullDown={fetchTeams}
+      />
+      {/* <ScrollView contentContainerStyle={styles.listBox}>
         <List teams={teams} refetch={fetchTeams} />
-      </ScrollView>
+      </ScrollView> */}
     </View>
   );
 }
@@ -72,20 +81,6 @@ const ToolBar = () => {
         <Image source={AddNewIconImage} />
       </Pressable>
     </View>
-  );
-};
-
-type ListProps = {
-  teams: TTeam[];
-  refetch: () => void;
-};
-const List: React.FC<ListProps> = ({ teams, refetch }) => {
-  return (
-    <>
-      {teams.map((team) => (
-        <Item key={team.id} refetch={refetch} team={team} />
-      ))}
-    </>
   );
 };
 
@@ -159,8 +154,7 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 0,
+    paddingTop: 16,
     backgroundColor: "white",
     minHeight: "100%",
     height: "100%",
@@ -171,6 +165,7 @@ const styles = StyleSheet.create({
      */
   },
   toolbar: {
+    paddingHorizontal: 16,
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 4,

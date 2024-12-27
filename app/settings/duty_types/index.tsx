@@ -172,9 +172,7 @@ const DutyTypeItem: React.FC<DutyTypeItemProps> = ({ dutyType, refetchList }) =>
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingHorizontal: 0,
-    paddingBottom: 0,
+    paddingTop: 16,
     backgroundColor: "white",
     minHeight: "100%",
     height: "100%",
