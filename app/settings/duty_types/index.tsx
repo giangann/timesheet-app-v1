@@ -1,6 +1,7 @@
 import { fetchDutyTypes, softDeleteDutyType } from "@/api/setting";
 import { TDutyType } from "@/api/setting/type";
 import { MyModal } from "@/components/MyModal";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
@@ -11,7 +12,7 @@ import { NoData } from "@/ui/NoData";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Divider, Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
@@ -38,11 +39,12 @@ export default function DutyTypeList() {
   return (
     <View style={styles.container}>
       <ToolBar />
-      <FlatList
+      <MyFlatListRefreshable
         data={dutyTypes}
         renderItem={({ item }) => <DutyTypeItem dutyType={item} refetchList={onFetchDutyTypes} />}
         ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
         contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
+        onPullDown={onFetchDutyTypes}
       />
     </View>
   );
