@@ -1,5 +1,6 @@
 import { fetchHomeData } from "@/api/user";
 import { THomeData } from "@/api/user/types";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
@@ -16,7 +17,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
 
 const Illustration1 = require("@/assets/images/illu-my-form.png");
 const Illustration2 = require("@/assets/images/illu-timesheet.png");
@@ -26,7 +27,7 @@ const Illustration5 = require("@/assets/images/illu-form-need-approve.png");
 const Illustration6 = require("@/assets/images/illu-user-info.png");
 
 export default function HomeScreen() {
-  const { userInfo, session } = useSession();
+  const { userInfo, session, verifySessionToken } = useSession();
   const [homeData, setHomeData] = useState<THomeData | null>(null);
   const router = useRouter();
 
@@ -112,119 +113,128 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-          {/* QUICK ACTION __ ROW 1: Common (MyForm, MyTimeSheet) */}
-          <View style={styles.quickActionContainer}>
-            <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
-              <Pressable onPress={goToMyFormsScreen}>
-                <View style={styles.quickActionItemBoxInner}>
-                  <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
-                  {(homeData?.numberOfUnreadFormNotify || null) && (
-                    <>
-                      <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
-                      <View style={styles.chipCircle}>
-                        <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify || null) ?? "00"}
-                        </NunitoText>
-                      </View>
-                    </>
-                  )}
-                  {!(homeData?.numberOfUnreadFormNotify || null) && (
-                    <>
-                      <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
-                    </>
-                  )}
-
-                  <View style={styles.quickActionItemIllu}>
-                    <Image source={Illustration1} />
-                  </View>
-                </View>
-              </Pressable>
-            </View>
-
-            <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
-              <Pressable onPress={goToMyTimesheetScreen}>
-                <View style={styles.quickActionItemBoxInner}>
-                  <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
-                  <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
-                  <View style={styles.chipCircle}>
-                    <NunitoText type="body2" lightColor="white" darkColor="white">
-                      {formatNumberAddLeadingZero(homeData?.numberOfCurrentMonthTimeKeeping) ?? "00"}
-                    </NunitoText>
-                  </View>
-
-                  <View style={styles.quickActionItemIllu}>
-                    <Image source={Illustration2} />
-                  </View>
-                </View>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* QUICK ACTION __ ROW 2: Archivist (Setting, TimeKeeping) */}
-          {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
+        <MyFlatListRefreshable
+          data={[homeData]}
+          onPullDown={() => {
+            onFetchHomeData();
+            verifySessionToken(session ?? "");
+          }}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          renderItem={() => (
             <>
-              <View style={{ height: 16 }} />
+              {/* QUICK ACTION __ ROW 1: Common (MyForm, MyTimeSheet) */}
               <View style={styles.quickActionContainer}>
-                <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
-                  <Pressable onPress={goToSettingScreen}>
+                <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
+                  <Pressable onPress={goToMyFormsScreen}>
                     <View style={styles.quickActionItemBoxInner}>
-                      <NunitoText type="subtitle1">Cài đặt</NunitoText>
-                      <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
+                      <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
+                      {(homeData?.numberOfUnreadFormNotify || null) && (
+                        <>
+                          <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
+                          <View style={styles.chipCircle}>
+                            <NunitoText type="body2" lightColor="white" darkColor="white">
+                              {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify || null) ?? "00"}
+                            </NunitoText>
+                          </View>
+                        </>
+                      )}
+                      {!(homeData?.numberOfUnreadFormNotify || null) && (
+                        <>
+                          <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
+                        </>
+                      )}
+
                       <View style={styles.quickActionItemIllu}>
-                        <Image source={Illustration3} />
+                        <Image source={Illustration1} />
                       </View>
                     </View>
                   </Pressable>
                 </View>
 
-                <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
-                  <Pressable onPress={goToTimeKeepingScreen}>
+                <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
+                  <Pressable onPress={goToMyTimesheetScreen}>
                     <View style={styles.quickActionItemBoxInner}>
-                      <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
-                      <NunitoText type="body3">
-                        {homeData?.haveTimeKeepingForTeamToday
-                          ? "Chấm công cho các thành viên trong phòng ban"
-                          : "Chấm công cho các thành viên trong phòng ban"}
-                      </NunitoText>
+                      <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
+                      <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
+                      <View style={styles.chipCircle}>
+                        <NunitoText type="body2" lightColor="white" darkColor="white">
+                          {formatNumberAddLeadingZero(homeData?.numberOfCurrentMonthTimeKeeping) ?? "00"}
+                        </NunitoText>
+                      </View>
+
                       <View style={styles.quickActionItemIllu}>
-                        <Image source={Illustration4} />
+                        <Image source={Illustration2} />
                       </View>
                     </View>
                   </Pressable>
                 </View>
               </View>
-            </>
-          )}
 
-          {/* QUICK ACTION __ ROW 3: Director (ApproveForm) */}
-          {(userInfo?.roleCode === ROLE_CODE.TEAM_DIRECTOR || userInfo?.roleCode === ROLE_CODE.DEPARTMENT_DIRECTOR) && (
-            <>
-              <View style={{ height: 16 }} />
-              <View style={styles.quickActionContainer}>
-                <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
-                  <Pressable onPress={goToApproveFormsScreen}>
-                    <View style={styles.quickActionItemBoxInner}>
-                      <NunitoText type="subtitle1">Đơn từ</NunitoText>
-                      <NunitoText type="body3">Đơn cần xử lý</NunitoText>
-                      <View style={styles.chipCircle}>
-                        <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberAddLeadingZero(homeData?.numberOfFormNeedApprove) ?? "00"}
-                        </NunitoText>
-                      </View>
-
-                      <View style={styles.quickActionItemIllu}>
-                        <Image source={Illustration5} />
-                      </View>
+              {/* QUICK ACTION __ ROW 2: Archivist (Setting, TimeKeeping) */}
+              {userInfo?.roleCode === ROLE_CODE.ARCHIVIST && (
+                <>
+                  <View style={{ height: 16 }} />
+                  <View style={styles.quickActionContainer}>
+                    <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
+                      <Pressable onPress={goToSettingScreen}>
+                        <View style={styles.quickActionItemBoxInner}>
+                          <NunitoText type="subtitle1">Cài đặt</NunitoText>
+                          <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
+                          <View style={styles.quickActionItemIllu}>
+                            <Image source={Illustration3} />
+                          </View>
+                        </View>
+                      </Pressable>
                     </View>
-                  </Pressable>
-                </View>
 
-                {/* __placholder_item__ */}
-                <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
+                    <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                      <Pressable onPress={goToTimeKeepingScreen}>
+                        <View style={styles.quickActionItemBoxInner}>
+                          <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
+                          <NunitoText type="body3">
+                            {homeData?.haveTimeKeepingForTeamToday
+                              ? "Chấm công cho các thành viên trong phòng ban"
+                              : "Chấm công cho các thành viên trong phòng ban"}
+                          </NunitoText>
+                          <View style={styles.quickActionItemIllu}>
+                            <Image source={Illustration4} />
+                          </View>
+                        </View>
+                      </Pressable>
+                    </View>
+                  </View>
+                </>
+              )}
 
-                {/* QUICK ACTION __ ROW 3.2: Prepare for future features */}
-                {/* <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
+              {/* QUICK ACTION __ ROW 3: Director (ApproveForm) */}
+              {(userInfo?.roleCode === ROLE_CODE.TEAM_DIRECTOR || userInfo?.roleCode === ROLE_CODE.DEPARTMENT_DIRECTOR) && (
+                <>
+                  <View style={{ height: 16 }} />
+                  <View style={styles.quickActionContainer}>
+                    <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                      <Pressable onPress={goToApproveFormsScreen}>
+                        <View style={styles.quickActionItemBoxInner}>
+                          <NunitoText type="subtitle1">Đơn từ</NunitoText>
+                          <NunitoText type="body3">Đơn cần xử lý</NunitoText>
+                          <View style={styles.chipCircle}>
+                            <NunitoText type="body2" lightColor="white" darkColor="white">
+                              {formatNumberAddLeadingZero(homeData?.numberOfFormNeedApprove) ?? "00"}
+                            </NunitoText>
+                          </View>
+
+                          <View style={styles.quickActionItemIllu}>
+                            <Image source={Illustration5} />
+                          </View>
+                        </View>
+                      </Pressable>
+                    </View>
+
+                    {/* __placholder_item__ */}
+                    <View style={[styles.quickActionItemBox, { opacity: 0 }]} />
+
+                    {/* QUICK ACTION __ ROW 3.2: Prepare for future features */}
+                    {/* <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
               <Pressable
                 onPress={() => {
                   router.navigate("/");
@@ -246,55 +256,57 @@ export default function HomeScreen() {
                   </View>
                   </Pressable>
             </View> */}
+                  </View>
+                </>
+              )}
+
+              {/* USER INFORMATION BRIEF */}
+              <View style={{ height: 32 }} />
+              <View style={styles.userInfoContainer}>
+                <NunitoText>Thông tin của tôi</NunitoText>
+                <View style={styles.userInfoBox}>
+                  <View style={styles.userInfoBoxInner}>
+                    <View style={styles.userInfoField}>
+                      <View style={styles.userInfoFieldIconBox}>
+                        <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                      </View>
+                      <NunitoText type="body3">{userInfo?.name}</NunitoText>
+                    </View>
+                    <View style={styles.userInfoField}>
+                      <View style={styles.userInfoFieldIconBox}>
+                        <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                      </View>
+                      <NunitoText type="body3">{userInfo?.roleName}</NunitoText>
+                    </View>
+                    <View style={styles.userInfoField}>
+                      <View style={styles.userInfoFieldIconBox}>
+                        <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                      </View>
+                      <NunitoText type="body3">{userInfo?.phone}</NunitoText>
+                    </View>
+                    <View style={styles.userInfoField}>
+                      <View style={styles.userInfoFieldIconBox}>
+                        <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                      </View>
+                      <NunitoText type="body3">{userInfo?.email}</NunitoText>
+                    </View>
+                    <View style={styles.userInfoIllu}>
+                      <Image source={Illustration6} />
+                    </View>
+                    <View style={styles._absoluteTopRightLayer}>
+                      <Pressable onPress={goToMyProfileScreen}>
+                        <View style={styles.userInfoGotoProfileScreen}>
+                          <NunitoText type="body2">Chi tiết</NunitoText>
+                          <Ionicons name="arrow-forward" size={16} />
+                        </View>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
               </View>
             </>
           )}
-
-          {/* USER INFORMATION BRIEF */}
-          <View style={{ height: 32 }} />
-          <View style={styles.userInfoContainer}>
-            <NunitoText>Thông tin của tôi</NunitoText>
-            <View style={styles.userInfoBox}>
-              <View style={styles.userInfoBoxInner}>
-                <View style={styles.userInfoField}>
-                  <View style={styles.userInfoFieldIconBox}>
-                    <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX["75"]}`} />
-                  </View>
-                  <NunitoText type="body3">{userInfo?.name}</NunitoText>
-                </View>
-                <View style={styles.userInfoField}>
-                  <View style={styles.userInfoFieldIconBox}>
-                    <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
-                  </View>
-                  <NunitoText type="body3">{userInfo?.roleName}</NunitoText>
-                </View>
-                <View style={styles.userInfoField}>
-                  <View style={styles.userInfoFieldIconBox}>
-                    <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
-                  </View>
-                  <NunitoText type="body3">{userInfo?.phone}</NunitoText>
-                </View>
-                <View style={styles.userInfoField}>
-                  <View style={styles.userInfoFieldIconBox}>
-                    <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX["75"]}`} />
-                  </View>
-                  <NunitoText type="body3">{userInfo?.email}</NunitoText>
-                </View>
-                <View style={styles.userInfoIllu}>
-                  <Image source={Illustration6} />
-                </View>
-                <View style={styles._absoluteTopRightLayer}>
-                  <Pressable onPress={goToMyProfileScreen}>
-                    <View style={styles.userInfoGotoProfileScreen}>
-                      <NunitoText type="body2">Chi tiết</NunitoText>
-                      <Ionicons name="arrow-forward" size={16} />
-                    </View>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
+        />
       </View>
     </SafeAreaView>
   );
@@ -311,7 +323,7 @@ const styles = StyleSheet.create({
     flex: 1, // Make sure ScrollView also expands to fill space
   },
   scrollViewContent: {
-    paddingBottom: 100, // Adjust this value based on the height of your tab bar
+    paddingBottom: 32, // Adjust this value based on the height of your tab bar
   },
   // container: {},
   // header

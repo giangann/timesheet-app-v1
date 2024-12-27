@@ -136,7 +136,7 @@ export default function AppLayout() {
           options={{
             title: "Phê duyệt đơn",
             tabBarIcon: ({ color }) => <Octicons name="checklist" size={22} color={color} />,
-            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/approveForm",
+            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR && userInfo?.roleCode !== ROLE_CODE.DEPARTMENT_DIRECTOR ? null : "/approveForm",
           }}
         />
         <Tabs.Screen
