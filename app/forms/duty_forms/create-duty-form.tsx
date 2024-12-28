@@ -26,7 +26,7 @@ export default function CreateDutyForm() {
     getValues,
     formState: { isSubmitting },
     handleSubmit,
-  } = useForm<TDutyFormCreateFormField>();
+  } = useForm<TDutyFormCreateFormField>({ defaultValues: { startTime: defaultDutyFormTime().startTime, endTime: defaultDutyFormTime().endTime } });
   const { fields, append, update, remove } = useFieldArray({ name: "dutyTypes", control: control });
 
   const onAddDutyType = useCallback(

@@ -60,7 +60,9 @@ export default function CreateOvertimeForm() {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<CreateItemForm>({ defaultValues: { note: null, attachFile: null } });
+  } = useForm<CreateItemForm>({
+    defaultValues: { note: null, attachFile: null, startTime: defaultOtFormDateTime().startTime, endTime: defaultOtFormDateTime().endTime },
+  });
 
   const salaryCoefTypeOpts = salaryCoefficientTypes.map(({ id, name, coefficient }) => ({
     value: id,
@@ -218,7 +220,13 @@ export default function CreateOvertimeForm() {
             leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
           />
 
-          <FormInputMultilne formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập nội dung..." required multiline/>
+          <FormInputMultilne
+            formInputProps={{ control: control, name: "note" }}
+            label="Nội dung công việc"
+            placeholder="Nhập nội dung..."
+            required
+            multiline
+          />
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
