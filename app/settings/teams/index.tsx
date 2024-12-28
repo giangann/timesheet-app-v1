@@ -8,7 +8,7 @@ import { useDeleteTeam } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
 import { Entypo } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
@@ -87,20 +87,31 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
   const [visible, setVisible] = useState(false);
   const [openCfModal, setOpenCfModal] = useState(false);
 
+  const router = useRouter();
+
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
 
   const { onDeleteTeam } = useDeleteTeam();
 
   const onPressDelete = useCallback(() => {
+    closeMenu();
     setOpenCfModal(true);
-    setVisible(false);
-  }, [setOpenCfModal, setVisible]);
+  }, [setOpenCfModal, closeMenu]);
 
   const onConfirmDelete = useCallback(() => {
     onDeleteTeam(id);
     refetch();
   }, [id, onDeleteTeam, refetch]);
+
+  const onGoToEdit = useCallback(() => {
+    router.navigate({ pathname: "/settings/teams/edit-team/[id]", params: { id: id } });
+  }, [id, router]);
+
+  const onPressEdit = useCallback(() => {
+    closeMenu();
+    onGoToEdit();
+  }, [onGoToEdit, closeMenu]);
   return (
     <>
       {/* Info */}
@@ -126,6 +137,7 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
               </TouchableHighlight>
             }
           >
+            <Menu.Item onPress={onPressEdit} title="Sửa" />
             <Menu.Item onPress={onPressDelete} title="Xóa" />
           </Menu>
         </View>
