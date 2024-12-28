@@ -15,7 +15,6 @@ import { useCallback, useState } from "react";
 import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
-const FilterIconImage = require("@/assets/images/filter-icon.png");
 
 export default function ExceptionDays() {
   const [days, setDays] = useState<TExceptionDay[]>([]);
@@ -59,9 +58,6 @@ const ToolBar = () => {
   const router = useRouter();
   return (
     <View style={styles.toolbar}>
-      <Pressable onPress={() => {}}>
-        <Image source={FilterIconImage} />
-      </Pressable>
       <Pressable onPress={() => router.push("/settings/exception_days/add-exception-day")}>
         <Image source={AddNewIconImage} />
       </Pressable>

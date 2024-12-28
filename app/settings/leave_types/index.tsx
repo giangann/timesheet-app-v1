@@ -13,8 +13,6 @@ import { useCallback, useState } from "react";
 import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
-const FilterIconImage = require("@/assets/images/filter-icon.png");
-const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
 type TLeaveType = {
   id: number;
@@ -71,9 +69,6 @@ const ToolBar = () => {
   const router = useRouter();
   return (
     <View style={styles.toolbar}>
-      <Pressable onPress={() => {}}>
-        <Image source={FilterIconImage} />
-      </Pressable>
       <Pressable onPress={() => router.push("/settings/leave_types/add-leave-type")}>
         <Image source={AddNewIconImage} />
       </Pressable>
