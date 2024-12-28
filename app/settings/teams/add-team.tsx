@@ -6,10 +6,9 @@ import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-const TeamIconLeft = require("@/assets/images/identify-card.png");
-
 type CreateItem = {
   name: string;
+  hotline: string;
 };
 
 export default function AddTeam() {
@@ -45,6 +44,8 @@ export default function AddTeam() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Your scrollable form inputs go here */}
         <FormInput formInputProps={{ control: control, name: "name" }} label="Tên phòng ban" required placeholder="Nhập tên phòng ban..." />
+        <FormInput formInputProps={{ control: control, name: "hotline" }} label="Liên hệ phòng ban" placeholder="Nhập sđt liên hệ..." />
+
         {/* Add more FormInput components as needed */}
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onCreate)} style={styles.buttonContainer}>

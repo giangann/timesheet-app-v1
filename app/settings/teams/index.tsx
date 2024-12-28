@@ -18,6 +18,7 @@ type TTeam = {
   id: number;
   name: string;
   code: string | null;
+  hotline: string;
 };
 
 export default function TeamList() {
@@ -61,9 +62,6 @@ export default function TeamList() {
         contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
         onPullDown={fetchTeams}
       />
-      {/* <ScrollView contentContainerStyle={styles.listBox}>
-        <List teams={teams} refetch={fetchTeams} />
-      </ScrollView> */}
     </View>
   );
 }
@@ -84,7 +82,7 @@ type ItemProps = {
   team: TTeam;
 };
 const Item: React.FC<ItemProps> = ({ team, refetch }) => {
-  const { id, name } = team;
+  const { id, name, hotline } = team;
 
   const [visible, setVisible] = useState(false);
   const [openCfModal, setOpenCfModal] = useState(false);
@@ -112,7 +110,10 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
             {addPrefix(id)}
           </NunitoText>
         </View>
-        <NunitoText type="body2"> {name}</NunitoText>
+        <View>
+          <NunitoText type="body2"> {name}</NunitoText>
+          <NunitoText type="body3"> {hotline}</NunitoText>
+        </View>
 
         {/* Menu */}
         <View style={styles.iconThreeDotsAbsBox}>
