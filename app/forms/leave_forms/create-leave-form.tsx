@@ -68,14 +68,24 @@ export default function CreateLeaveForm() {
     [session, userInfo, setUserApproves]
   );
 
+  const fetchDepartmentDirector = useCallback(async () => {
+    const responseJson = await fetchListUserByRole(session, { role: ROLE_CODE.DEPARTMENT_DIRECTOR });
+
+    if (responseJson.statusCode === 200) {
+      setUserApproves(responseJson.data.users);
+    } else {
+      MyToast.error(responseJson.error);
+    }
+  }, [session, setUserApproves]);
+
   const onStartDateTimeChange = useCallback(
     (newStartDateTime: Date) => {
       const endDate = getValues("endDate");
       if (isMoreThanOneDay(newStartDateTime, endDate)) {
-        fetchUserApproves(ROLE_CODE.DEPARTMENT_DIRECTOR);
+        fetchDepartmentDirector();
       }
     },
-    [getValues, fetchUserApproves]
+    [getValues, fetchDepartmentDirector]
   );
 
   const onEndDateTimeChange = useCallback(
@@ -83,10 +93,10 @@ export default function CreateLeaveForm() {
       const startDate = getValues("startDate");
 
       if (isMoreThanOneDay(startDate, newEndDateTime)) {
-        fetchUserApproves(ROLE_CODE.DEPARTMENT_DIRECTOR);
+        fetchDepartmentDirector();
       }
     },
-    [getValues, fetchUserApproves]
+    [getValues, fetchDepartmentDirector]
   );
 
   const onCreate = async (value: CreateItemForm) => {

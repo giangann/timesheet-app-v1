@@ -12,7 +12,7 @@ export type TUserApproveWithId = {
 };
 export type TListUserApproveParams = {
   role: ROLE_CODE;
-  teamId: number;
+  teamId?: number;
 };
 export type TListUserApproveInMultiTeamsParams = {
   role: ROLE_CODE;
@@ -20,4 +20,3 @@ export type TListUserApproveInMultiTeamsParams = {
 };
 
 export type TCheckAction = "check" | "uncheck";
- 
