@@ -55,7 +55,7 @@ export default function Settings() {
           </View>
         </Pressable>
 
-        {/* <Pressable onPress={() => router.push("/settings/holidays")}>
+        <Pressable onPress={() => router.push("/settings/holidays")}>
           <View style={styles.itemBox}>
             <View style={styles.itemBoxLeft}>
               <View style={styles.iconBox}>
@@ -67,7 +67,7 @@ export default function Settings() {
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
             </View>
           </View>
-        </Pressable> */}
+        </Pressable>
 
         <Pressable onPress={() => router.push("/settings/duty_types")}>
           <View style={styles.itemBox}>

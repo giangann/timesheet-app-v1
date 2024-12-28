@@ -27,14 +27,14 @@ export default function SettingLayout() {
         }}
       />
       <Stack.Screen name="teams/add-team" options={{ title: "Thêm phòng ban" }} />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="holidays/index"
         options={{
           title: "Ngày nghỉ",
           headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/setting" /> : undefined, // Do not render on Android
         }}
       />
-      <Stack.Screen name="holidays/add-holiday" options={{ title: "Thêm ngày nghỉ" }} /> */}
+      <Stack.Screen name="holidays/add-holiday" options={{ title: "Thêm ngày nghỉ" }} />
       <Stack.Screen
         name="leave_types/index"
         options={{
