@@ -1,5 +1,5 @@
 import { fetchListUserByRole } from "@/api/form";
-import { FormInput } from "@/components/FormInput";
+import { FormInputMultilne } from "@/components/FormInputMultiLine";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
@@ -218,7 +218,7 @@ export default function CreateOvertimeForm() {
             leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
           />
 
-          <FormInput formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập nội dung..." required />
+          <FormInputMultilne formInputProps={{ control: control, name: "note" }} label="Nội dung công việc" placeholder="Nhập nội dung..." required multiline/>
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>

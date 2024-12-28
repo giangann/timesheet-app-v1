@@ -1,4 +1,4 @@
-import { FormInput } from "@/components/FormInput";
+import { FormInputMultilne } from "@/components/FormInputMultiLine";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
@@ -125,7 +125,7 @@ export default function CreateDutyForm() {
 
             <ChooseDutyTypesAndDutyTypeUsers />
 
-            <FormInput
+            <FormInputMultilne
               formInputProps={{ control: control, name: "note" }}
               label="Nội dung công việc"
               placeholder="Nhập nội dung..."

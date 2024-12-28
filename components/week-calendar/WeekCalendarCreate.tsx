@@ -11,6 +11,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button, Switch } from "react-native-paper";
 import { FormInput } from "../FormInput";
+import { FormInputMultilne } from "../FormInputMultiLine";
 import { FormPickDate } from "../FormPickDate";
 import { FormPickDateTime } from "../FormPickDateTime";
 import { NunitoText } from "../text/NunitoText";
@@ -95,7 +96,7 @@ export const WeekCalendarCreate = ({ calendarId }: Props) => {
           )}
 
           <WeekCalendarSelectUser />
-          <FormInput formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
+          <FormInputMultilne formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
 
           <View style={styles.actionContainer}>
             <Button
