@@ -31,7 +31,7 @@ export default function ApproveFormLayout() {
       <Stack.Screen
         name="overtime_forms/index"
         options={{
-          title: "Phê duyệt đơn tăng ca",
+          title: "Phê duyệt đơn làm ngoài giờ",
           headerLeft: Platform.OS === "ios" ? () => <GoBackButton destRoute="/(tabs)/approveForm" title="Phê duyệt đơn" /> : undefined, // Do not render on Android
         }}
       />

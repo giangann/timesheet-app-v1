@@ -92,7 +92,7 @@ export const OvertimeFormDetail: React.FC<OvertimeFormDetailProps> = memo(({ for
               modalProps={{ animationType: "slide", transparent: true }}
             >
               <View>
-                <NunitoText type="body3">Bạn có chắc xóa đơn tăng ca?</NunitoText>
+                <NunitoText type="body3">Bạn có chắc xóa đơn làm ngoài giờ?</NunitoText>
               </View>
             </MyModal>
           )}

@@ -23,7 +23,7 @@ export enum FORM_NOTI_ACTION_TYPE {
 
 export const FORM_NOTI_NAME = {
   [FORM_NOTI_TYPE.LEAVE_FORM]: "Đơn xin nghỉ",
-  [FORM_NOTI_TYPE.OVERTIME_FORM]: "Đơn tăng ca",
+  [FORM_NOTI_TYPE.OVERTIME_FORM]: "Đơn làm ngoài giờ",
   [FORM_NOTI_TYPE.DUTY_FORM]: "Đơn trực",
 };
 

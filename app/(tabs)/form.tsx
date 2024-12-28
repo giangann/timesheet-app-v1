@@ -34,7 +34,7 @@ export default function Settings() {
               <View style={styles.iconBox}>
                 <FontAwesome6 name="clock-rotate-left" size={16} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
-              <NunitoText type="body1">Đơn tăng ca</NunitoText>
+              <NunitoText type="body1">Đơn làm ngoài giờ</NunitoText>
             </View>
             <View style={styles.chip}>
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />

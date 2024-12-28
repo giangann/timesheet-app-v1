@@ -69,7 +69,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         }
         if (evType === FORM_NOTI_TYPE.OVERTIME_FORM) {
           const handlePress = () => router.navigate({ pathname: "/approve-forms/overtime_forms/[id]", params: { id: evDataParsed.obj.id } });
-          MyToast.notify(`${evDataParsed.title} - ${evDataParsed.message} Đơn tăng ca`, { onPress: handlePress });
+          MyToast.notify(`${evDataParsed.title} - ${evDataParsed.message} Đơn làm ngoài giờ`, { onPress: handlePress });
         }
         if (evType === FORM_NOTI_TYPE.DUTY_FORM) {
           const handlePress = () => router.navigate({ pathname: "/approve-forms/duty_forms/[id]", params: { id: evDataParsed.obj.id } });

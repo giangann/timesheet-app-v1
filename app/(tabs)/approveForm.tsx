@@ -33,7 +33,7 @@ export default function ApproveForm() {
               <View style={styles.iconBox}>
                 <FontAwesome6 name="clock-rotate-left" size={16} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />
               </View>
-              <NunitoText type="body1">Phê duyệt - Đơn tăng ca</NunitoText>
+              <NunitoText type="body1">Phê duyệt - Đơn làm ngoài giờ</NunitoText>
             </View>
             <View style={styles.chip}>
               <Entypo name="chevron-right" size={14} color={`#FFFFFF${OPACITY_TO_HEX["85"]}`} />

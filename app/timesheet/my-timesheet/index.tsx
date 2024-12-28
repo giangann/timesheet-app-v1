@@ -153,7 +153,7 @@ const MarkedSymbolNote = () => {
             <NunitoText type="body4">24</NunitoText>
             <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT] }]} />
           </View>
-          <NunitoText type="subtitle2">Ngày tăng ca </NunitoText>
+          <NunitoText type="subtitle2">Ngày làm ngoài giờ </NunitoText>
         </View>
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
@@ -227,7 +227,7 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
   return (
     <View style={styles.formContainer}>
       <View style={styles.formTitleRow}>
-        <NunitoText type="subtitle1">Đơn tăng ca</NunitoText>
+        <NunitoText type="subtitle1">Đơn làm ngoài giờ</NunitoText>
         <Pressable onPress={onGotoOvertimeFormDetail}>
           <View style={styles.gotoDetailButton}>
             <NunitoText type="body4" style={{ opacity: 1 }}>
