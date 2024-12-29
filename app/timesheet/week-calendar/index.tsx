@@ -15,13 +15,13 @@ export default function WeekCalendar() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const { weekCalendars } = useFetchWeekCalendar();
-  const { dutyForms } = useFetchGroupDutyForms();
-  const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
+  // const { weekCalendars } = useFetchWeekCalendar();
+  // const { dutyForms } = useFetchGroupDutyForms();
+  // const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
 
-  // const weekCalendars: any = [];
-  // const dutyForms: any = [];
-  // const leaveForms: any = [];
+  const weekCalendars: any = [];
+  const dutyForms: any = [];
+  const leaveForms: any = [];
 
   const weekCalendarEventItems = useMemo(() => weekCalendarToEventItems(weekCalendars), [weekCalendars]);
   const dutyEventItems = useMemo(() => dutyFormToEventItems(dutyForms), [dutyForms]);
