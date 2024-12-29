@@ -33,8 +33,8 @@ export const usePushNotifications = (): PushNotificationState => {
   const addStatus = (newStatus: string) => setStatus((prev) => [...prev, newStatus]);
   const addError = (newError: string) => setError((prev) => [...prev, newError]);
 
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   async function registerForPushNotificationsAsync() {
     let token;
