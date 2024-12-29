@@ -12,22 +12,33 @@ import { Platform, StyleSheet, View } from "react-native";
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
   const { onUpdateSearchParams } = useTeamWeekCalendarProvider();
+  const router = useRouter();
 
   const _onPressItem = (viewMode: string, numberOfDays: number) => {
     onUpdateSearchParams({ viewMode, numberOfDays: numberOfDays.toString() });
     props.navigation.closeDrawer();
   };
 
+  const _onPressBackItem = () => {
+    router.navigate("/(tabs)/timesheet");
+  };
+  const _onPressCreateNew = () => {
+    router.navigate("/timesheet/week-calendar/create-week-calendar");
+  };
+
   return (
     <DrawerContentScrollView {...props}>
-      <DrawerItem label="Day" onPress={() => _onPressItem("day", 1)} />
-      <DrawerItem label="3 Days" onPress={() => _onPressItem("week", 3)} />
-      <DrawerItem label="4 Days" onPress={() => _onPressItem("week", 4)} />
-      <DrawerItem label="Week" onPress={() => _onPressItem("week", 7)} />
-      <DrawerItem label="Work week" onPress={() => _onPressItem("week", 5)} />
-      <DrawerItem label="Resources" onPress={() => _onPressItem("resources", 1)} />
+      <DrawerItem label="Chế độ ngày" onPress={() => _onPressItem("day", 1)} />
+      {/* <DrawerItem label="Chế độ 3 ngày" onPress={() => _onPressItem("week", 3)} /> */}
+      <DrawerItem label="Chế độ 4 ngày" onPress={() => _onPressItem("week", 4)} />
+      <DrawerItem label="Chế độ tuần" onPress={() => _onPressItem("week", 7)} />
+      {/* <DrawerItem label="Chế độ ngày làm việc" onPress={() => _onPressItem("week", 5)} /> */}
+      {/* <DrawerItem label="Resources" onPress={() => _onPressItem("resources", 1)} /> */}
       <View style={[styles.line, { backgroundColor: theme.colors.border }]} />
       <View style={[styles.line, { backgroundColor: theme.colors.border }]} />
+
+      <DrawerItem label="< Về trang quản lý công" onPress={_onPressBackItem} />
+      <DrawerItem label="+ Tạo mới sự kiện" onPress={_onPressCreateNew} />
     </DrawerContentScrollView>
   );
 }
@@ -64,7 +75,7 @@ const DrawerLayout = () => {
           name="index"
           options={{
             title: "Lịch công tác",
-            headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" customContainerStyles={{paddingVertical:0}} title="Quản lý công" />, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" customContainerStyles={{ paddingVertical: 0 }} title="Quản lý công" />, // Do not render on Android
             headerRight: () => (
               <EditButton
                 isEdit={true}
@@ -80,7 +91,7 @@ const DrawerLayout = () => {
           name="create-week-calendar"
           options={{
             title: "Thêm sự kiện mới",
-            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác"/>, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác" />, // Do not render on Android
           }}
         />
 
@@ -88,7 +99,7 @@ const DrawerLayout = () => {
           name="[id]"
           options={{
             title: "Chi tiết lịch",
-            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác"/>, // Do not render on Android
+            headerLeft: () => <GoBackButton destRoute="/timesheet/week-calendar" title="Lịch công tác" />, // Do not render on Android
           }}
         />
       </Drawer>
