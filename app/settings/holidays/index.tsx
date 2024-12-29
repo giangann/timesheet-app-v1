@@ -1,34 +1,39 @@
 import { THoliday } from "@/api/setting/type";
+import CustomYearPicker from "@/components/CutomeYearPicker";
+import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { dayFromDate, getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
 import { useFetchHolidays } from "@/hooks/setting";
 import { useRouter } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
-const FilterIconImage = require("@/assets/images/filter-icon.png");
+
+const currentYear = new Date().getFullYear();
 
 export default function HolidayList() {
-  const { holidays } = useFetchHolidays(2024);
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const { holidays, onFetchHolidays } = useFetchHolidays(selectedYear);
+
+  const onYearSelected = (year: number) => {
+    setSelectedYear(year);
+  };
 
   return (
     <View style={styles.container}>
-      <ToolBar />
-      <ScrollView contentContainerStyle={styles.listBox}>
-        <List holidays={sortByDate(holidays)} />
-      </ScrollView>
+      <ToolBar leftComponent={<CustomYearPicker year={selectedYear} onYearSelect={onYearSelected} />} />
+      <MyFlatListRefreshable data={[holidays]} renderItem={() => <List holidays={sortByDate(holidays)} />} onPullDown={onFetchHolidays} />
     </View>
   );
 }
 
-const ToolBar = () => {
+const ToolBar = ({ leftComponent }: { leftComponent: React.ReactNode }) => {
   const router = useRouter();
   return (
     <View style={styles.toolbar}>
-      <Pressable onPress={() => {}}>
-        <Image source={FilterIconImage} />
-      </Pressable>
+      {leftComponent}
       <Pressable onPress={() => router.push("/settings/holidays/add-holiday")}>
         <Image source={AddNewIconImage} />
       </Pressable>
@@ -42,11 +47,11 @@ type ListProps = {
 const List: React.FC<ListProps> = ({ holidays }) => {
   const listGroupHolidaysByMonth = groupHolidaysByMonth(holidays);
   return (
-    <>
+    <View style={styles.listBox}>
       {listGroupHolidaysByMonth.map((groupHolidays) => (
         <GroupItems key={groupHolidays.id} groupItems={groupHolidays} />
       ))}
-    </>
+    </View>
   );
 };
 
@@ -71,7 +76,7 @@ type ItemProps = {
   holiday: THoliday;
 };
 const Item: React.FC<ItemProps> = ({ holiday }) => {
-  const { name: holidayName, date } = holiday;
+  const { name: holidayName, date, id } = holiday;
   return (
     <View style={styles.itemBox}>
       <View style={styles.indexBox}>
@@ -102,14 +107,13 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     gap: 4,
     marginBottom: 20,
   },
   listBox: {
     paddingBottom: 16,
     gap: 24,
-    // paddingBottom:60,
   },
 
   groupItemsBox: {
