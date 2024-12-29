@@ -14,15 +14,22 @@ export default function WeekCalendar() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const { weekCalendars } = useFetchWeekCalendar();
-  const { dutyForms } = useFetchGroupDutyForms();
-  const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
+  // const { weekCalendars } = useFetchWeekCalendar();
+  // const { dutyForms } = useFetchGroupDutyForms();
+  // const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
+
+  const weekCalendars: any = [];
+  const dutyForms: any = [];
+  const leaveForms: any = [];
 
   const weekCalendarEventItems = useMemo(() => weekCalendarToEventItems(weekCalendars), [weekCalendars]);
   const dutyEventItems = useMemo(() => dutyFormToEventItems(dutyForms), [dutyForms]);
   const leaveEventItems = useMemo(() => leaveFormToEventItems(leaveForms), [leaveForms]);
 
-  const allEvents = useMemo(() => [...weekCalendarEventItems, ...dutyEventItems, ...leaveEventItems], [weekCalendarEventItems, dutyEventItems]);
+  const allEvents = useMemo(
+    () => [...weekCalendarEventItems, ...dutyEventItems, ...leaveEventItems],
+    [weekCalendarEventItems, dutyEventItems, leaveEventItems]
+  );
 
   const onEventSelected = (event: OnEventResponse) => {
     console.log("Selected Event:", event); // Debugging line
