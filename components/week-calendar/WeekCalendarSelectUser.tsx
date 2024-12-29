@@ -37,14 +37,16 @@ export const WeekCalendarSelectUser = () => {
 
   const listUsers = useMemo(() => (filterCheckStatus === "all" ? searchedUsers : selectedUsers), [filterCheckStatus, searchedUsers, selectedUsers]);
   return (
-    <>
+    <View style={styles.container}>
       {/*  */}
       <FieldLabel />
 
       {/*  */}
-      {useFieldArrayReturn?.fields.map((field, index) => (
-        <UserItem key={field.id} userInfo={field} fieldArrayId={index} />
-      ))}
+      <View style={styles.userListContainer}>
+        {useFieldArrayReturn?.fields.map((field, index) => (
+          <UserItem key={field.id} userInfo={field} fieldArrayId={index} />
+        ))}
+      </View>
 
       {/*  */}
       <Button style={[{ alignItems: "flex-start" }]} onPress={onOpen} textColor="#0B3A82">
@@ -126,7 +128,7 @@ export const WeekCalendarSelectUser = () => {
           </SafeAreaView>
         </Modal>
       )}
-    </>
+    </View>
   );
 };
 
@@ -183,6 +185,12 @@ const UserItem: React.FC<{ userInfo: TWeekCalendarCreateFormFieldsUser; fieldArr
 };
 
 const styles = StyleSheet.create({
+  container: {
+    gap: 12,
+  },
+  userListContainer: {
+    gap: 8,
+  },
   userItemBox: {
     position: "relative",
     paddingHorizontal: 16,
