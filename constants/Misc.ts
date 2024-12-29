@@ -1,3 +1,4 @@
+import { THolidayDetail } from "@/api/setting/type";
 import { TPagiParams } from "@/types";
 import { EventItem } from "@howljs/calendar-kit";
 
@@ -385,4 +386,11 @@ const generateEvents = () => {
       } as EventItem;
     })
     .concat(allDayEvents);
+};
+
+export const _mockHoliday: THolidayDetail = {
+  name: "Giỗ tổ Hùng Vương 2",
+  date: "2024-12-30",
+  salaryCoefficientTypeId: null,
+  activeOutsideWorkingTime: null,
 };

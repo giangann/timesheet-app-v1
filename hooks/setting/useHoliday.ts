@@ -48,8 +48,10 @@ export function useHolidayDetail() {
         const responseJson = await fetchHoliday(session, holidayId);
 
         if (responseJson.statusCode === 200) {
-          setHoliday(responseJson.data.holiday);
-          return responseJson.data.holiday;
+          const holiday = responseJson.data.holiday;
+
+          setHoliday(holiday);
+          return holiday;
         } else {
           MyToast.error(responseJson.error ?? responseJson.message);
         }

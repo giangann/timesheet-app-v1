@@ -1,14 +1,17 @@
 import { THoliday } from "@/api/setting/type";
 import CustomYearPicker from "@/components/CutomeYearPicker";
+import { MyModal } from "@/components/MyModal";
 import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
 import { dayFromDate, getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
-import { useFetchHolidays } from "@/hooks/setting";
+import { useDeleteHoliday, useFetchHolidays } from "@/hooks/setting";
+import { Entypo } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
+import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 
 const currentYear = new Date().getFullYear();
@@ -24,7 +27,11 @@ export default function HolidayList() {
   return (
     <View style={styles.container}>
       <ToolBar leftComponent={<CustomYearPicker year={selectedYear} onYearSelect={onYearSelected} />} />
-      <MyFlatListRefreshable data={[holidays]} renderItem={() => <List holidays={sortByDate(holidays)} />} onPullDown={onFetchHolidays} />
+      <MyFlatListRefreshable
+        data={[holidays]}
+        renderItem={() => <List refetch={onFetchHolidays} holidays={sortByDate(holidays)} />}
+        onPullDown={onFetchHolidays}
+      />
     </View>
   );
 }
@@ -43,13 +50,14 @@ const ToolBar = ({ leftComponent }: { leftComponent: React.ReactNode }) => {
 
 type ListProps = {
   holidays: THoliday[];
+  refetch: () => void;
 };
-const List: React.FC<ListProps> = ({ holidays }) => {
+const List: React.FC<ListProps> = ({ holidays, refetch }) => {
   const listGroupHolidaysByMonth = groupHolidaysByMonth(holidays);
   return (
     <View style={styles.listBox}>
       {listGroupHolidaysByMonth.map((groupHolidays) => (
-        <GroupItems key={groupHolidays.id} groupItems={groupHolidays} />
+        <GroupItems key={groupHolidays.id} groupItems={groupHolidays} refetch={refetch} />
       ))}
     </View>
   );
@@ -57,15 +65,16 @@ const List: React.FC<ListProps> = ({ holidays }) => {
 
 type GroupItemsProps = {
   groupItems: TGroupedHolidays;
+  refetch: () => void;
 };
-const GroupItems: React.FC<GroupItemsProps> = ({ groupItems }) => {
+const GroupItems: React.FC<GroupItemsProps> = ({ groupItems, refetch }) => {
   const { holidays, name: monthName } = groupItems;
   return (
     <View style={styles.groupItemsBox}>
       <NunitoText type="body2">{monthName}</NunitoText>
       <View style={styles.itemsWrapper}>
         {holidays.map((holiday) => (
-          <Item key={holiday.id} holiday={holiday} />
+          <Item key={holiday.id} holiday={holiday} refetch={refetch} />
         ))}
       </View>
     </View>
@@ -74,11 +83,42 @@ const GroupItems: React.FC<GroupItemsProps> = ({ groupItems }) => {
 
 type ItemProps = {
   holiday: THoliday;
+  refetch: () => void;
 };
-const Item: React.FC<ItemProps> = ({ holiday }) => {
+const Item: React.FC<ItemProps> = ({ holiday, refetch }) => {
   const { name: holidayName, date, id } = holiday;
+
+  const [visible, setVisible] = useState(false);
+  const [openCfModal, setOpenCfModal] = useState(false);
+
+  const router = useRouter();
+  const { onDeleteHoliday } = useDeleteHoliday();
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  const onPressDelete = useCallback(() => {
+    closeMenu();
+    setOpenCfModal(true);
+  }, [setOpenCfModal, closeMenu]);
+
+  const onConfirmDelete = useCallback(() => {
+    onDeleteHoliday(id);
+    refetch();
+  }, [id, onDeleteHoliday, refetch]);
+
+  const onGoToEdit = useCallback(() => {
+    router.navigate({ pathname: "/settings/holidays/[id]", params: { id } });
+  }, [id, router]);
+
+  const onPressEdit = useCallback(() => {
+    closeMenu();
+    onGoToEdit();
+  }, [onGoToEdit, closeMenu]);
+
   return (
     <View style={styles.itemBox}>
+      {/* Info */}
       <View style={styles.indexBox}>
         <NunitoText type="body2" lightColor="white" darkColor="white">
           {dayFromDate(date)}
@@ -88,6 +128,36 @@ const Item: React.FC<ItemProps> = ({ holiday }) => {
         <NunitoText type="body2"> {holidayName}</NunitoText>
         <NunitoText type="subtitle2">{getDayOfWeekNameInVietnamese(date)}</NunitoText>
       </View>
+
+      {/* Menu */}
+      <View style={styles.iconThreeDotsAbsBox}>
+        <Menu
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <TouchableHighlight underlayColor={`#000000${OPACITY_TO_HEX["15"]}`} onPress={openMenu} style={styles.iconThreeDotsBtn}>
+              <Entypo name="dots-three-vertical" size={18} color="black" />
+            </TouchableHighlight>
+          }
+        >
+          <Menu.Item onPress={onPressEdit} title="Sửa" />
+          <Menu.Item onPress={onPressDelete} title="Xóa" />
+        </Menu>
+      </View>
+
+      {/* Modal */}
+      {openCfModal && (
+        <MyModal
+          title={"Xác nhận xóa ngày nghỉ"}
+          onClose={() => setOpenCfModal(false)}
+          cb={onConfirmDelete}
+          modalProps={{ animationType: "fade", transparent: true }}
+        >
+          <View>
+            <NunitoText type="body3">Xóa ngày nghỉ: {holidayName}?</NunitoText>
+          </View>
+        </MyModal>
+      )}
     </View>
   );
 };
@@ -131,12 +201,23 @@ const styles = StyleSheet.create({
 
     flexDirection: "row",
     alignItems: "center",
+
+    position: "relative",
   },
   indexBox: {
     backgroundColor: `#0B3A82`,
     padding: 10 * UNIT_DIMENSION,
     borderRadius: 8 * UNIT_DIMENSION,
     marginRight: 12 * UNIT_DIMENSION,
+  },
+  iconThreeDotsAbsBox: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  iconThreeDotsBtn: {
+    padding: 12,
+    borderRadius: 20,
   },
 });
 

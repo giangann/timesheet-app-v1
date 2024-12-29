@@ -37,6 +37,8 @@ export default function SettingLayout() {
         }}
       />
       <Stack.Screen name="holidays/add-holiday" options={{ title: "Thêm ngày nghỉ" }} />
+      <Stack.Screen name="holidays/[id]" options={{ title: "Chỉnh sửa ngày nghỉ" }} />
+
       <Stack.Screen
         name="leave_types/index"
         options={{

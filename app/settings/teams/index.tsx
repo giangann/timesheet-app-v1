@@ -8,7 +8,7 @@ import { useDeleteTeam } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
 import { NoData } from "@/ui/NoData";
 import { Entypo } from "@expo/vector-icons";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
