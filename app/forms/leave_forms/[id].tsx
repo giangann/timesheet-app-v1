@@ -46,6 +46,21 @@ export default function DetailOrEditForm() {
     };
   }, []);
 
+  useEffect(() => {
+    function lockLandscape() {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+    }
+    function unlockLandscape() {
+      ScreenOrientation.unlockAsync();
+    }
+
+    lockLandscape();
+
+    return () => {
+      unlockLandscape();
+    };
+  }, []);
+
   return (
     <>
       {!form && isLoading && (

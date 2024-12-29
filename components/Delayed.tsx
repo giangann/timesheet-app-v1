@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
-  waitBeforeShow?: number;
+  waitBeforeShow?: number; // milliseconds
 };
 
 export const Delayed: React.FC<Props> = ({ children, waitBeforeShow = 500 }) => {
