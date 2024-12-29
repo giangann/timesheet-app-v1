@@ -131,6 +131,7 @@ export default function CreateDutyForm() {
               placeholder="Nhập nội dung..."
               disabled={!isDateDirty}
               required
+              multiline
             />
             <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} disabled={!isDateDirty} />
             <View style={styles.actionContainer}>

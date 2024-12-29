@@ -96,7 +96,7 @@ export const WeekCalendarCreate = ({ calendarId }: Props) => {
           )}
 
           <WeekCalendarSelectUser />
-          <FormInputMultilne formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập ghi chú..." />
+          <FormInputMultilne formInputProps={{ control: useFormReturn?.control, name: "description" }} label="Mô tả" placeholder="Nhập mô tả..." multiline/>
 
           <View style={styles.actionContainer}>
             <Button
