@@ -11,6 +11,24 @@ export type THoliday = {
   salaryCoefficientTypeId: number;
   activeOutsideWorkingTime: boolean;
 };
+export type THolidayDetail = {
+  name: string;
+  date: string; // YYYY-MM-DD
+  salaryCoefficientTypeId: number;
+  activeOutsideWorkingTime: boolean;
+};
+export type THolidayCreate = {
+  name: string;
+  date: string; // YYYY-MM-DD
+  salaryCoefficientTypeId?: number;
+  activeOutsideWorkingTime?: boolean;
+};
+export type THolidayEdit = {
+  name?: string;
+  date?: string; // YYYY-MM-DD
+  salaryCoefficientTypeId?: number;
+  activeOutsideWorkingTime?: boolean;
+};
 export type THolidayFilterParams = {
   year: number;
 };

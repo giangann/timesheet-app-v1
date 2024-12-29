@@ -1,8 +1,8 @@
 import { createTeam, deleteTeam, editTeam, fetchTeam } from "@/api/team";
-import { TTeam, TTeamCreate, TTeamDetail, TTeamEdit } from "@/api/team/type";
+import { TTeamCreate, TTeamDetail, TTeamEdit } from "@/api/team/type";
 import { useSession } from "@/contexts";
 import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 
 export function useDeleteTeam() {

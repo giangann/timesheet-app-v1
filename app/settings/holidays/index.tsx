@@ -1,56 +1,16 @@
+import { THoliday } from "@/api/setting/type";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { UNIT_DIMENSION } from "@/constants/Misc";
-import { useSession } from "@/contexts/ctx";
 import { dayFromDate, getDayOfWeekNameInVietnamese, sortByDate } from "@/helper/date";
-import { MyToast } from "@/ui/MyToast";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useFetchHolidays } from "@/hooks/setting";
+import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
 const FilterIconImage = require("@/assets/images/filter-icon.png");
 
-type THoliday = {
-  id: number;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  name: string;
-  date: string; // YYYY-MM-DD
-  salaryCoefficientTypeId: number;
-  activeOutsideWorkingTime: boolean;
-};
-
 export default function HolidayList() {
-  const [holidays, setHolidays] = useState<THoliday[]>([]);
-  const { session } = useSession();
-
-  const fetchHolidays = async () => {
-    const token = `Bearer ${session}`;
-
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-    const endpoint = "/holidays?year=2024";
-    const url = `${baseUrl}${endpoint}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      credentials: "include",
-    });
-    const responseJson = await response.json();
-
-    if (responseJson.statusCode === 200) {
-      setHolidays(responseJson.data.holidays);
-    } else {
-      MyToast.error(responseJson.error);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchHolidays();
-    }, [])
-  );
+  const { holidays } = useFetchHolidays(2024);
 
   return (
     <View style={styles.container}>
