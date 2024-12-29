@@ -46,20 +46,20 @@ export default function DetailOrEditForm() {
     };
   }, []);
 
-  useEffect(() => {
-    function lockLandscape() {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-    }
-    function unlockLandscape() {
-      ScreenOrientation.unlockAsync();
-    }
+  // useEffect(() => {
+  //   function lockLandscape() {
+  //     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+  //   }
+  //   function unlockLandscape() {
+  //     ScreenOrientation.unlockAsync();
+  //   }
 
-    lockLandscape();
+  //   lockLandscape();
 
-    return () => {
-      unlockLandscape();
-    };
-  }, []);
+  //   return () => {
+  //     unlockLandscape();
+  //   };
+  // }, []);
 
   return (
     <>

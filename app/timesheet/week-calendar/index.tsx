@@ -93,24 +93,24 @@ export default function WeekCalendar() {
     }, [navigation])
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      function lockLandscape() {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-      }
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     function lockLandscape() {
+  //       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+  //     }
 
-      function unlockLandscape() {
-        console.log("Unlock async to:", ScreenOrientation.OrientationLock.DEFAULT);
-        ScreenOrientation.unlockAsync();
-      }
+  //     function unlockLandscape() {
+  //       console.log("Unlock async to:", ScreenOrientation.OrientationLock.DEFAULT);
+  //       ScreenOrientation.unlockAsync();
+  //     }
 
-      lockLandscape();
+  //     lockLandscape();
 
-      return () => {
-        setTimeout(unlockLandscape, 100);
-      };
-    }, [])
-  );
+  //     return () => {
+  //       setTimeout(unlockLandscape, 100);
+  //     };
+  //   }, [])
+  // );
   return (
     <Delayed waitBeforeShow={3000}>
       <TeamWeekCalendar onEventSelected={onEventSelected} events={allEvents} />
