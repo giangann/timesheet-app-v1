@@ -69,29 +69,29 @@ export default function WeekCalendar() {
     });
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      const landscapes = [ScreenOrientation.Orientation.LANDSCAPE_LEFT, ScreenOrientation.Orientation.LANDSCAPE_RIGHT];
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const landscapes = [ScreenOrientation.Orientation.LANDSCAPE_LEFT, ScreenOrientation.Orientation.LANDSCAPE_RIGHT];
 
-      const onOrientationChange: ScreenOrientation.OrientationChangeListener = (event) => {
-        if (landscapes.includes(event.orientationInfo.orientation)) {
-          navigation.setOptions({
-            headerShown: false,
-          });
-        } else {
-          navigation.setOptions({
-            headerShown: true,
-          });
-        }
-      };
+  //     const onOrientationChange: ScreenOrientation.OrientationChangeListener = (event) => {
+  //       if (landscapes.includes(event.orientationInfo.orientation)) {
+  //         navigation.setOptions({
+  //           headerShown: false,
+  //         });
+  //       } else {
+  //         navigation.setOptions({
+  //           headerShown: true,
+  //         });
+  //       }
+  //     };
 
-      const orientationChangeSubscription = ScreenOrientation.addOrientationChangeListener(onOrientationChange);
+  //     const orientationChangeSubscription = ScreenOrientation.addOrientationChangeListener(onOrientationChange);
 
-      return () => {
-        ScreenOrientation.removeOrientationChangeListener(orientationChangeSubscription);
-      };
-    }, [navigation])
-  );
+  //     return () => {
+  //       ScreenOrientation.removeOrientationChangeListener(orientationChangeSubscription);
+  //     };
+  //   }, [navigation])
+  // );
 
   // useFocusEffect(
   //   useCallback(() => {

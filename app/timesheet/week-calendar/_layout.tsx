@@ -74,6 +74,7 @@ const DrawerLayout = () => {
         <Drawer.Screen
           name="index"
           options={{
+            headerShown: false,
             title: "Lịch công tác",
             headerLeft: () => <GoBackButton destRoute="/(tabs)/timesheet" customContainerStyles={{ paddingVertical: 0 }} title="Quản lý công" />, // Do not render on Android
             headerRight: () => (
