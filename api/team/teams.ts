@@ -73,13 +73,13 @@ export async function editTeam(session: string | undefined | null, teamId: numbe
   const token = `Bearer ${session}`;
 
   const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
-  const endpoint = "/teams";
+  const endpoint = `/teams`;
   const url = `${baseUrl}${endpoint}`;
 
   const response = await fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers: { "Content-Type": "application/json", Authorization: token },
-    body: JSON.stringify(bodyData),
+    body: JSON.stringify({ ...bodyData, id: teamId }),
     credentials: "include",
   });
   const responseJson = await response.json();

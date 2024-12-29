@@ -27,7 +27,7 @@ export default function SettingLayout() {
         }}
       />
       <Stack.Screen name="teams/add-team" options={{ title: "Thêm phòng ban" }} />
-      <Stack.Screen name="teams/edit-team/[id]" options={{ title: "Chỉnh sửa phòng ban" }} />
+      <Stack.Screen name="teams/[id]" options={{ title: "Chỉnh sửa phòng ban" }} />
 
       <Stack.Screen
         name="holidays/index"

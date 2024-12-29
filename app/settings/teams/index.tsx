@@ -57,7 +57,7 @@ export default function TeamList() {
       <ToolBar />
       <MyFlatListRefreshable
         data={teams}
-        renderItem={({ item: team }) => <Item team={team} refetch={fetchTeams} />}
+        renderItem={({ item: team, index }) => <Item team={team} refetch={fetchTeams} index={index} />}
         ListEmptyComponent={<NoData message="Chưa có loại trực được tạo, hãy tạo mới" />}
         contentContainerStyle={{ gap: 20, paddingBottom: 32, paddingHorizontal: 16 }}
         onPullDown={fetchTeams}
@@ -80,8 +80,9 @@ const ToolBar = () => {
 type ItemProps = {
   refetch: () => void;
   team: TTeam;
+  index: number;
 };
-const Item: React.FC<ItemProps> = ({ team, refetch }) => {
+const Item: React.FC<ItemProps> = ({ team, refetch, index }) => {
   const { id, name, hotline } = team;
 
   const [visible, setVisible] = useState(false);
@@ -105,7 +106,8 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
   }, [id, onDeleteTeam, refetch]);
 
   const onGoToEdit = useCallback(() => {
-    router.navigate({ pathname: "/settings/teams/edit-team/[id]", params: { id: id } });
+    // @ts-ignore
+    router.navigate({ pathname: "settings/teams/[id]", params: { id } });
   }, [id, router]);
 
   const onPressEdit = useCallback(() => {
@@ -118,7 +120,7 @@ const Item: React.FC<ItemProps> = ({ team, refetch }) => {
       <View style={styles.itemBox}>
         <View style={styles.indexBox}>
           <NunitoText type="body2" lightColor="white" darkColor="white">
-            {addPrefix(id)}
+            {addPrefix(index + 1)}
           </NunitoText>
         </View>
         <View>

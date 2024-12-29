@@ -1,7 +1,7 @@
-import { TTeam, TTeamCreate, TTeamDetail, TTeamEdit } from "@/api/team/type";
+import { TTeamCreate, TTeamDetail } from "@/api/team/type";
 import { FormInput } from "@/components/FormInput";
 import { NunitoText } from "@/components/text/NunitoText";
-import { dirtyValues, hasNullishValue, pickProperties } from "@/helper/common";
+import { hasNullishValue, pickProperties } from "@/helper/common";
 import { useCreateTeam, useEditTeam, useTeamDetail } from "@/hooks/setting";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect } from "expo-router";
@@ -17,12 +17,7 @@ type CreateItem = {
   hotline: string | undefined;
 };
 export const TeamCreateOrEdit: React.FC<Props> = memo(({ teamId }) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { dirtyFields },
-    setValue,
-  } = useForm<CreateItem>({ defaultValues: { name: "" } });
+  const { control, handleSubmit, setValue } = useForm<CreateItem>({ defaultValues: { name: "" } });
 
   const { onCreateTeam } = useCreateTeam();
   const { onEditTeam } = useEditTeam();
@@ -51,9 +46,18 @@ export const TeamCreateOrEdit: React.FC<Props> = memo(({ teamId }) => {
     try {
       if (!teamId) throw new Error("Không có teamId, hãy khởi động lại ứng dụng");
 
-      const dirtyFieldValues = dirtyValues(fieldValues, dirtyFields);
+      const requiredValues = pickProperties(fieldValues, ["name"]);
+      if (hasNullishValue(requiredValues)) {
+        MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
+        return;
+      }
 
-      onEditTeam(teamId, dirtyFieldValues);
+      const bodyData: TTeamCreate = {
+        name: fieldValues.name ?? "",
+        hotline: fieldValues.hotline,
+      };
+
+      onEditTeam(teamId, bodyData);
     } catch (error: any) {
       MyToast.error(error.message);
     }
@@ -82,7 +86,7 @@ export const TeamCreateOrEdit: React.FC<Props> = memo(({ teamId }) => {
       }
 
       fetchDetail();
-    }, [teamId])
+    }, [teamId, onFetchTeamDetail, setValue])
   );
   return (
     <View style={styles.container}>
@@ -96,7 +100,7 @@ export const TeamCreateOrEdit: React.FC<Props> = memo(({ teamId }) => {
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onSubmit)} style={styles.buttonContainer}>
         <View style={styles.button}>
           <NunitoText type="body3" style={{ color: "white" }}>
-            Tạo mới
+            {teamId ? "Cập nhật" : "Tạo mới"}
           </NunitoText>
         </View>
       </TouchableOpacity>
@@ -111,6 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollContent: {
+    gap: 20,
     padding: 16,
     paddingBottom: 100, // Space at the bottom to prevent overlap with the button
   },
