@@ -115,7 +115,7 @@ export const HolidayCreateOrEdit: React.FC<Props> = memo(({ holidayId }) => {
 
         <FormInput formInputProps={{ control: control, name: "name" }} label="Tên ngày nghỉ" required placeholder="Nhập tên ngày nghỉ..." />
 
-        <FormSelectV2
+        {/* <FormSelectV2
           useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
           options={salaryCoefficientTypeOptions}
           label="Loại ngoài giờ"
@@ -133,7 +133,7 @@ export const HolidayCreateOrEdit: React.FC<Props> = memo(({ holidayId }) => {
           required
           placeholder="Chọn cho phép / không cho phép"
           leftIcon={<Fontisto name="checkbox-active" size={18} color={Colors.light.inputIconNone} />}
-        />
+        /> */}
         {/* Add more FormInput components as needed */}
       </ScrollView>
       <TouchableOpacity activeOpacity={0.8} onPress={handleSubmit(onSubmit)} style={styles.buttonContainer}>
