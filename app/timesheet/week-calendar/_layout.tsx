@@ -7,7 +7,8 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import Drawer from "expo-router/drawer";
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { PanGesture } from "react-native-gesture-handler";
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
@@ -68,6 +69,29 @@ const DrawerLayout = () => {
               {props.children}
             </NunitoText>
           ),
+          // // No warning but crash
+          // configureGestureHandler: (gesture: PanGesture) => {
+          //   return gesture.onEnd((event) => {
+          //     'worklet'; // Mark as worklet to run on the UI thread
+          //     if (event.translationX > 50) {
+          //       // Use runOnJS to safely call JavaScript thread functions
+          //       runOnJS(() => {
+          //         router.navigate("/(tabs)/timesheet");
+          //       })();
+          //     }
+          //   });
+          // },
+
+          // // Warning but ok
+          configureGestureHandler: (gesture: PanGesture) => {
+            return gesture.onEnd((event) => {
+              // Detect swipe-back gesture
+              if (event.translationX > 50) {
+                // Navigate to another route instead of opening the drawer
+                router.navigate("/(tabs)/timesheet");
+              }
+            });
+          },
         }}
         drawerContent={_renderDrawer}
       >

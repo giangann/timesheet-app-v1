@@ -1,3 +1,4 @@
+import { Delayed } from "@/components/Delayed";
 import { CreateNewButton } from "@/components/button";
 import { TeamWeekCalendar } from "@/components/timesheet";
 import { EVENT_ITEM_PREFIX } from "@/constants/Misc";
@@ -6,22 +7,17 @@ import { useFetchGroupDutyForms, useFetchLeaveFormsInWeekCalendar } from "@/hook
 import { useFetchWeekCalendar } from "@/hooks/week-calendar";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { Delayed } from "@/components/Delayed";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 
 export default function WeekCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>();
   const navigation = useNavigation();
   const router = useRouter();
 
-  // const { weekCalendars } = useFetchWeekCalendar();
-  // const { dutyForms } = useFetchGroupDutyForms();
-  // const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
-
-  const weekCalendars: any = [];
-  const dutyForms: any = [];
-  const leaveForms: any = [];
+  const { weekCalendars } = useFetchWeekCalendar();
+  const { dutyForms } = useFetchGroupDutyForms();
+  const { leaveForms } = useFetchLeaveFormsInWeekCalendar();
 
   const weekCalendarEventItems = useMemo(() => weekCalendarToEventItems(weekCalendars), [weekCalendars]);
   const dutyEventItems = useMemo(() => dutyFormToEventItems(dutyForms), [dutyForms]);
@@ -69,50 +65,26 @@ export default function WeekCalendar() {
     });
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const landscapes = [ScreenOrientation.Orientation.LANDSCAPE_LEFT, ScreenOrientation.Orientation.LANDSCAPE_RIGHT];
+  useFocusEffect(
+    useCallback(() => {
+      function lockLandscape() {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+      }
 
-  //     const onOrientationChange: ScreenOrientation.OrientationChangeListener = (event) => {
-  //       if (landscapes.includes(event.orientationInfo.orientation)) {
-  //         navigation.setOptions({
-  //           headerShown: false,
-  //         });
-  //       } else {
-  //         navigation.setOptions({
-  //           headerShown: true,
-  //         });
-  //       }
-  //     };
+      function unlockLandscape() {
+        console.log("Unlock async to:", ScreenOrientation.OrientationLock.DEFAULT);
+        ScreenOrientation.unlockAsync();
+      }
 
-  //     const orientationChangeSubscription = ScreenOrientation.addOrientationChangeListener(onOrientationChange);
+      lockLandscape();
 
-  //     return () => {
-  //       ScreenOrientation.removeOrientationChangeListener(orientationChangeSubscription);
-  //     };
-  //   }, [navigation])
-  // );
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     function lockLandscape() {
-  //       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-  //     }
-
-  //     function unlockLandscape() {
-  //       console.log("Unlock async to:", ScreenOrientation.OrientationLock.DEFAULT);
-  //       ScreenOrientation.unlockAsync();
-  //     }
-
-  //     lockLandscape();
-
-  //     return () => {
-  //       setTimeout(unlockLandscape, 100);
-  //     };
-  //   }, [])
-  // );
+      return () => {
+        setTimeout(unlockLandscape, 100);
+      };
+    }, [])
+  );
   return (
-    <Delayed waitBeforeShow={3000}>
+    <Delayed waitBeforeShow={1000}>
       <TeamWeekCalendar onEventSelected={onEventSelected} events={allEvents} />
     </Delayed>
   );
