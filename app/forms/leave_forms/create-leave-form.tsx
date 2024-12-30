@@ -28,10 +28,6 @@ type CreateItemForm = {
   note: string | null;
 };
 
-type TLeaveType = {
-  id: number;
-  name: string;
-};
 type TUserApprove = {
   identifyCard: number;
   name: string;
@@ -195,9 +191,8 @@ export default function CreateLeaveForm() {
             leftIcon={<MaterialCommunityIcons name="human-queue" size={18} color={Colors.light.inputIconNone} />}
           />
 
-          <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
-
           <FormInput formInputProps={{ control: control, name: "note" }} label="Ghi chú" placeholder="Nhập ghi chú..." />
+          <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
           <View style={styles.button}>
