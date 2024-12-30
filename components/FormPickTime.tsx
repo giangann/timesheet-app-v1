@@ -83,6 +83,7 @@ function RawFormPickTime<T extends FieldValues>({
         testID="dateTimePickerModal"
         is24Hour={true}
         display={Platform.OS === "ios" ? "spinner" : "default"}
+        locale="vi-VN"
       />
     </View>
   );

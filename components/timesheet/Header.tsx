@@ -28,7 +28,7 @@ const Header: FC<HeaderProps> = ({
   const navigation = useNavigation<DrawerNavigationProp<any>>();
 
   const updateTitle = (date: string) => {
-    const formatted = new Date(date).toLocaleDateString('en-US', {
+    const formatted = new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'long',
     });

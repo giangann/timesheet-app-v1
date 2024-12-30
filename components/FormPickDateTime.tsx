@@ -91,6 +91,7 @@ export function FormPickDateTime<T extends FieldValues>({
         onCancel={onDateTimeDismiss}
         display={Platform.OS === "ios" ? "inline" : "default"}
         date={value ?? initDate}
+        locale="vi-VN"
       />
 
       {/* Error message */}

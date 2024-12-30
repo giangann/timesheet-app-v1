@@ -211,7 +211,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events
         firstDay={1}
         hideWeekDays={hideWeekDays}
         initialLocales={initialLocales}
-        locale="en"
+        locale="vi"
         minRegularEventMinutes={5}
         // theme={
         //   configs.themeMode === "auto" ? (colorScheme === "dark" ? CALENDAR_THEME.dark : CALENDAR_THEME.light) : CALENDAR_THEME[configs.themeMode]
