@@ -1,4 +1,4 @@
-package com.giangnn229.timesheetappv1;
+package com.giangann229.timesheetappv1;
 
 import com.facebook.react.modules.network.OkHttpClientFactory;
 import com.facebook.react.modules.network.OkHttpClientProvider;

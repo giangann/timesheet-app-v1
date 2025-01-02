@@ -13,11 +13,10 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.facebook.react.modules.network.OkHttpClientProvider
+import com.giangann229.timesheetappv1.IgnoreSSLFactory
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
-
-import com.giangann229.timesheetappv1.IgnoreSSLFactory // <-- Import statement
 
 class MainApplication : Application(), ReactApplication {
 
