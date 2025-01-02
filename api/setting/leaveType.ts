@@ -3,7 +3,7 @@ import { paramsObjectToQueryString } from "@/helper/common";
 export async function fetchLeaveTypes(session: string | undefined | null) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/leave-form-types";
   const url = `${baseUrl}${endpoint}`;
 
@@ -20,7 +20,7 @@ export async function fetchLeaveTypes(session: string | undefined | null) {
 export async function deleteLeaveType(session: string | undefined | null, leaveTypeId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/leave-form-types/${leaveTypeId}`;
   const url = `${baseUrl}${endpoint}`;
 

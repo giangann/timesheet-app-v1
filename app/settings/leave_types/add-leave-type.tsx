@@ -23,7 +23,7 @@ export default function AddLeaveType() {
   const onCreate = async (data: CreateItem) => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
     const endpoint = "/leave-form-types";
     const url = `${baseUrl}${endpoint}`;
 

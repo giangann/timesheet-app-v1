@@ -3,7 +3,7 @@ import { TChangePassword } from "./types";
 export async function fetchUserProfile(session: string) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/users/profile`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -20,7 +20,7 @@ export async function fetchUserProfile(session: string) {
 export async function changePassword(session: string | null | undefined, bodyData: TChangePassword) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/auth/change-password`;
   const url = `${baseUrl}${endpoint}`;
 

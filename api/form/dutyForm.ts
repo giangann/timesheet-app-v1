@@ -11,7 +11,7 @@ import { paramsObjectToQueryString } from "@/helper/common";
 export async function fetchMyDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms/filter/user";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -46,7 +46,7 @@ export async function fetchApproveDutyForms(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms/filter/user-approve";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -77,7 +77,7 @@ export async function fetchApproveDutyForms(
 export async function fetchUserCreateDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms/filter/user-create";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -108,7 +108,7 @@ export async function fetchUserCreateDutyForms(session: string | undefined | nul
 export async function fetchGroupDutyForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TDutyFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms/filter/all";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -139,7 +139,7 @@ export async function fetchGroupDutyForms(session: string | undefined | null, pa
 export async function fetchDutyFormDetail(session: string | undefined | null, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/duty-forms`;
   const querystring = paramsObjectToQueryString({ id: formId });
   const url = `${baseUrl}${endpoint}${querystring}`;
@@ -157,7 +157,7 @@ export async function fetchDutyFormDetail(session: string | undefined | null, fo
 export async function createDutyForm(session: string | null | undefined, bodyData: TDutyFormCreate) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms";
   const url = `${baseUrl}${endpoint}`;
 
@@ -182,7 +182,7 @@ export async function fetchDutySuggestedUsers(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/duty-forms/suggest-users";
   const queryString = paramsObjectToQueryString({ ...filterParams, ...pagiParams });
 
@@ -201,7 +201,7 @@ export async function fetchDutySuggestedUsers(
 export async function deleteForm(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/duty-forms/cancel`;
   const querystring = paramsObjectToQueryString({ id: formId });
   const url = `${baseUrl}${endpoint}${querystring}`;

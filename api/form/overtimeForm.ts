@@ -6,7 +6,7 @@ import moment from "moment";
 export async function fetchMyOvertimeForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TOvertimeFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/overtime-forms/filter/user";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -41,7 +41,7 @@ export async function fetchApproveOvertimeForms(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/overtime-forms/filter/user-approve";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -71,7 +71,7 @@ export async function fetchApproveOvertimeForms(
 export async function fetchOvertimeFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/overtime-forms/${formId}`;
   const url = `${baseUrl}${endpoint}`;
 

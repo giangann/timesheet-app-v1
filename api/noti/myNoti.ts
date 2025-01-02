@@ -3,7 +3,7 @@ import { TPagiParams } from "@/types";
 
 export const fetchMyNotis = async (session: string | undefined | null, pagiParams?: TPagiParams) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/notifications";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -24,7 +24,7 @@ export const fetchMyNotis = async (session: string | undefined | null, pagiParam
 
 export const readNoti = async (session: string | undefined | null, notiId: number) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/notifications";
   const pathParams = `/${notiId}`;
 

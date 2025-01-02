@@ -210,7 +210,7 @@ export function useEditDutyForm() {
 
         // make request
         const token = `Bearer ${session}`;
-        const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+        const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
         const endpoint = `/duty-forms?id=${dutyFormId}`;
         const url = `${baseUrl}${endpoint}`;
 

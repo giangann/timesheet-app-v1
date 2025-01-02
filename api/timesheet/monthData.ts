@@ -4,7 +4,7 @@ export const fetchMonthData = async (session: string | undefined | null, params:
   const { userIdentifyCard, month, year } = params;
 
   const token = `Bearer ${session}`;
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/users/timesheet";
   const queryString = `?userIdentifyCard=${userIdentifyCard}&month=${month}&year=${year}`;
   const url = `${baseUrl}${endpoint}${queryString}`;

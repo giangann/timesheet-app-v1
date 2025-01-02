@@ -30,7 +30,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
       const endpoint = `/leave-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -66,7 +66,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
       const endpoint = `/leave-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -97,7 +97,7 @@ export default function DetailForm() {
   const fetchLeaveFormDetail = async (formId: string) => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
     const endpoint = `/leave-forms/${formId}`;
     const url = `${baseUrl}${endpoint}`;
 
