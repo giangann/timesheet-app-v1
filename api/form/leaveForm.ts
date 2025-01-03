@@ -6,7 +6,7 @@ import moment from "moment";
 export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/leave-forms/filter/user";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -41,7 +41,7 @@ export async function fetchApproveLeaveForms(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/leave-forms/filter/user-approve";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -72,7 +72,7 @@ export async function fetchApproveLeaveForms(
 export async function fetchLeaveFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = `/leave-forms/${formId}`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -86,11 +86,14 @@ export async function fetchLeaveFormDetail(session: string | null | undefined, f
   return responseJson;
 }
 
-
-export async function fetchLeaveFormsInWeekCalendar(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
+export async function fetchLeaveFormsInWeekCalendar(
+  session: string | undefined | null,
+  pagiParams?: TPagiParams,
+  filterParams?: TLeaveFormFilterParams
+) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/leave-forms/filter/all";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;

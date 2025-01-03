@@ -5,7 +5,7 @@ import { paramsObjectToQueryString } from "@/helper/common";
 export async function fetchListUserByRole(session: string | null | undefined, params: TListUserApproveParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/users/list-user-by-role";
 
   const queryString = paramsObjectToQueryString(params);
@@ -24,7 +24,7 @@ export async function fetchListUserByRole(session: string | null | undefined, pa
 export async function uploadAttachFile(session: string | null | undefined, file: File) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/attach-files";
   const url = `${baseUrl}${endpoint}`;
 

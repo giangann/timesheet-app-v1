@@ -4,7 +4,7 @@ import { paramsObjectToQueryString } from "@/helper/common";
 
 export const fetchTodayTimeKeeping = async (session: string | undefined | null, params: TTimeKeepingMemberParams) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/timekeeping";
   const queryString = paramsObjectToQueryString(params);
   const url = `${baseUrl}${endpoint}${queryString}`;
@@ -21,7 +21,7 @@ export const fetchTodayTimeKeeping = async (session: string | undefined | null, 
 
 export const updateTodayTimeKeeping = async (session: string | undefined | null, bodyData: TTimeKeepingCheckin) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://proven-incredibly-redbird.ngrok-free.app/api/v1";
+  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
   const endpoint = "/timekeeping";
   const url = `${baseUrl}${endpoint}`;
 
