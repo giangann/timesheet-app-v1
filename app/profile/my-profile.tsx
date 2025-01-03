@@ -172,6 +172,17 @@ export default function MyProfile() {
                   </Pressable>
                 </View>
               </View>
+
+              <View style={styles.infoBox}>
+                <View style={styles.infoBoxHeader}>
+                  <NunitoText type="body3" lightColor="white" darkColor="white">
+                    Debug
+                  </NunitoText>
+                </View>
+                <View style={[styles.infoBoxContent, { gap: 12 }]}>
+                  <NunitoText>Build at 03/01 13:15 </NunitoText>
+                </View>
+              </View>
             </View>
 
             {openChangePwModal && (
