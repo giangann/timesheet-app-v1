@@ -119,7 +119,7 @@ const Login = () => {
                  <View style={styles.btnInner}>
                     {isSubmitting && <Progress.Circle indeterminate size={14} />}
                     <NunitoText type="body3" lightColor="white" darkColor="white">
-                      Đăng nhập fix network
+                      Đăng nhập IgnoreSSLFactory
                     </NunitoText>
                   </View>
                 </TouchableOpacity>
