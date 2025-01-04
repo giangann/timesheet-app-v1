@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'timesheet-app-v1'
+rootProject.name = 'CPV Timesheet'
 
 dependencyResolutionManagement {
   versionCatalogs {

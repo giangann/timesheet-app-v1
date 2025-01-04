@@ -318,7 +318,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.giangann229.timesheetappv1";
-				PRODUCT_NAME = "timesheetappv1";
+				PRODUCT_NAME = "CPVTimesheet";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -345,7 +345,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.giangann229.timesheetappv1";
-				PRODUCT_NAME = "timesheetappv1";
+				PRODUCT_NAME = "CPVTimesheet";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";

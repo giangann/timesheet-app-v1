@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "timesheet-app-v1",
+    "name": "CPV Timesheet",
     "slug": "timesheet-app-v1",
     "version": "1.0.0",
-    "icon": "./assets/images/logo-vptw-300.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo-vptw-300.png",
+        "foregroundImage": "./assets/images/android-adaptive-icon.png",
         "backgroundColor": "#FF0000"
       },
       "permissions": [
@@ -27,7 +27,7 @@
       "googleServicesFile": "./google-services.json"
     },
     "notification": {
-      "icon": "./assets/images/logo-vptw-300.png",
+      "icon": "./assets/images/app-icon.png",
       "color": "#FF0000"
     },
     "web": {
