@@ -7,9 +7,10 @@ type Props = {
   title?: string;
   children?: React.ReactNode;
   modalProps?: ModalProps;
+  isNeedAccept?: boolean
 };
 
-export function MyModal({ title, cb, onClose, children, modalProps }: Props) {
+export function MyModal({ title, cb, onClose, children, modalProps, isNeedAccept = true }: Props) {
   const onAccept = () => {
     if (cb) cb();
     onClose();
@@ -35,13 +36,15 @@ export function MyModal({ title, cb, onClose, children, modalProps }: Props) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={onAccept} activeOpacity={0.8} style={styles.buttonItem}>
-              <View style={styles.buttonContained}>
-                <NunitoText type="body3" style={{ color: "white" }}>
-                  Xác nhận
-                </NunitoText>
-              </View>
-            </TouchableOpacity>
+            {isNeedAccept &&
+              <TouchableOpacity onPress={onAccept} activeOpacity={0.8} style={styles.buttonItem}>
+                <View style={styles.buttonContained}>
+                  <NunitoText type="body3" style={{ color: "white" }}>
+                    Xác nhận
+                  </NunitoText>
+                </View>
+              </TouchableOpacity>
+            }
           </View>
         </View>
       </View>

@@ -8,6 +8,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ChooseOrientation } from './ChooseOrientation';
 
 interface HeaderProps {
   currentDate: SharedValue<string>;
@@ -83,6 +84,8 @@ const Header: FC<HeaderProps> = ({
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
           {title}
         </Text>
+        <ChooseOrientation/>
+
         <TouchableOpacity
           hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
           activeOpacity={0.6}
@@ -93,6 +96,7 @@ const Header: FC<HeaderProps> = ({
             color={theme.colors.text}
           />
         </TouchableOpacity>
+
       </View>
     </View>
   );
