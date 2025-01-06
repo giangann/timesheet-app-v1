@@ -4,11 +4,13 @@ import { FormPickTime } from "@/components/FormPickTime";
 import { FormSelectV2 } from "@/components/FormSelectV2";
 import FormUploadImage from "@/components/FormUploadImage";
 import { ChooseDutyTypesAndDutyTypeUsers } from "@/components/form";
+import { DutyFormCreate } from "@/components/form/duty-form-v2/DutyFormCreate";
 import { Colors } from "@/constants/Colors";
 import { DutyFormCreateContext } from "@/contexts";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { defaultDutyFormTime } from "@/helper/date";
 import { useCreateNewForm, useFetchSalaryCoefTypes } from "@/hooks/form";
+import { DutyFormCreateProvider } from "@/providers";
 import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -82,73 +84,76 @@ export default function CreateDutyForm() {
     }
   }, []);
   return (
-    <DutyFormCreateContext.Provider
-      value={{ onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [], dutyDate: getValues("date") }}
-    >
-      <KeyboardAwareScrollView>
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
-            <View style={styles.timeRangeContainer}>
-              <View style={styles.timeRangeItem}>
-                <FormPickTime
-                  useControllerProps={{ control: control, name: "startTime" }}
-                  label="Giờ bắt đầu"
-                  placeholder="Chọn giờ"
-                  required
-                  leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
-                  initTime={defaultDutyFormTime().startTime}
-                  disabled={!isDateDirty}
-                />
-              </View>
-              <View style={styles.timeRangeItem}>
-                <FormPickTime
-                  useControllerProps={{ control: control, name: "endTime" }}
-                  label="Giờ kết thúc"
-                  placeholder="Chọn giờ"
-                  required
-                  leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
-                  initTime={defaultDutyFormTime().endTime}
-                  disabled={!isDateDirty}
-                />
-              </View>
-            </View>
-            <FormSelectV2
-              useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
-              options={salaryCoefTypeOpts}
-              label="Loại ngoài giờ"
-              required
-              placeholder="Chọn loại ngoài giờ"
-              leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
-              disabled={!isDateDirty}
-            />
+    // <DutyFormCreateContext.Provider
+    //   value={{ onAddDutyType, onRemoveDutyType, updateDutyTypeUser, formDutyTypes: getValues("dutyTypes") ?? [], dutyDate: getValues("date") }}
+    // >
+    //   <KeyboardAwareScrollView>
+    //     <View style={styles.container}>
+    //       <ScrollView contentContainerStyle={styles.scrollContent}>
+    //         <FormPickDate useControllerProps={{ control: control, name: "date" }} label="Ngày" required placeholder="Chọn ngày..." />
+    //         <View style={styles.timeRangeContainer}>
+    //           <View style={styles.timeRangeItem}>
+    //             <FormPickTime
+    //               useControllerProps={{ control: control, name: "startTime" }}
+    //               label="Giờ bắt đầu"
+    //               placeholder="Chọn giờ"
+    //               required
+    //               leftIcon={<MaterialCommunityIcons name="clock-start" size={18} color={Colors.light.inputIconNone} />}
+    //               initTime={defaultDutyFormTime().startTime}
+    //               disabled={!isDateDirty}
+    //             />
+    //           </View>
+    //           <View style={styles.timeRangeItem}>
+    //             <FormPickTime
+    //               useControllerProps={{ control: control, name: "endTime" }}
+    //               label="Giờ kết thúc"
+    //               placeholder="Chọn giờ"
+    //               required
+    //               leftIcon={<MaterialCommunityIcons name="clock-end" size={18} color={Colors.light.inputIconNone} />}
+    //               initTime={defaultDutyFormTime().endTime}
+    //               disabled={!isDateDirty}
+    //             />
+    //           </View>
+    //         </View>
+    //         <FormSelectV2
+    //           useControllerProps={{ control: control, name: "salaryCoefficientTypeId" }}
+    //           options={salaryCoefTypeOpts}
+    //           label="Loại ngoài giờ"
+    //           required
+    //           placeholder="Chọn loại ngoài giờ"
+    //           leftIcon={<MaterialIcons name="more-time" size={18} color={Colors.light.inputIconNone} />}
+    //           disabled={!isDateDirty}
+    //         />
 
-            <ChooseDutyTypesAndDutyTypeUsers />
+    //         <ChooseDutyTypesAndDutyTypeUsers />
 
-            <FormInputMultilne
-              formInputProps={{ control: control, name: "note" }}
-              label="Nội dung công việc"
-              placeholder="Nhập nội dung..."
-              disabled={!isDateDirty}
-              required
-              multiline
-            />
-            <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} disabled={!isDateDirty} />
-            <View style={styles.actionContainer}>
-              <Button
-                onPress={handleSubmit(onSubmit)}
-                mode="contained"
-                icon="content-save-all-outline"
-                loading={isSubmitting}
-                style={styles.buttonContained}
-              >
-                Lưu
-              </Button>
-            </View>
-          </ScrollView>
-        </View>
-      </KeyboardAwareScrollView>
-    </DutyFormCreateContext.Provider>
+    //         <FormInputMultilne
+    //           formInputProps={{ control: control, name: "note" }}
+    //           label="Nội dung công việc"
+    //           placeholder="Nhập nội dung..."
+    //           disabled={!isDateDirty}
+    //           required
+    //           multiline
+    //         />
+    //         <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} disabled={!isDateDirty} />
+    //         <View style={styles.actionContainer}>
+    //           <Button
+    //             onPress={handleSubmit(onSubmit)}
+    //             mode="contained"
+    //             icon="content-save-all-outline"
+    //             loading={isSubmitting}
+    //             style={styles.buttonContained}
+    //           >
+    //             Lưu
+    //           </Button>
+    //         </View>
+    //       </ScrollView>
+    //     </View>
+    //   </KeyboardAwareScrollView>
+    // </DutyFormCreateContext.Provider>
+    <DutyFormCreateProvider>
+      <DutyFormCreate />
+    </DutyFormCreateProvider>
   );
 }
 

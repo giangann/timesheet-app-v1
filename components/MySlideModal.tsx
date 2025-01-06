@@ -1,8 +1,8 @@
+import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Modal, ModalProps, View, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
+import { Modal, ModalProps, View, StyleSheet, TouchableOpacity, ViewStyle, Pressable, ScrollView } from "react-native";
 import { NunitoText } from "./text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { ScrollView } from "react-native";
 
 type Props = {
   onClose: () => void;
@@ -15,8 +15,8 @@ type Props = {
 export function MySlideModal({ title, onClose, children, modalProps, modalContainerStyles }: Props) {
   return (
     <Modal {...modalProps} transparent={true} animationType="slide">
-      <View style={styles.overlay}>
-        <View style={[styles.modalContainer, modalContainerStyles]}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable style={[styles.modalContainer, modalContainerStyles]} onPress={(e) => e.stopPropagation()}>
           <View style={styles.modalHeader}>
             {title && <NunitoText type="subtitle1">{title ?? "_Title"}</NunitoText>}
             <View style={styles.modalCloseIconWrapper}>
@@ -28,10 +28,9 @@ export function MySlideModal({ title, onClose, children, modalProps, modalContai
               <View style={styles.modalHeaderNotch} />
             </View>
           </View>
-
           <ScrollView contentContainerStyle={styles.childrenContainer}>{children}</ScrollView>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
@@ -46,21 +45,17 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: "100%",
     minHeight: 250,
-
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: "white",
-
     elevation: 2,
   },
   modalHeader: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-
     borderBottomColor: `#000000${OPACITY_TO_HEX["15"]}`,
     borderBottomWidth: 1,
   },
@@ -73,7 +68,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   modalHeaderNotch: {
     width: 40,
     height: 2,

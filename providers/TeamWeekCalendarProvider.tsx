@@ -13,7 +13,7 @@ export type TTeamWeekCalendarContext = {
 
 export const TeamWeekCalendarContext = createContext<TTeamWeekCalendarContext>({
   searchParams: defaultSearchParams,
-  onUpdateSearchParams(_newPartialParams) {},
+  onUpdateSearchParams(_newPartialParams) { },
 });
 
 export const useTeamWeekCalendarProvider = () => useContext(TeamWeekCalendarContext);
@@ -30,8 +30,6 @@ export const TeamWeekCalendarProvider = ({ children }: ProviderProps) => {
   );
 
   return (
-    <>
-      <TeamWeekCalendarContext.Provider value={{ searchParams, onUpdateSearchParams }}>{children}</TeamWeekCalendarContext.Provider>
-    </>
+    <TeamWeekCalendarContext.Provider value={{ searchParams, onUpdateSearchParams }}>{children}</TeamWeekCalendarContext.Provider>
   );
 };

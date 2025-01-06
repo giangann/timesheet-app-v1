@@ -119,7 +119,7 @@ const Login = () => {
                  <View style={styles.btnInner}>
                     {isSubmitting && <Progress.Circle indeterminate size={14} />}
                     <NunitoText type="body3" lightColor="white" darkColor="white">
-                      Đăng nhập update splash 2
+                      Đăng nhập
                     </NunitoText>
                   </View>
                 </TouchableOpacity>
