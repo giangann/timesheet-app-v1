@@ -13,9 +13,9 @@ export const SelectedDutyTypes: React.FC = memo(() => {
     const { useFieldArrayReturn } = useDutyFormCreateProvider()
 
     return (
-        <View>
+        <View style={styles.dutyTypes}>
             {useFieldArrayReturn?.fields?.map((field, index) =>
-                <SelectedDutyType fieldArrayIndex={index} dutyTypeInfo={field} />
+                <SelectedDutyType key={field.id} fieldArrayIndex={index} dutyTypeInfo={field} />
             )}
         </View>
     )
@@ -30,19 +30,14 @@ export const SelectedDutyType: React.FC<SelectedDutyTypeProps> = memo(({ dutyTyp
     const [visible, setVisible] = useState(false);
 
     // Hooks
-    const { useFieldArrayReturn, openSelectUsersModal, setOpenSelectUsersModal } = useDutyFormCreateProvider()
+    const { useFieldArrayReturn, openSelectUsersModal, setOpenSelectUsersModal, setSelectingDutyType } = useDutyFormCreateProvider()
 
     // Variables
     const isNoUser = useMemo(() => dutyTypeInfo.dutyTypeUsers.length <= 0, [dutyTypeInfo]);
 
     // Handlers
-    const openMenu = () => setVisible(true);
-    const closeMenu = () => setVisible(false);
-
-    const openFullScrModal = () => setOpenSelectUsersModal(true);
-    const closeFullScrModal = () => {
-        setOpenSelectUsersModal(false);
-    };
+    const openMenu = useCallback(() => setVisible(true), [setVisible]);
+    const closeMenu = useCallback(() => setVisible(false), [setVisible]);
 
     const onRemoveDutyType = useCallback(
         (index: number) => {
@@ -51,12 +46,12 @@ export const SelectedDutyType: React.FC<SelectedDutyTypeProps> = memo(({ dutyTyp
         [useFieldArrayReturn]
     );
 
-
-    // press delete item of menu handler
     const onPressAttendee = useCallback(() => {
         closeMenu();
-        openFullScrModal();
-    }, []);
+        setOpenSelectUsersModal(true)
+        setSelectingDutyType({ id: dutyTypeInfo.dutyTypeId, name: dutyTypeInfo.dutyTypeName })
+    }, [dutyTypeInfo, closeMenu, setSelectingDutyType, setOpenSelectUsersModal]);
+
     const onPressDelete = useCallback(() => {
         onRemoveDutyType(fieldArrayIndex);
     }, [onRemoveDutyType, fieldArrayIndex]);
@@ -70,7 +65,7 @@ export const SelectedDutyType: React.FC<SelectedDutyTypeProps> = memo(({ dutyTyp
                         <View style={styles.bullet} />
                     </View>
                     <NunitoText type="body2" style={styles.dutyTypeName}>
-                        {dutyTypeInfo.dutyTypeName}
+                        {dutyTypeInfo.dutyTypeName} - {fieldArrayIndex}
                     </NunitoText>
                 </View>
 
@@ -121,6 +116,9 @@ export const SelectedDutyType: React.FC<SelectedDutyTypeProps> = memo(({ dutyTyp
 })
 
 const styles = StyleSheet.create({
+    dutyTypes: {
+        gap: 12
+    },
     dutyTypeItemBox: {
         position: "relative",
         paddingHorizontal: 16,

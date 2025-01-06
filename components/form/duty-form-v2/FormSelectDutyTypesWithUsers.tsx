@@ -10,7 +10,7 @@ import { useCallback } from "react"
 export const FormSelectDutyTypesWithUsers = () => {
     const { openSelectUsersModal, openSelectDutyTypeModal, setOpenSelectDutyTypeModal } = useDutyFormCreateProvider()
 
-    const onOpenDutyTypesModal = useCallback(() => { console.log('open', { openSelectDutyTypeModal }); setOpenSelectDutyTypeModal(true) }, [setOpenSelectDutyTypeModal]);
+    const onOpenDutyTypesModal = useCallback(() => { setOpenSelectDutyTypeModal(true) }, [setOpenSelectDutyTypeModal]);
 
     return (
         <View>
