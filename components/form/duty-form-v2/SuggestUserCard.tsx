@@ -1,16 +1,24 @@
 import { TDutyFormAttendanceInfo } from "@/types";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Card, Checkbox, Text, TouchableRipple } from "react-native-paper";
 
 type SuggestUserItemProps = {
     user: TDutyFormAttendanceInfo;
     isChecked: boolean;
+    onSelectUser: (user: TDutyFormAttendanceInfo) => void
 };
-export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, isChecked }) => {
+export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, isChecked, onSelectUser }) => {
+    const [checked, setChecked] = useState(isChecked)
+
     const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
+
+
     const onPressUserCard = useCallback(() => {
-    }, [user]);
+        onSelectUser(user)
+        setChecked((prev) => !prev)
+    }, [user, setChecked, onSelectUser]);
+
     return (
         <Card style={styles.card}>
             <TouchableRipple borderless rippleColor="rgba(0, 0, 0, .32)" onPress={onPressUserCard}>
@@ -21,7 +29,7 @@ export const SuggestUserCard: React.FC<SuggestUserItemProps> = memo(({ user, isC
                         <Text variant="bodyMedium">Số lần trực: {user.numOnDuty}</Text>
                     </Card.Content>
                     <View style={styles.userCheckboxWrapper}>
-                        <Checkbox status={isChecked ? "checked" : "unchecked"} />
+                        <Checkbox status={checked ? "checked" : "unchecked"} />
                     </View>
                 </View>
             </TouchableRipple>

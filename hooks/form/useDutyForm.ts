@@ -85,6 +85,7 @@ export function useSuggestDutyUsers() {
 
   const onFetchDutySuggestedUsers = useCallback(async (pagiParams: TPagiParams, filterParams: TDutySuggestedUserFilterParams) => {
     setIsLoading(true);
+
     try {
       const responseJson = await fetchDutySuggestedUsers(session, pagiParams, filterParams);
       if (responseJson.statusCode === 200) {

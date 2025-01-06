@@ -4,11 +4,12 @@ import { SelectedDutyTypes } from "./SelectedDutyTypes"
 import { SelectDutyTypeModal } from "./SelectDutyTypeModal"
 import { SelectDutyUsersModal } from "./SelectDutyUsersModal"
 import { NunitoText } from "@/components/text/NunitoText"
-import { Button } from "react-native-paper"
+import { Button, Text } from "react-native-paper"
 import { useCallback } from "react"
 
 export const FormSelectDutyTypesWithUsers = () => {
-    const { openSelectUsersModal, openSelectDutyTypeModal, setOpenSelectDutyTypeModal } = useDutyFormCreateProvider()
+    const { openSelectUsersModal, openSelectDutyTypeModal, setOpenSelectDutyTypeModal, useFormReturn } = useDutyFormCreateProvider()
+    const dutyDate = useFormReturn?.getValues('date')
 
     const onOpenDutyTypesModal = useCallback(() => { setOpenSelectDutyTypeModal(true) }, [setOpenSelectDutyTypeModal]);
 
@@ -16,6 +17,7 @@ export const FormSelectDutyTypesWithUsers = () => {
         <View>
             {/*  */}
             <FieldLabel />
+            {!dutyDate && <Text style={{ color: "red" }}>Hãy chọn Ngày</Text>}
 
             {/* Selected Duty Types */}
             <SelectedDutyTypes />
@@ -25,7 +27,7 @@ export const FormSelectDutyTypesWithUsers = () => {
                 style={[{ alignItems: "flex-start" }]}
                 onPress={onOpenDutyTypesModal}
                 textColor="#0B3A82"
-                disabled={false} // change this
+                disabled={!dutyDate} // change this
             >
                 + thêm loại trực
             </Button>

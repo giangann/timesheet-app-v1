@@ -1,4 +1,3 @@
-import { FormSelectDutyTypesWithUsers } from "./FormSelectDutyTypesWithUsers";
 import { FormInputMultilne } from "@/components/FormInputMultiLine";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
@@ -8,21 +7,23 @@ import { Colors } from "@/constants/Colors";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { defaultDutyFormTime } from "@/helper/date";
 import { useCreateNewForm, useFetchSalaryCoefTypes } from "@/hooks/form";
-import { DutyFormCreateProvider, useDutyFormCreateProvider } from "@/providers";
-import { TDutyFormAttendanceInfo, TDutyFormCreateDutyTypeInfo, TDutyFormCreateFormField } from "@/types";
+import { useDutyFormCreateProvider } from "@/providers";
+import { TDutyFormCreateFormField } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { useCallback, useMemo } from "react";
-import { useController, useFieldArray, useForm } from "react-hook-form";
+import { useCallback } from "react";
+import { useController } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "react-native-paper";
+import { FormSelectDutyTypesWithUsers } from "./FormSelectDutyTypesWithUsers";
 
 
 type Props = {}
 export const DutyFormCreate: React.FC<Props> = ({ }) => {
   const { salaryCoefficientTypes } = useFetchSalaryCoefTypes();
   const { useFormReturn } = useDutyFormCreateProvider()
+  const { onCreate } = useCreateNewForm();
 
   const isDateDirty = useController({ control: useFormReturn?.control, name: "date" }).fieldState.isDirty;
 
@@ -39,7 +40,7 @@ export const DutyFormCreate: React.FC<Props> = ({ }) => {
         return;
       }
 
-      // await onCreate(values);
+      await onCreate(values);
     } catch (error: any) {
       MyToast.error(error.message);
     }
