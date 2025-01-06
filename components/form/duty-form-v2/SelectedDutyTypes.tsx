@@ -65,7 +65,7 @@ export const SelectedDutyType: React.FC<SelectedDutyTypeProps> = memo(({ dutyTyp
                         <View style={styles.bullet} />
                     </View>
                     <NunitoText type="body2" style={styles.dutyTypeName}>
-                        {dutyTypeInfo.dutyTypeName} - {fieldArrayIndex}
+                        {dutyTypeInfo.dutyTypeName}
                     </NunitoText>
                 </View>
 

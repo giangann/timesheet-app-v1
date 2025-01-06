@@ -54,6 +54,7 @@ function RawFormInputMultilne<T extends FieldValues>({
           style={[inputStyles.default, error && inputStyles.error, disabled && inputStyles.disabled, rest.multiline && { height: 120 }]}
           clearButtonMode="always"
           textAlignVertical="top"
+          editable={!disabled}
           {...rest}
         />
 

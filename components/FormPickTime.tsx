@@ -61,7 +61,7 @@ function RawFormPickTime<T extends FieldValues>({
       </View>
 
       {/* open date picker modal when press */}
-      <Pressable onPress={onShowDatePicker} accessible accessibilityLabel="Open date picker">
+      <Pressable onPress={onShowDatePicker} accessible accessibilityLabel="Open date picker" disabled={disabled}>
         <View style={disabled ? styles.showDateBoxDisabled : styles.showDateBox}>
           {/* left icon */}
           {leftIcon}
