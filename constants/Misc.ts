@@ -1,4 +1,3 @@
-import { THolidayDetail } from "@/api/setting/type";
 import { TPagiParams } from "@/types";
 
 export const UNIT_DIMENSION = 1;
@@ -91,9 +90,3 @@ export const EVENT_COLOR = {
   [EVENT_ITEM_PREFIX.LEAVE_FORM]: "#447AC9",
 };
 
-export const _mockHoliday: THolidayDetail = {
-  name: "Giỗ tổ Hùng Vương 2",
-  date: "2024-12-30",
-  salaryCoefficientTypeId: null,
-  activeOutsideWorkingTime: null,
-};

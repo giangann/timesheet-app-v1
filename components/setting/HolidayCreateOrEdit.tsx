@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { FormPickDate } from "../FormPickDate";
 import { FormSelectV2 } from "../FormSelectV2";
-import { _mockHoliday } from "@/constants/Misc";
 
 type Props = {
   holidayId?: number;
