@@ -15,13 +15,15 @@ import { Redirect, Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
+import { MyToast } from "@/ui/MyToast";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
   const [isVerifying, setIsVerifying] = useState(true);
   const { session, isLoading, verifySessionToken, userInfo } = useSession();
   const { expoPushToken } = usePushNotifications();
-  const { hasRegister, markHasRegister } = useHasRegisterEPTInCurrentLoginSession();
+  const { hasRegister, markHasRegister } =
+    useHasRegisterEPTInCurrentLoginSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -41,17 +43,36 @@ export default function AppLayout() {
   }, [session]);
 
   useEffect(() => {
-    if (!userInfo || !expoPushToken) return;
-    if (hasRegister === null) return;
-    if (hasRegister === true) return;
+    async function registerExpoPushToken() {
+      try {
+        if (!userInfo || !expoPushToken) return;
+        if (hasRegister === null) return;
+        if (hasRegister === true) return;
 
-    registerExponentPushToken(session, { userIdentifyCard: userInfo.identifyCard, expoPushToken: expoPushToken.data });
-    markHasRegister(true);
+        const responseJson = await registerExponentPushToken(session, {
+          userIdentifyCard: userInfo.identifyCard,
+          expoPushToken: expoPushToken.data,
+        });
+
+        if (responseJson.statusCode === 200) {
+          markHasRegister(true);
+        } else {
+          MyToast.error(responseJson.error ?? responseJson.message);
+        }
+      } catch (error: any) {
+        MyToast.error(error.message);
+      }
+    }
+    registerExpoPushToken();
   }, [session, userInfo, expoPushToken, hasRegister]);
 
   // Delay any redirects or UI changes until both loading and verification are complete
   if (isLoading || isVerifying) {
-    return <SkeletonRectangleLoader overrideContainerStyles={{ height: "auto", flex: 1 }} />;
+    return (
+      <SkeletonRectangleLoader
+        overrideContainerStyles={{ height: "auto", flex: 1 }}
+      />
+    );
   }
 
   // Only redirect after checks are fully completed
@@ -83,7 +104,9 @@ export default function AppLayout() {
           name="index"
           options={{
             title: "Trang chủ",
-            tabBarIcon: ({ color }: any) => <MaterialIcons name="home" size={22} color={color} />,
+            tabBarIcon: ({ color }: any) => (
+              <MaterialIcons name="home" size={22} color={color} />
+            ),
             ...Platform.select({
               android: {
                 headerShown: false,
@@ -104,14 +127,18 @@ export default function AppLayout() {
           name="form"
           options={{
             title: "Đơn của tôi",
-            tabBarIcon: ({ color }) => <Ionicons name="newspaper-sharp" size={22} color={color} />,
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="newspaper-sharp" size={22} color={color} />
+            ),
           }}
         />
         <Tabs.Screen
           name="timesheet"
           options={{
             title: "Quản lý công - cá nhân",
-            tabBarIcon: ({ color }) => <Ionicons name="calendar" size={22} color={color} />,
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="calendar" size={22} color={color} />
+            ),
             headerShown: true,
           }}
         />
@@ -119,32 +146,51 @@ export default function AppLayout() {
           name="timeKeeping"
           options={{
             title: "Quản lý công - đơn vị",
-            tabBarIcon: ({ color }) => <Ionicons name="today" size={22} color={color} />,
-            href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/timeKeeping",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="today" size={22} color={color} />
+            ),
+            href:
+              userInfo?.roleCode !== ROLE_CODE.ARCHIVIST
+                ? null
+                : "/timeKeeping",
           }}
         />
         <Tabs.Screen
           name="setting"
           options={{
             title: "Cài đặt",
-            tabBarIcon: ({ color }) => <Ionicons name="settings" size={22} color={color} />,
-            href: userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="settings" size={22} color={color} />
+            ),
+            href:
+              userInfo?.roleCode !== ROLE_CODE.ARCHIVIST ? null : "/setting",
           }}
         />
         <Tabs.Screen
           name="approveForm"
           options={{
             title: "Phê duyệt đơn",
-            tabBarIcon: ({ color }) => <Octicons name="checklist" size={22} color={color} />,
-            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR && userInfo?.roleCode !== ROLE_CODE.DEPARTMENT_DIRECTOR ? null : "/approveForm",
+            tabBarIcon: ({ color }) => (
+              <Octicons name="checklist" size={22} color={color} />
+            ),
+            href:
+              userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR &&
+              userInfo?.roleCode !== ROLE_CODE.DEPARTMENT_DIRECTOR
+                ? null
+                : "/approveForm",
           }}
         />
         <Tabs.Screen
           name="timeKeepingTeam"
           options={{
             title: "Chấm công",
-            tabBarIcon: ({ color }) => <Octicons name="checklist" size={22} color={color} />,
-            href: userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR ? null : "/timeKeepingTeam",
+            tabBarIcon: ({ color }) => (
+              <Octicons name="checklist" size={22} color={color} />
+            ),
+            href:
+              userInfo?.roleCode !== ROLE_CODE.TEAM_DIRECTOR
+                ? null
+                : "/timeKeepingTeam",
           }}
         />
       </Tabs>

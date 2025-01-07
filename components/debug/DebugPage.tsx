@@ -5,8 +5,7 @@ import { DebugPushNoti } from "./DebugPushNoti";
 
 export const DebugPage: React.FC = memo(() => {
   return (
-    <ScrollView
-    contentContainerStyle={{padding:20}}>
+    <ScrollView contentContainerStyle={{ padding: 20 }}>
       <NunitoText>DebugScreen</NunitoText>
 
       <DebugPushNoti />
