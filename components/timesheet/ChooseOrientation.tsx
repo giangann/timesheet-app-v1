@@ -6,6 +6,8 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button } from "react-native-paper";
 import { MyModal } from "../MyModal";
+import { MyToast } from "@/ui/MyToast";
+import { NunitoText } from "../text/NunitoText";
 
 type Props = {}
 export const ChooseOrientation: React.FC<Props> = memo(({ }) => {
@@ -98,8 +100,12 @@ const OrientationModal: React.FC<OrientationModalProps> = memo(({ onCloseModal }
 
     useFocusEffect(useCallback(() => {
         async function getOrientation() {
-            const orientation = await ScreenOrientation.getOrientationAsync()
-            setCurrentOrientation(orientation)
+            try {
+                const orientation = await ScreenOrientation.getOrientationAsync()
+                setCurrentOrientation(orientation)
+            } catch (error:any) {
+                MyToast.error(error.message ?? "Unknown Error")
+            }
         }
         getOrientation()
     }, [ScreenOrientation]))
@@ -107,9 +113,12 @@ const OrientationModal: React.FC<OrientationModalProps> = memo(({ onCloseModal }
     return (
         <MyModal onClose={onCloseModal} isNeedAccept={false} modalProps={{ animationType: 'fade', transparent: true }} >
             <View style={styles.options}>
+                <NunitoText>
+                    O={currentOrientation}; OL={mapOrientationToLock(currentOrientation)}
+                </NunitoText> 
                 {options.map((opt, index) =>
-                    <Button key={index} onPress={() => onOptionPress(opt.targetOrientation)} textColor={opt.targetOrientation === mapOrientationToLock(currentOrientation) ? 'green' : ''}>
-                        {opt.label}
+                    <Button key={index} onPress={() => onOptionPress(opt.targetOrientation)} textColor={opt.targetOrientation === mapOrientationToLock(currentOrientation) ? 'green' : undefined}>
+                        {`${opt.label} (OL=${opt.targetOrientation})`} 
                     </Button>
                 )}
             </View>
