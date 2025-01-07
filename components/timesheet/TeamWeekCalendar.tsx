@@ -19,7 +19,6 @@ import { Text } from "react-native-paper";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { _mockEvents } from "@/constants/Misc";
 import { useTeamWeekCalendarProvider } from "@/providers";
 import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
