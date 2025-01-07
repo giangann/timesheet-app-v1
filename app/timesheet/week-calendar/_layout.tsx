@@ -83,15 +83,15 @@ const DrawerLayout = () => {
           // },
 
           // // Warning but ok
-          configureGestureHandler: (gesture: PanGesture) => {
-            return gesture.onEnd((event) => {
-              // Detect swipe-back gesture
-              if (event.translationX > 50) {
-                // Navigate to another route instead of opening the drawer
-                router.navigate("/(tabs)/timesheet");
-              }
-            });
-          },
+          // configureGestureHandler: (gesture: PanGesture) => {
+          //   return gesture.onEnd((event) => {
+          //     // Detect swipe-back gesture
+          //     if (event.translationX > 50) {
+          //       // Navigate to another route instead of opening the drawer
+          //       router.navigate("/(tabs)/timesheet");
+          //     }
+          //   });
+          // },
         }}
         drawerContent={_renderDrawer}
       >
