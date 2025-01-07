@@ -1,5 +1,6 @@
 import { fetchHomeData } from "@/api/user";
 import { THomeData } from "@/api/user/types";
+import { MyIconButton } from "@/components/button";
 import { MyFlatListRefreshable } from "@/components/list";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
@@ -66,13 +67,20 @@ export default function HomeScreen() {
           <View style={styles.headerContent}>
             <View style={styles.headerContentLeft}>
               <Pressable onPress={goToMyProfileScreen}>
-                <AvatarByRole role={userInfo?.roleCode} customStyles={{ borderColor: "white" }} />
+                <AvatarByRole
+                  role={userInfo?.roleCode}
+                  customStyles={{ borderColor: "white" }}
+                />
               </Pressable>
               <View style={styles.welcome}>
                 <NunitoText type="body3" lightColor="white" darkColor="white">
                   Xin chào !
                 </NunitoText>
-                <NunitoText type="heading3" lightColor="white" darkColor="white">
+                <NunitoText
+                  type="heading3"
+                  lightColor="white"
+                  darkColor="white"
+                >
                   {userInfo?.name}
                 </NunitoText>
               </View>
@@ -80,7 +88,9 @@ export default function HomeScreen() {
             <Pressable onPress={goToNotiScreen}>
               <View style={styles.notiBox}>
                 <Ionicons name="notifications" size={24} color="white" />
-                {(homeData?.numberOfUnreadFormNotify || null) && <View style={styles.notiBadge} />}
+                {(homeData?.numberOfUnreadFormNotify || null) && (
+                  <View style={styles.notiBadge} />
+                )}
               </View>
             </Pressable>
           </View>
@@ -93,19 +103,32 @@ export default function HomeScreen() {
               <View style={styles.todayDateBox}>
                 <View style={styles.dayOfWeekBox}>
                   <NunitoText lightColor="white" darkColor="white">
-                    {getDayOfWeekNameInVietnamese(moment(Date.now()).format("YYYY-MM-DD"))}
+                    {getDayOfWeekNameInVietnamese(
+                      moment(Date.now()).format("YYYY-MM-DD")
+                    )}
                   </NunitoText>
                 </View>
-                <NunitoText style={{ textAlign: "center" }}>{moment(Date.now()).format("DD/MM")}</NunitoText>
+                <NunitoText style={{ textAlign: "center" }}>
+                  {moment(Date.now()).format("DD/MM")}
+                </NunitoText>
               </View>
               <View style={styles.todayTimeKeepingBox}>
-                <NunitoText type="body2">{homeData?.haveTimeKeepingToday ? "Đã được chấm công" : "Chưa được chấm công"}</NunitoText>
+                <NunitoText type="body2">
+                  {homeData?.haveTimeKeepingToday
+                    ? "Đã được chấm công"
+                    : "Chưa được chấm công"}
+                </NunitoText>
                 <View style={styles.wdTime}>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    SA: {convertTimeToHHMM(homeData?.workingDayStartTime) ?? "08:00"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    SA:{" "}
+                    {convertTimeToHHMM(homeData?.workingDayStartTime) ??
+                      "08:00"}{" "}
+                    <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                   <NunitoText type="body2" style={{ opacity: 0.75 }}>
-                    CH: {convertTimeToHHMM(homeData?.workingDayEndTime) ?? "17:00"} <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
+                    CH:{" "}
+                    {convertTimeToHHMM(homeData?.workingDayEndTime) ?? "17:00"}{" "}
+                    <NunitoText lightColor="#4277C5">{"---"}</NunitoText>
                   </NunitoText>
                 </View>
               </View>
@@ -125,23 +148,38 @@ export default function HomeScreen() {
             <>
               {/* QUICK ACTION __ ROW 1: Common (MyForm, MyTimeSheet) */}
               <View style={styles.quickActionContainer}>
-                <View style={[styles.quickActionItemBox, { backgroundColor: "#FFFDE9" }]}>
+                <View
+                  style={[
+                    styles.quickActionItemBox,
+                    { backgroundColor: "#FFFDE9" },
+                  ]}
+                >
                   <Pressable onPress={goToMyFormsScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Đơn của tôi</NunitoText>
                       {(homeData?.numberOfUnreadFormNotify || null) && (
                         <>
-                          <NunitoText type="body3">Đơn từ mới được phê duyệt </NunitoText>
+                          <NunitoText type="body3">
+                            Đơn từ mới được phê duyệt{" "}
+                          </NunitoText>
                           <View style={styles.chipCircle}>
-                            <NunitoText type="body2" lightColor="white" darkColor="white">
-                              {formatNumberAddLeadingZero(homeData?.numberOfUnreadFormNotify || null) ?? "00"}
+                            <NunitoText
+                              type="body2"
+                              lightColor="white"
+                              darkColor="white"
+                            >
+                              {formatNumberAddLeadingZero(
+                                homeData?.numberOfUnreadFormNotify || null
+                              ) ?? "00"}
                             </NunitoText>
                           </View>
                         </>
                       )}
                       {!(homeData?.numberOfUnreadFormNotify || null) && (
                         <>
-                          <NunitoText type="body3">Không có đơn từ mới được phê duyệt </NunitoText>
+                          <NunitoText type="body3">
+                            Không có đơn từ mới được phê duyệt{" "}
+                          </NunitoText>
                         </>
                       )}
 
@@ -152,14 +190,27 @@ export default function HomeScreen() {
                   </Pressable>
                 </View>
 
-                <View style={[styles.quickActionItemBox, { backgroundColor: "#DFF0FF" }]}>
+                <View
+                  style={[
+                    styles.quickActionItemBox,
+                    { backgroundColor: "#DFF0FF" },
+                  ]}
+                >
                   <Pressable onPress={goToMyTimesheetScreen}>
                     <View style={styles.quickActionItemBoxInner}>
                       <NunitoText type="subtitle1">Chấm công tháng</NunitoText>
-                      <NunitoText type="body3">Số công hiện tại tháng này:</NunitoText>
+                      <NunitoText type="body3">
+                        Số công hiện tại tháng này:
+                      </NunitoText>
                       <View style={styles.chipCircle}>
-                        <NunitoText type="body2" lightColor="white" darkColor="white">
-                          {formatNumberAddLeadingZero(homeData?.numberOfCurrentMonthTimeKeeping) ?? "00"}
+                        <NunitoText
+                          type="body2"
+                          lightColor="white"
+                          darkColor="white"
+                        >
+                          {formatNumberAddLeadingZero(
+                            homeData?.numberOfCurrentMonthTimeKeeping
+                          ) ?? "00"}
                         </NunitoText>
                       </View>
 
@@ -176,11 +227,19 @@ export default function HomeScreen() {
                 <>
                   <View style={{ height: 16 }} />
                   <View style={styles.quickActionContainer}>
-                    <View style={[styles.quickActionItemBox, { backgroundColor: "#DCFFD7" }]}>
+                    <View
+                      style={[
+                        styles.quickActionItemBox,
+                        { backgroundColor: "#DCFFD7" },
+                      ]}
+                    >
                       <Pressable onPress={goToSettingScreen}>
                         <View style={styles.quickActionItemBoxInner}>
                           <NunitoText type="subtitle1">Cài đặt</NunitoText>
-                          <NunitoText type="body3">Cài đặt thành viên, cài đặt nghỉ, cài đặt trực... cho Phòng ban</NunitoText>
+                          <NunitoText type="body3">
+                            Cài đặt thành viên, cài đặt nghỉ, cài đặt trực...
+                            cho Phòng ban
+                          </NunitoText>
                           <View style={styles.quickActionItemIllu}>
                             <Image source={Illustration3} />
                           </View>
@@ -188,10 +247,17 @@ export default function HomeScreen() {
                       </Pressable>
                     </View>
 
-                    <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                    <View
+                      style={[
+                        styles.quickActionItemBox,
+                        { backgroundColor: "#FEF2F8" },
+                      ]}
+                    >
                       <Pressable onPress={goToTimeKeepingScreen}>
                         <View style={styles.quickActionItemBoxInner}>
-                          <NunitoText type="subtitle1">Chấm công ngày</NunitoText>
+                          <NunitoText type="subtitle1">
+                            Chấm công ngày
+                          </NunitoText>
                           <NunitoText type="body3">
                             {homeData?.haveTimeKeepingForTeamToday
                               ? "Chấm công cho các thành viên trong phòng ban"
@@ -208,18 +274,30 @@ export default function HomeScreen() {
               )}
 
               {/* QUICK ACTION __ ROW 3: Director (ApproveForm) */}
-              {(userInfo?.roleCode === ROLE_CODE.TEAM_DIRECTOR || userInfo?.roleCode === ROLE_CODE.DEPARTMENT_DIRECTOR) && (
+              {(userInfo?.roleCode === ROLE_CODE.TEAM_DIRECTOR ||
+                userInfo?.roleCode === ROLE_CODE.DEPARTMENT_DIRECTOR) && (
                 <>
                   <View style={{ height: 16 }} />
                   <View style={styles.quickActionContainer}>
-                    <View style={[styles.quickActionItemBox, { backgroundColor: "#FEF2F8" }]}>
+                    <View
+                      style={[
+                        styles.quickActionItemBox,
+                        { backgroundColor: "#FEF2F8" },
+                      ]}
+                    >
                       <Pressable onPress={goToApproveFormsScreen}>
                         <View style={styles.quickActionItemBoxInner}>
                           <NunitoText type="subtitle1">Đơn từ</NunitoText>
                           <NunitoText type="body3">Đơn cần xử lý</NunitoText>
                           <View style={styles.chipCircle}>
-                            <NunitoText type="body2" lightColor="white" darkColor="white">
-                              {formatNumberAddLeadingZero(homeData?.numberOfFormNeedApprove) ?? "00"}
+                            <NunitoText
+                              type="body2"
+                              lightColor="white"
+                              darkColor="white"
+                            >
+                              {formatNumberAddLeadingZero(
+                                homeData?.numberOfFormNeedApprove
+                              ) ?? "00"}
                             </NunitoText>
                           </View>
 
@@ -268,38 +346,62 @@ export default function HomeScreen() {
                   <View style={styles.userInfoBoxInner}>
                     <View style={styles.userInfoField}>
                       <View style={styles.userInfoFieldIconBox}>
-                        <FontAwesome5 name="id-card-alt" size={16} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                        <FontAwesome5
+                          name="id-card-alt"
+                          size={16}
+                          color={`#000000${OPACITY_TO_HEX["75"]}`}
+                        />
                       </View>
                       <NunitoText type="body3">{userInfo?.name}</NunitoText>
                     </View>
                     <View style={styles.userInfoField}>
                       <View style={styles.userInfoFieldIconBox}>
-                        <Foundation name="torso-business" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                        <Foundation
+                          name="torso-business"
+                          size={24}
+                          color={`#000000${OPACITY_TO_HEX["75"]}`}
+                        />
                       </View>
                       <NunitoText type="body3">{userInfo?.roleName}</NunitoText>
                     </View>
                     <View style={styles.userInfoField}>
                       <View style={styles.userInfoFieldIconBox}>
-                        <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                        <FontAwesome
+                          name="volume-control-phone"
+                          size={24}
+                          color={`#000000${OPACITY_TO_HEX["75"]}`}
+                        />
                       </View>
-                      <NunitoText type="body3">{userInfo?.phone ?? '--'}</NunitoText>
+                      <NunitoText type="body3">
+                        {userInfo?.phone ?? "--"}
+                      </NunitoText>
                     </View>
                     <View style={styles.userInfoField}>
                       <View style={styles.userInfoFieldIconBox}>
-                        <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX["75"]}`} />
+                        <MaterialIcons
+                          name="email"
+                          size={20}
+                          color={`#000000${OPACITY_TO_HEX["75"]}`}
+                        />
                       </View>
-                      <NunitoText type="body3">{userInfo?.email ?? '--'}</NunitoText>
+                      <NunitoText type="body3">
+                        {userInfo?.email ?? "--"}
+                      </NunitoText>
                     </View>
                     <View style={styles.userInfoIllu}>
                       <Image source={Illustration6} />
                     </View>
                     <View style={styles._absoluteTopRightLayer}>
-                      <Pressable onPress={goToMyProfileScreen}>
-                        <View style={styles.userInfoGotoProfileScreen}>
-                          <NunitoText type="body2">Chi tiết</NunitoText>
-                          <Ionicons name="arrow-forward" size={16} />
-                        </View>
-                      </Pressable>
+                      <MyIconButton
+                        onPressed={goToMyProfileScreen}
+                        iconElement={
+                          <View style={styles.userInfoGotoProfileScreen}>
+                            <NunitoText type="body2">Chi tiết</NunitoText>
+                            <Ionicons name="arrow-forward" size={16} />
+                          </View>
+                        }
+                        paddingSize={16}
+                      />
                     </View>
                   </View>
                 </View>
@@ -459,16 +561,18 @@ const styles = StyleSheet.create({
   userInfoBox: {
     height: 180,
     backgroundColor: "white",
-    padding: 12,
+    padding: 0,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: `#000000${OPACITY_TO_HEX["25"]}`,
+
+    position: "relative",
   },
   userInfoBoxInner: {
-    position: "relative",
     width: "100%",
     height: "100%",
     gap: 4,
+    padding: 16,
   },
   //
   _absoluteTopRightLayer: {
@@ -484,8 +588,8 @@ const styles = StyleSheet.create({
   },
   userInfoIllu: {
     position: "absolute",
-    bottom: 0,
-    right: 0,
+    bottom: 16,
+    right: 16,
   },
   userInfoField: {
     flexDirection: "row",
