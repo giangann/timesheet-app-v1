@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTeamWeekCalendarProvider } from "@/providers";
 import CustomUnavailableHour from "./CustomUnavaiableHour";
 import Header from "./Header";
+import { customeTheme } from "./theme";
 type Props = {
   onEventSelected: (event: OnEventResponse) => void;
   events: EventItem[];
@@ -215,6 +216,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events
         // theme={
         //   configs.themeMode === "auto" ? (colorScheme === "dark" ? CALENDAR_THEME.dark : CALENDAR_THEME.light) : CALENDAR_THEME[configs.themeMode]
         // }
+        theme={customeTheme}
         showWeekNumber={true}
         allowPinchToZoom={false}
         onChange={_onChange}
