@@ -19,7 +19,10 @@ import moment from "moment";
 import { FilterUserForm } from "./FilterUserForm";
 
 type TFilterCheckStatus = "checked" | "all";
-type TUserWithCheckStatus = TDutySuggestedUser & { isChecked: boolean };
+type TUserWithCheckStatus = TDutySuggestedUser & {
+  isChecked: boolean;
+  isShow?: boolean;
+};
 
 export const SelectDutyUsersModal: React.FC = memo(() => {
   const {
@@ -45,33 +48,33 @@ export const SelectDutyUsersModal: React.FC = memo(() => {
       ?.dutyTypeUsers?.map((user) => user.id) ?? []
   );
 
-  const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(
-    () =>
-      suggestedUsers.map((user) => ({
-        ...user,
-        isChecked: selectedUserIdsRef.current.includes(user.id) ? true : false,
-      })),
-    [suggestedUsers, selectedUserIdsRef]
-  );
-  const selectedUsers = useMemo(
-    () => usersWithCheckStatus.filter((user) => user.isChecked),
-    [usersWithCheckStatus]
-  );
-
-  const users: TDutyFormAttendanceInfo[] = useMemo(
-    () => (filterCheckStatus === "all" ? usersWithCheckStatus : selectedUsers),
-    [selectedUsers, usersWithCheckStatus, filterCheckStatus]
-  );
+  const usersWithCheckStatus: TUserWithCheckStatus[] = useMemo(() => {
+    console.log("recalculated usersWithCheckStatus");
+    return suggestedUsers.map((user) => ({
+      ...user,
+      isChecked: selectedUserIdsRef.current.includes(user.id) ? true : false,
+      // isShow: true,
+    }));
+  }, [suggestedUsers, selectedUserIdsRef.current]);
 
   const searchedUsers = useMemo(() => {
-    return users.filter((user) =>
-      user.name.toLowerCase().includes(text.toLowerCase())
-    );
-  }, [text, users]);
+    console.log({ usersWithCheckStatus });
+    return usersWithCheckStatus.map((user) => {
+      let isShown: boolean = false;
+      isShown = user.name.toLowerCase().includes(text.toLowerCase());
+
+      if (isShown) {
+        if (filterCheckStatus === "all") isShown = true;
+        else isShown = user.isChecked;
+      }
+
+      return { ...user, isShow: isShown };
+    });
+  }, [text, usersWithCheckStatus, filterCheckStatus]);
 
   const onCloseBtnPressed = useCallback(() => {
     setOpenSelectUsersModal(false);
-    setOpenSelectDutyTypeModal(false);
+    // setOpenSelectDutyTypeModal(false);
   }, [setOpenSelectUsersModal, setOpenSelectDutyTypeModal]);
 
   const onSaveBtnPressed = useCallback(() => {
@@ -89,7 +92,9 @@ export const SelectDutyUsersModal: React.FC = memo(() => {
     )?.[0];
 
     // take dutyTypeUsers
-    const dutyTypeUsers = users.filter((user) => selectedIds.includes(user.id));
+    const dutyTypeUsers = usersWithCheckStatus.filter((user) =>
+      selectedIds.includes(user.id)
+    );
 
     if (!currentDutyType) {
       useFieldArrayReturn?.append({
@@ -110,7 +115,12 @@ export const SelectDutyUsersModal: React.FC = memo(() => {
         dutyTypeUsers: dutyTypeUsers,
       });
     }
-  }, [selectedUserIdsRef, selectingDutyType, useFieldArrayReturn, users]);
+  }, [
+    selectedUserIdsRef,
+    selectingDutyType,
+    useFieldArrayReturn,
+    usersWithCheckStatus,
+  ]);
 
   const onSelectUser = useCallback(
     (user: TDutyFormAttendanceInfo) => {
@@ -174,6 +184,7 @@ export const SelectDutyUsersModal: React.FC = memo(() => {
                     key={user.id}
                     user={user}
                     onSelectUser={onSelectUser}
+                    isShow={user.isShow}
                   />
                 )}
                 ListEmptyComponent={
@@ -228,7 +239,7 @@ export const SelectDutyUsersModal: React.FC = memo(() => {
           </Delayed>
           {/* Save button */}
           <AnimatedFAB
-            icon={"plus"}
+            icon={"check"}
             label={"Label"}
             extended={false}
             onPress={onSaveBtnPressed}
