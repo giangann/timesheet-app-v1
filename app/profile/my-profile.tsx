@@ -14,6 +14,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Button } from "react-native-paper";
 export default function MyProfile() {
   const [profileData, setProfileData] = useState<TUserProfile | null>(null);
   const [openChangePwModal, setOpenChangePwModal] = useState(false);
@@ -179,7 +180,8 @@ export default function MyProfile() {
                 </NunitoText>
               </View>
               <View style={[styles.infoBoxContent, { gap: 12 }]}>
-                <NunitoText>Build at 04/01 00:45 </NunitoText>
+                {/* <NunitoText>Build at 04/01 00:45 </NunitoText> */}
+                <Button onPress={()=>router.navigate('/debug')}>To debug page</Button>
               </View>
             </View>
           </View>
