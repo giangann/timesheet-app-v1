@@ -282,13 +282,13 @@ export default function HomeScreen() {
                       <View style={styles.userInfoFieldIconBox}>
                         <FontAwesome name="volume-control-phone" size={24} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                       </View>
-                      <NunitoText type="body3">{userInfo?.phone}</NunitoText>
+                      <NunitoText type="body3">{userInfo?.phone ?? '--'}</NunitoText>
                     </View>
                     <View style={styles.userInfoField}>
                       <View style={styles.userInfoFieldIconBox}>
                         <MaterialIcons name="email" size={20} color={`#000000${OPACITY_TO_HEX["75"]}`} />
                       </View>
-                      <NunitoText type="body3">{userInfo?.email}</NunitoText>
+                      <NunitoText type="body3">{userInfo?.email ?? '--'}</NunitoText>
                     </View>
                     <View style={styles.userInfoIllu}>
                       <Image source={Illustration6} />

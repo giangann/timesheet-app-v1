@@ -108,8 +108,8 @@ export default function MyProfile() {
                 <NunitoText type="body2">Họ và tên: {userInfo?.name}</NunitoText>
                 <NunitoText type="body2">Số CCCD: {userInfo?.identifyCard}</NunitoText>
                 <NunitoText type="body2">Chức vụ: {userInfo?.roleName}</NunitoText>
-                <NunitoText type="body2">Mã chức vụ: {userInfo?.roleCode}</NunitoText>
-                <NunitoText type="body2">Địa chỉ: {userInfo?.address}</NunitoText>
+                {/* <NunitoText type="body2">Mã chức vụ: {userInfo?.roleCode}</NunitoText> */}
+                <NunitoText type="body2">Địa chỉ: {userInfo?.address ?? '__ __'}</NunitoText>
               </View>
             </View>
 
@@ -120,8 +120,8 @@ export default function MyProfile() {
                 </NunitoText>
               </View>
               <View style={styles.infoBoxContent}>
-                <NunitoText type="body2">Số điện thoại: {userInfo?.phone}</NunitoText>
-                <NunitoText type="body2">Email: {userInfo?.email}</NunitoText>
+                <NunitoText type="body2">Số điện thoại: {userInfo?.phone ?? '__ __'}</NunitoText>
+                <NunitoText type="body2">Email: {userInfo?.email ?? '__ __'}</NunitoText>
               </View>
             </View>
 
