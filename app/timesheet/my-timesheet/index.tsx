@@ -1,9 +1,24 @@
-import { fetchDutyFormDetail, fetchLeaveFormDetail, fetchOvertimeFormDetail } from "@/api/form";
-import { TDutyFormDetail, TLeaveFormDetail, TOvertimeFormDetail } from "@/api/form/types";
+import {
+  fetchDutyFormDetail,
+  fetchLeaveFormDetail,
+  fetchOvertimeFormDetail,
+} from "@/api/form";
+import {
+  TDutyFormDetail,
+  TLeaveFormDetail,
+  TOvertimeFormDetail,
+} from "@/api/form/types";
+import { Delayed } from "@/components/Delayed";
 import { BasicCalendar } from "@/components/my-rn-calendar/BasicCalendar";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { TIMESHEET_FORM_TYPE, TIMESHEET_FORM_TYPE_COLOR, WORKING_TYPE, WORKING_TYPE_COLOR, WORKING_TYPE_NULL_COLOR } from "@/constants/Misc";
+import {
+  TIMESHEET_FORM_TYPE,
+  TIMESHEET_FORM_TYPE_COLOR,
+  WORKING_TYPE,
+  WORKING_TYPE_COLOR,
+  WORKING_TYPE_NULL_COLOR,
+} from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
 import { arrayStringToString } from "@/helper/common";
 import { MyToast } from "@/ui/MyToast";
@@ -23,7 +38,11 @@ export default function MyTimeSheet() {
 
   const { session } = useSession();
 
-  const onFetchForms = (lfId: number | null, otfId: number | null, dtfId: number | null) => {
+  const onFetchForms = (
+    lfId: number | null,
+    otfId: number | null,
+    dtfId: number | null
+  ) => {
     onFetchLeaveFrom(lfId);
     onFetchOvertimeFrom(otfId);
     onFetchDutyFrom(dtfId);
@@ -108,10 +127,12 @@ export default function MyTimeSheet() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
-        <View>
-          <BasicCalendar onFetchForms={onFetchForms} />
-          <MarkedSymbolNote />
-        </View>
+        <Delayed>
+          <View>
+            <BasicCalendar onFetchForms={onFetchForms} />
+            <MarkedSymbolNote />
+          </View>
+        </Delayed>
         <View style={styles.formsWrapper}>
           {isFetching && <SkeletonPostLoader />}
           {leaveForm && !isFetching && <LeaveFormInfo leaveForm={leaveForm} />}
@@ -128,19 +149,34 @@ const MarkedSymbolNote = () => {
     <View style={styles.noteContainer}>
       <View style={styles.noteWkTypeRow}>
         <View style={styles.noteWkTypeRowItem}>
-          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.ALL] }]}>
+          <View
+            style={[
+              styles.markBorder,
+              { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.ALL] },
+            ]}
+          >
             <NunitoText type="body4">24</NunitoText>
           </View>
           <NunitoText type="subtitle2">Cả công</NunitoText>
         </View>
         <View style={styles.noteWkTypeRowItem}>
-          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.HALF] }]}>
+          <View
+            style={[
+              styles.markBorder,
+              { borderColor: WORKING_TYPE_COLOR[WORKING_TYPE.HALF] },
+            ]}
+          >
             <NunitoText type="body4">24</NunitoText>
           </View>
           <NunitoText type="subtitle2">Nửa công</NunitoText>
         </View>
         <View style={styles.noteWkTypeRowItem}>
-          <View style={[styles.markBorder, { borderColor: WORKING_TYPE_NULL_COLOR }]}>
+          <View
+            style={[
+              styles.markBorder,
+              { borderColor: WORKING_TYPE_NULL_COLOR },
+            ]}
+          >
             <NunitoText type="body4">24</NunitoText>
           </View>
           <NunitoText type="subtitle2">Chưa chấm</NunitoText>
@@ -151,21 +187,45 @@ const MarkedSymbolNote = () => {
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
             <NunitoText type="body4">24</NunitoText>
-            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT] }]} />
+            <View
+              style={[
+                styles.markDot,
+                {
+                  backgroundColor:
+                    TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.OT],
+                },
+              ]}
+            />
           </View>
           <NunitoText type="subtitle2">Ngày làm ngoài giờ </NunitoText>
         </View>
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
             <NunitoText type="body4">24</NunitoText>
-            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.DUTY] }]} />
+            <View
+              style={[
+                styles.markDot,
+                {
+                  backgroundColor:
+                    TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.DUTY],
+                },
+              ]}
+            />
           </View>
           <NunitoText type="subtitle2">Ngày trực </NunitoText>
         </View>
         <View style={styles.noteFormTypeRowItem}>
           <View style={[styles.markDotBox]}>
             <NunitoText type="body4">24</NunitoText>
-            <View style={[styles.markDot, { backgroundColor: TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.LEAVE] }]} />
+            <View
+              style={[
+                styles.markDot,
+                {
+                  backgroundColor:
+                    TIMESHEET_FORM_TYPE_COLOR[TIMESHEET_FORM_TYPE.LEAVE],
+                },
+              ]}
+            />
           </View>
           <NunitoText type="subtitle2">Ngày xin nghỉ</NunitoText>
         </View>
@@ -185,7 +245,11 @@ const MarkedSymbolNote = () => {
 
 const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
   const router = useRouter();
-  const onGotoLeaveFormDetail = () => router.navigate({ pathname: "/forms/leave_forms/[id]", params: { id: leaveForm.id } });
+  const onGotoLeaveFormDetail = () =>
+    router.navigate({
+      pathname: "/forms/leave_forms/[id]",
+      params: { id: leaveForm.id },
+    });
   return (
     <View style={styles.formContainer}>
       <View style={styles.formTitleRow}>
@@ -195,7 +259,11 @@ const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
             <NunitoText type="body4" style={{ opacity: 1 }}>
               Chi tiết
             </NunitoText>
-            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+            <Ionicons
+              name="arrow-forward"
+              size={16}
+              style={{ opacity: 0.75 }}
+            />
           </View>
         </Pressable>
       </View>
@@ -206,8 +274,12 @@ const LeaveFormInfo = ({ leaveForm }: { leaveForm: TLeaveFormDetail }) => {
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(leaveForm.startDate).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
-          <NunitoText type="body4">{`${moment(leaveForm.endDate).format("DD/MM/YYYY HH:mm")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(leaveForm.startDate).format(
+            "DD/MM/YYYY HH:mm"
+          )}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(leaveForm.endDate).format(
+            "DD/MM/YYYY HH:mm"
+          )}`}</NunitoText>
         </View>
       </View>
     </View>
@@ -233,18 +305,28 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
             <NunitoText type="body4" style={{ opacity: 1 }}>
               Chi tiết
             </NunitoText>
-            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+            <Ionicons
+              name="arrow-forward"
+              size={16}
+              style={{ opacity: 0.75 }}
+            />
           </View>
         </Pressable>
       </View>
 
       <View style={styles.formContentContainer}>
         <View style={styles.formContentItemLeft}>
-          <NunitoText type="body3">{`${otForm.salaryCoefficientType.name} (x${otForm.salaryCoefficientType.coefficient.toFixed(2)})`}</NunitoText>
+          <NunitoText type="body3">{`${
+            otForm.salaryCoefficientType.name
+          } (x${otForm.salaryCoefficientType.coefficient.toFixed(
+            2
+          )})`}</NunitoText>
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(otForm.date).format("DD/MM/YYYY")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(otForm.date).format(
+            "DD/MM/YYYY"
+          )}`}</NunitoText>
           <NunitoText type="body4">{`${otForm.startTime} - ${otForm.endTime}`}</NunitoText>
         </View>
       </View>
@@ -254,7 +336,11 @@ const OTFormInfo = ({ otForm }: { otForm: TOvertimeFormDetail }) => {
 
 const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
   const router = useRouter();
-  const onGotoDutyFormDetail = () => router.navigate({ pathname: "/forms/duty_forms/[id]", params: { id: dutyForm.id } });
+  const onGotoDutyFormDetail = () =>
+    router.navigate({
+      pathname: "/forms/duty_forms/[id]",
+      params: { id: dutyForm.id },
+    });
 
   return (
     <View style={styles.formContainer}>
@@ -265,19 +351,29 @@ const DutyFormInfo = ({ dutyForm }: { dutyForm: TDutyFormDetail }) => {
             <NunitoText type="body4" style={{ opacity: 1 }}>
               Chi tiết
             </NunitoText>
-            <Ionicons name="arrow-forward" size={16} style={{ opacity: 0.75 }} />
+            <Ionicons
+              name="arrow-forward"
+              size={16}
+              style={{ opacity: 0.75 }}
+            />
           </View>
         </Pressable>
       </View>
 
       <View style={styles.formContentContainer}>
         <View style={styles.formContentItemLeft}>
-          <NunitoText type="body3">{dutyTypesToDutyTypeNames(dutyForm.dutyTypes)}</NunitoText>
-          <NunitoText type="body3">{`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)}`}</NunitoText>
+          <NunitoText type="body3">
+            {dutyTypesToDutyTypeNames(dutyForm.dutyTypes)}
+          </NunitoText>
+          <NunitoText type="body3">{`${
+            dutyForm.salaryCoefficientTypeName
+          } (x${dutyForm.salaryCoefficient.toFixed(2)}`}</NunitoText>
         </View>
 
         <View style={styles.formContentItemRight}>
-          <NunitoText type="body4">{`${moment(dutyForm.date).format("DD/MM/YYYY")}`}</NunitoText>
+          <NunitoText type="body4">{`${moment(dutyForm.date).format(
+            "DD/MM/YYYY"
+          )}`}</NunitoText>
           <NunitoText type="body4">{`${dutyForm.startTime} - ${dutyForm.endTime}`}</NunitoText>
         </View>
       </View>
