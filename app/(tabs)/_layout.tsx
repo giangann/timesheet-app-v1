@@ -46,7 +46,6 @@ export default function AppLayout() {
     async function registerExpoPushToken() {
       try {
         if (!userInfo || !expoPushToken) return;
-        if (hasRegister === null) return;
         if (hasRegister === true) return;
 
         const responseJson = await registerExponentPushToken(session, {
