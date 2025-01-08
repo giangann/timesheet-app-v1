@@ -257,8 +257,10 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     width: "100%",
+    height: "100%",
     backgroundColor: "white",
     position: "relative",
+    // paddingTop: 56,
   },
 
   modalTitleWrapper: {
@@ -276,6 +278,7 @@ const styles = StyleSheet.create({
   modalContentContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
+    paddingBottom: 124,
     gap: 16,
   },
 

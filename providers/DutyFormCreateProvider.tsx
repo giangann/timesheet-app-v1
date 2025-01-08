@@ -1,3 +1,4 @@
+import { defaultDutyFormTime } from "@/helper/date";
 import { TDutyFormCreateFormField } from "@/types";
 import { createContext, Dispatch, SetStateAction, useContext, useState } from "react"
 import { UseFieldArrayReturn, UseFormReturn, useFieldArray, useForm } from "react-hook-form";
@@ -42,7 +43,7 @@ type Props = {
     children: React.ReactNode
 }
 export const DutyFormCreateProvider: React.FC<Props> = ({ children }) => {
-    const useFormReturn = useForm<TDutyFormCreateFormField>()
+    const useFormReturn = useForm<TDutyFormCreateFormField>({ defaultValues: { startTime: defaultDutyFormTime().startTime, endTime: defaultDutyFormTime().endTime } })
     const useFieldArrayReturn = useFieldArray({ name: 'dutyTypes', control: useFormReturn.control })
 
     const [openSelectDutyTypeModal, setOpenSelectDutyTypeModal] = useState<boolean>(false)
