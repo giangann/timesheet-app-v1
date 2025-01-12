@@ -1,4 +1,5 @@
 import { fetchListUserByRole } from "@/api/form";
+import { CopyToClipBoard } from "@/components/clipboard";
 import { FormInputMultilne } from "@/components/FormInputMultiLine";
 import { FormPickDate } from "@/components/FormPickDate";
 import { FormPickTime } from "@/components/FormPickTime";
@@ -54,6 +55,8 @@ export default function CreateOvertimeForm() {
   const [salaryCoefficientTypes, setSalaryCoefficientTypes] = useState<TSalaryCoefficientType[]>([]);
   const [userApproves, setUserApproves] = useState<TUserApprove[]>([]);
 
+  const [debug, setDebug] = useState<string|null>()
+
   const { session, userInfo } = useSession();
   const router = useRouter();
   const {
@@ -72,6 +75,9 @@ export default function CreateOvertimeForm() {
 
   const onCreate = async (value: CreateItemForm) => {
     try {
+      console.log(value.attachFile)
+      setDebug(JSON.stringify(value.attachFile))
+
       const requiredValues = pickProperties(value, ["date", "startTime", "endTime", "salaryCoefficientTypeId", "userApproveIdentifyCard", "note"]);
       if (hasNullishValue(requiredValues)) {
         MyToast.error("Hãy nhập đủ các thông tin yêu cầu");
@@ -87,6 +93,8 @@ export default function CreateOvertimeForm() {
         attachFile: value.attachFile,
         note: value.note,
       };
+      
+
       const formData = new FormData();
       Object.entries(bodyData).forEach(([k, v]) => {
         if (v !== null && v !== undefined) {
@@ -227,6 +235,9 @@ export default function CreateOvertimeForm() {
             required
             multiline
           />
+
+          <CopyToClipBoard content={debug}/>
+
           <FormUploadImage label="Ảnh đính kèm" useControllerProps={{ control: control, name: "attachFile" }} />
         </ScrollView>
         <TouchableOpacity onPress={handleSubmit(onCreate)} activeOpacity={0.8} style={styles.buttonContainer} disabled={isSubmitting}>
