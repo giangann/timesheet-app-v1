@@ -9,6 +9,8 @@ export const DebugPage: React.FC = memo(() => {
       <NunitoText>DebugScreen</NunitoText>
 
       <DebugPushNoti />
+
+      <NunitoText>Update image 12/01/25</NunitoText>
     </ScrollView>
   );
 });
