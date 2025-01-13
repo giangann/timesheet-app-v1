@@ -1,4 +1,9 @@
-import { FORM_NOTI_TYPE, FORM_STATUS, NOTI_STATUS, ROLE_CODE } from "@/constants/Misc";
+import {
+  FORM_NOTI_TYPE,
+  FORM_STATUS,
+  NOTI_STATUS,
+  ROLE_CODE,
+} from "@/constants/Misc";
 export type TFormUserApply = {
   name: string;
   identifyCard: string;
@@ -24,15 +29,10 @@ export type TDutyForm = {
   createdUserRoleName: string;
   createdUserTeamName: string;
 
-  dutyTypeNames: string[];
   salaryCoefficient: number;
   salaryCoefficientTypeName: string;
 
-  userNames: {
-    name: string;
-    roleCode: ROLE_CODE;
-    identifyCard: string;
-  }[];
+  dutyTypes: TDutyFormDetailDutyType[];
 
   note: string;
   reason: string | null;
@@ -101,6 +101,7 @@ export type TDutyFormDetailDutyType = {
     id: number;
     name: string;
     roleName: string;
+    roleCode:string;
     roleId: number;
     teamName: string;
     teamId: number;

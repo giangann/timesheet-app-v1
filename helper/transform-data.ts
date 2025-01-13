@@ -4,7 +4,7 @@ import { EventItem } from "@howljs/calendar-kit";
 import { formatToISOWithMilliseconds } from "./date";
 import moment from "moment";
 import { TWeekCalendarCreateFormFieldsUser } from "@/types";
-import { TDutyForm, TLeaveForm } from "@/api/form/types";
+import { TDutyForm, TDutyFormDetailDutyType, TLeaveForm } from "@/api/form/types";
 import { arrayStringToString, combineDateAndTimeToDateObject } from "./common";
 
 export function weekCalendarToEventItems(weekCalendars: TWeekCalendar[]): EventItem[] {
@@ -89,4 +89,18 @@ export function weekCalendarUsersToUserFields(weekCalendarUsers: TWeekCalendarDe
     res.push(field);
   });
   return res;
+}
+
+export function dutyTypesToUsers(dutyTypes:TDutyFormDetailDutyType[] ):TDutyFormDetailDutyType['users'] {
+  const users: TDutyFormDetailDutyType['users'] = []
+
+  dutyTypes.forEach((dtType)=>{
+    users.push(...dtType.users)
+  })
+
+  return users
+}
+
+export function dutyTypeUsersToName (dtTypeUsers: TDutyFormDetailDutyType['users']):string{
+  return dtTypeUsers.map((user)=>user.name).join(', ')
 }
