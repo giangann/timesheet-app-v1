@@ -4,7 +4,6 @@ import * as ExpoClipboard from "expo-clipboard";
 import { memo, useCallback } from "react";
 import { View } from "react-native";
 import { MyIconButton } from "../button";
-import { NunitoText } from "../text/NunitoText";
 type Props = {
   content: string | undefined | null;
 };
@@ -22,13 +21,10 @@ export const CopyToClipBoard: React.FC<Props> = memo(({ content }) => {
 
   return (
     <View>
-      <NunitoText>{content}</NunitoText>
-      {content && (
-        <MyIconButton
-          onPressed={onCopy}
-          iconElement={<Feather name="clipboard" size={24} color="black" />}
-        />
-      )}
+      <MyIconButton
+        onPressed={onCopy}
+        iconElement={<Feather name="clipboard" size={24} color="black" />}
+      />
     </View>
   );
 });
