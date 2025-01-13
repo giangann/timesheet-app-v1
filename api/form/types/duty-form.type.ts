@@ -58,11 +58,10 @@ export type TApproveDutyForm = {
   createdUserRoleName: string;
   createdUserTeamName: string;
 
-  dutyTypeNames: string[];
   salaryCoefficient: number;
   salaryCoefficientTypeName: string;
 
-  userNames: string[];
+  dutyTypes: TDutyFormDetailDutyType[];
 
   note: string;
   reason: string | null;
@@ -101,7 +100,7 @@ export type TDutyFormDetailDutyType = {
     id: number;
     name: string;
     roleName: string;
-    roleCode:string;
+    roleCode: string;
     roleId: number;
     teamName: string;
     teamId: number;

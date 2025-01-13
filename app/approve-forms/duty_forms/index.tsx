@@ -1,13 +1,21 @@
 import { fetchApproveDutyForms } from "@/api/form";
-import { TApproveDutyForm, TApproveDutyFormFilterParams } from "@/api/form/types";
+import {
+  TApproveDutyForm,
+  TApproveDutyFormFilterParams,
+} from "@/api/form/types";
 import { FormPickDate } from "@/components/FormPickDate";
 import { MyFilterModal } from "@/components/MyFilterModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { DEFAULT_PAGI_PARAMS, FORM_STATUS, ROLE_CODE } from "@/constants/Misc";
 import { useSession } from "@/contexts/ctx";
-import { arrayStringToString, omitNullishValues, omitProperties } from "@/helper/common";
+import {
+  arrayStringToString,
+  omitNullishValues,
+  omitProperties,
+} from "@/helper/common";
 import { formatRelativeTimeWithLongText } from "@/helper/date";
+import { dutyTypeUsersToName } from "@/helper/transform-data";
 import { TPageable, TPagiParams } from "@/types";
 import { AvatarByRole } from "@/ui/AvatarByRole";
 import { ChipStatus } from "@/ui/ChipStatus";
@@ -20,7 +28,14 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ApproveDutyForms() {
   const [dutyForms, setDutyForms] = useState<TApproveDutyForm[]>([]);
@@ -33,7 +48,10 @@ export default function ApproveDutyForms() {
   const { session } = useSession();
 
   const handleEndListReached = () => {
-    if (!isLoading && (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1) {
+    if (
+      !isLoading &&
+      (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1
+    ) {
       // calculate new pagi (next page)
       const { page: currentPage, size } = pagiParamsRef.current;
       const newPagiParams: TPagiParams = { page: currentPage + 1, size };
@@ -49,7 +67,11 @@ export default function ApproveDutyForms() {
   const fetchAndUpdateListForms = async (pagiParams: TPagiParams) => {
     setIsLoading(true);
     try {
-      const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParamsRef.current);
+      const responseJson = await fetchApproveDutyForms(
+        session,
+        pagiParams,
+        filterParamsRef.current
+      );
       if (responseJson.statusCode === 200) {
         const moreDutyForms = responseJson.data.dutyForms;
         setDutyForms((prev) => [...prev, ...moreDutyForms]);
@@ -74,7 +96,11 @@ export default function ApproveDutyForms() {
 
   const fetchAndOverrideListForms = async (pagiParams: TPagiParams) => {
     try {
-      const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParamsRef.current);
+      const responseJson = await fetchApproveDutyForms(
+        session,
+        pagiParams,
+        filterParamsRef.current
+      );
       if (responseJson.statusCode === 200) {
         const overrideDutyForms = responseJson.data.dutyForms;
         setDutyForms(overrideDutyForms);
@@ -91,7 +117,10 @@ export default function ApproveDutyForms() {
       if (isFirstRender.current === false) {
         // Calculate pagi params
         const { page: currentPage, size } = pagiParamsRef.current;
-        const overridePagiParams: TPagiParams = { page: 0, size: (currentPage + 1) * size };
+        const overridePagiParams: TPagiParams = {
+          page: 0,
+          size: (currentPage + 1) * size,
+        };
 
         // Fetch and override list with pagi params
         fetchAndOverrideListForms(overridePagiParams);
@@ -100,11 +129,18 @@ export default function ApproveDutyForms() {
     }, [session]) // Only depend on `session` here, or any other non-changing dependencies
   );
 
-  const reFetchListFormsWithFilter = async (pagiParams: TPagiParams, filterParams: TApproveDutyFormFilterParams) => {
+  const reFetchListFormsWithFilter = async (
+    pagiParams: TPagiParams,
+    filterParams: TApproveDutyFormFilterParams
+  ) => {
     setIsLoading(true);
     try {
       // api call
-      const responseJson = await fetchApproveDutyForms(session, pagiParams, filterParams);
+      const responseJson = await fetchApproveDutyForms(
+        session,
+        pagiParams,
+        filterParams
+      );
 
       if (responseJson.statusCode === 200) {
         const formsWithFilter = responseJson.data.dutyForms;
@@ -129,9 +165,14 @@ export default function ApproveDutyForms() {
     reFetchListFormsWithFilter(pagiParamsRef.current, filterParamsRef.current);
   };
 
-  const onFilterFieldsChange = (newFilterParamsWihoutStatus: Omit<TApproveDutyFormFilterParams, "status">) => {
+  const onFilterFieldsChange = (
+    newFilterParamsWihoutStatus: Omit<TApproveDutyFormFilterParams, "status">
+  ) => {
     // update filter params
-    filterParamsRef.current = { status: filterParamsRef.current.status, ...newFilterParamsWihoutStatus };
+    filterParamsRef.current = {
+      status: filterParamsRef.current.status,
+      ...newFilterParamsWihoutStatus,
+    };
     // reset pagiParams:
     pagiParamsRef.current = DEFAULT_PAGI_PARAMS;
 
@@ -140,14 +181,22 @@ export default function ApproveDutyForms() {
 
   return (
     <View style={styles.container}>
-      <FilterBar filterParams={filterParamsRef.current} onStatusTabPress={onStatusTabPress} onFilterFieldsChange={onFilterFieldsChange} />
+      <FilterBar
+        filterParams={filterParamsRef.current}
+        onStatusTabPress={onStatusTabPress}
+        onFilterFieldsChange={onFilterFieldsChange}
+      />
       <FlatList
         data={dutyForms}
         renderItem={({ item }) => <Item dutyForm={item} />}
         keyExtractor={(item) => item.id.toString()}
         onEndReached={handleEndListReached}
         onEndReachedThreshold={0.15}
-        ListFooterComponent={(pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? <SkeletonRectangleLoader /> : null}
+        ListFooterComponent={
+          (pageable?.currentPage ?? -2) < (pageable?.totalPages ?? 0) - 1 ? (
+            <SkeletonRectangleLoader />
+          ) : null
+        }
         ListEmptyComponent={isFirstRender.current ? null : <NoData />}
         style={styles.flatList}
       />
@@ -155,16 +204,27 @@ export default function ApproveDutyForms() {
   );
 }
 
-type FilterBarProps = FilterStatusProps & FilterFieldsProps & { filterParams: TApproveDutyFormFilterParams };
-const FilterBar = ({ onStatusTabPress, filterParams, onFilterFieldsChange }: FilterBarProps) => {
+type FilterBarProps = FilterStatusProps &
+  FilterFieldsProps & { filterParams: TApproveDutyFormFilterParams };
+const FilterBar = ({
+  onStatusTabPress,
+  filterParams,
+  onFilterFieldsChange,
+}: FilterBarProps) => {
   return (
     <View style={styles.filterBarContainer}>
       {/* Filter Status */}
       <ScrollView horizontal>
-        <FilterStatus status={filterParams.status} onStatusTabPress={onStatusTabPress} />
+        <FilterStatus
+          status={filterParams.status}
+          onStatusTabPress={onStatusTabPress}
+        />
       </ScrollView>
       {/* Filter Fields Button */}
-      <FilterFields filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
+      <FilterFields
+        filterParams={filterParams}
+        onFilterFieldsChange={onFilterFieldsChange}
+      />
     </View>
   );
 };
@@ -289,12 +349,24 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
     <View style={styles.statusTabsContainer}>
       {statusTabsArray.map((statusTab, index) => {
         return (
-          <TouchableOpacity onPress={() => onStatusTabPress(statusTab.status[0])} key={index}>
+          <TouchableOpacity
+            onPress={() => onStatusTabPress(statusTab.status[0])}
+            key={index}
+          >
             <View
-              style={[styles.statusTabItem, statusTab.status.includes(status as never) ? statusTab.tabStyles.pressed : statusTab.tabStyles.unpressed]}
+              style={[
+                styles.statusTabItem,
+                statusTab.status.includes(status as never)
+                  ? statusTab.tabStyles.pressed
+                  : statusTab.tabStyles.unpressed,
+              ]}
             >
               <NunitoText
-                style={statusTab.status.includes(status as never) ? statusTab.textStyles.pressed : statusTab.textStyles.unpressed}
+                style={
+                  statusTab.status.includes(status as never)
+                    ? statusTab.textStyles.pressed
+                    : statusTab.textStyles.unpressed
+                }
                 type="body2"
               >
                 {statusTab.name}
@@ -308,15 +380,21 @@ const FilterStatus = ({ onStatusTabPress, status }: FilterStatusProps) => {
 };
 
 type FilterFieldsProps = FilterFieldsFormProps;
-const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps) => {
+const FilterFields = ({
+  onFilterFieldsChange,
+  filterParams,
+}: FilterFieldsProps) => {
   const [open, setOpen] = useState(false);
 
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
 
   const filterFieldsExcludeStatus = omitProperties(filterParams, ["status"]);
-  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(filterFieldsExcludeStatus);
-  const hasFilterExcludeStatus = Object.keys(filterFieldsExcludeStatusAndNullishValue).length > 0;
+  const filterFieldsExcludeStatusAndNullishValue = omitNullishValues(
+    filterFieldsExcludeStatus
+  );
+  const hasFilterExcludeStatus =
+    Object.keys(filterFieldsExcludeStatusAndNullishValue).length > 0;
 
   return (
     <>
@@ -329,8 +407,15 @@ const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps)
       </TouchableOpacity>
       {/* Filter Fields Modal */}
       {open && (
-        <MyFilterModal onClose={onClose} title="Bộ lọc" modalContainerStyles={{ height: 300 }}>
-          <FilterFieldsForm filterParams={filterParams} onFilterFieldsChange={onFilterFieldsChange} />
+        <MyFilterModal
+          onClose={onClose}
+          title="Bộ lọc"
+          modalContainerStyles={{ height: 300 }}
+        >
+          <FilterFieldsForm
+            filterParams={filterParams}
+            onFilterFieldsChange={onFilterFieldsChange}
+          />
         </MyFilterModal>
       )}
     </>
@@ -338,11 +423,17 @@ const FilterFields = ({ onFilterFieldsChange, filterParams }: FilterFieldsProps)
 };
 
 type FilterFieldsFormProps = {
-  onFilterFieldsChange: (newFilterParamsWihoutStatus: Omit<TApproveDutyFormFilterParams, "status">) => void;
+  onFilterFieldsChange: (
+    newFilterParamsWihoutStatus: Omit<TApproveDutyFormFilterParams, "status">
+  ) => void;
   filterParams: TApproveDutyFormFilterParams;
 };
-const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFormProps) => {
-  const { control, handleSubmit, reset, setValue } = useForm<TApproveDutyFormFilterParams>({});
+const FilterFieldsForm = ({
+  onFilterFieldsChange,
+  filterParams,
+}: FilterFieldsFormProps) => {
+  const { control, handleSubmit, reset, setValue } =
+    useForm<TApproveDutyFormFilterParams>({});
 
   const onFieldsReset = () => {
     reset();
@@ -361,12 +452,24 @@ const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFo
   return (
     <View style={styles.modalContent}>
       <View style={styles.modalFields}>
-        <FormPickDate useControllerProps={{ control: control, name: "startCreatedAt" }} label="Ngày tạo đơn (từ ngày):" placeholder="Chọn ngày" />
-        <FormPickDate useControllerProps={{ control: control, name: "endCreatedAt" }} label="Ngày tạo đơn (đến ngày):" placeholder="Chọn ngày" />{" "}
+        <FormPickDate
+          useControllerProps={{ control: control, name: "startCreatedAt" }}
+          label="Ngày tạo đơn (từ ngày):"
+          placeholder="Chọn ngày"
+        />
+        <FormPickDate
+          useControllerProps={{ control: control, name: "endCreatedAt" }}
+          label="Ngày tạo đơn (đến ngày):"
+          placeholder="Chọn ngày"
+        />{" "}
       </View>
 
       <View style={styles.buttonModalContainer}>
-        <TouchableOpacity onPress={onFieldsReset} activeOpacity={0.8} style={styles.buttonItem}>
+        <TouchableOpacity
+          onPress={onFieldsReset}
+          activeOpacity={0.8}
+          style={styles.buttonItem}
+        >
           <View style={styles.buttonOutlined}>
             <NunitoText type="body3" style={{ color: "#0B3A82" }}>
               Đặt lại
@@ -374,7 +477,11 @@ const FilterFieldsForm = ({ onFilterFieldsChange, filterParams }: FilterFieldsFo
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSubmit(onFilterApply)} activeOpacity={0.8} style={styles.buttonItem}>
+        <TouchableOpacity
+          onPress={handleSubmit(onFilterApply)}
+          activeOpacity={0.8}
+          style={styles.buttonItem}
+        >
           <View style={styles.buttonContained}>
             <NunitoText type="body3" style={{ color: "white" }}>
               Áp dụng
@@ -477,17 +584,36 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
       {/* Extra info, only display when expand is true */}
       {isExpand && (
         <View style={styles.extraInfo}>
-          <NunitoText type="body4">
+          <View>
             <NunitoText type="body2">Loại trực: </NunitoText>
-            {arrayStringToString(dutyForm.dutyTypeNames)}
-          </NunitoText>
-          <NunitoText type="body4">
-            <NunitoText type="body2">Thành viên: </NunitoText>
-            {arrayStringToString(dutyForm.userNames)}
-          </NunitoText>
+
+            <View>
+              {dutyForm.dutyTypes.map((dutyType) => (
+                <View key={dutyType.id} style={styles.dutyTypeItemContainer}>
+                  {/* Name */}
+                  <View style={styles.dutyTypeNameContainer}>
+                    <View style={styles.bulletBox}>
+                      <View style={styles.bullet} />
+                    </View>
+                    <NunitoText type="body2" style={styles.dutyTypeName}>
+                      {dutyType.dutyTypeName}
+                    </NunitoText>
+                  </View>
+                  {/* User */}
+                  <View style={styles.dtTypeUser}>
+                    <NunitoText type="body4">
+                      {dutyTypeUsersToName(dutyType.users)}
+                    </NunitoText>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
           <NunitoText type="body4">
             <NunitoText type="body2">Loại ngoài giờ: </NunitoText>
-            {`${dutyForm.salaryCoefficientTypeName} (x${dutyForm.salaryCoefficient.toFixed(2)})`}
+            {`${
+              dutyForm.salaryCoefficientTypeName
+            } (x${dutyForm.salaryCoefficient.toFixed(2)})`}
           </NunitoText>
           <NunitoText type="body4">
             <NunitoText type="body2">Nội dung công việc: </NunitoText>
@@ -509,7 +635,11 @@ const Item: React.FC<ItemProps> = ({ dutyForm }) => {
       {/* expand button */}
       <Pressable onPress={onToggleExpand}>
         <View style={styles.itemExpandBtn}>
-          <Entypo name={isExpand ? "chevron-up" : "chevron-down"} size={22} color="black" />
+          <Entypo
+            name={isExpand ? "chevron-up" : "chevron-down"}
+            size={22}
+            color="black"
+          />
         </View>
       </Pressable>
     </View>
@@ -603,6 +733,34 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
   },
+
+  dutyTypeItemContainer: {
+    flexDirection: "column",
+    // gap: 10,
+  },
+
+  dutyTypeName: {
+    color: "black",
+    opacity: 0.6
+  },
+  dutyTypeNameContainer: {
+    flexDirection: "row",
+    gap: 4,
+  },
+  bulletBox: {
+    position: "relative",
+    top: 2,
+  },
+  bullet: {
+    width: 3,
+    height: 14,
+    backgroundColor: `#0B3A82`,
+    borderRadius: 1,
+  },
+  dtTypeUser: {
+    paddingLeft: 8,
+  },
+
   itemExpandBtn: {
     backgroundColor: "#B0CEFF",
     alignItems: "center",
