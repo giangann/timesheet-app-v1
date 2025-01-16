@@ -245,7 +245,7 @@ export const TeamWeekCalendar: React.FC<Props> = memo(({ onEventSelected, events
         }}
         selectedEvent={selectedEvent}
         start={8 * 60}
-        end={17 * 60}
+        end={24 * 60}
         spaceFromBottom={safeBottom}
         defaultDuration={60}
         onDragEventEnd={undefined}
