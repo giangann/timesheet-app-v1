@@ -60,8 +60,6 @@ export default function FormUploadImage<T extends FieldValues>({
   );
 
   useEffect(() => {
-    console.log({ defaultUri });
-    // if (isEmpty(defaultUri)) return;
     if (!defaultUri) {
       setLoading(false);
       return;
