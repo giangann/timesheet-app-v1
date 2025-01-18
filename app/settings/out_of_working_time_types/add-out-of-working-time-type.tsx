@@ -5,6 +5,7 @@ import { MyToast } from "@/ui/MyToast";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { BASE_URL } from "@/constants/System";
 
 const LeaveTypeIconLeft = require("@/assets/images/identify-card.png");
 
@@ -29,7 +30,7 @@ export default function AddOutOfWorkingTimeType() {
     };
 
     const token = `Bearer ${session}`;
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 

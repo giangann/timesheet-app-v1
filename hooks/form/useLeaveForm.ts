@@ -7,6 +7,7 @@ import { TPagiParams } from "@/types";
 import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
+import { BASE_URL } from "@/constants/System";
 
 export function useEditLeaveForm() {
   const { session } = useSession();
@@ -33,7 +34,7 @@ export function useEditLeaveForm() {
 
         // make request
         const token = `Bearer ${session}`;
-        const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+        const baseUrl = BASE_URL;
         const endpoint = `/leave-forms?id=${leaveFormId}`;
         const url = `${baseUrl}${endpoint}`;
 

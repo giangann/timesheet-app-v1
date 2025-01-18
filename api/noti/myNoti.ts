@@ -1,9 +1,10 @@
 import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
+import { BASE_URL } from "@/constants/System";
 import { TPagiParams } from "@/types";
 
 export const fetchMyNotis = async (session: string | undefined | null, pagiParams?: TPagiParams) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/notifications";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -24,7 +25,7 @@ export const fetchMyNotis = async (session: string | undefined | null, pagiParam
 
 export const readNoti = async (session: string | undefined | null, notiId: number) => {
   const token = `Bearer ${session}`;
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/notifications";
   const pathParams = `/${notiId}`;
 

@@ -4,6 +4,7 @@ import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
+import { BASE_URL } from "@/constants/System";
 import { useSession } from "@/contexts";
 import { paramsObjectToQueryString } from "@/helper/common";
 import { useDetailLeaveForm } from "@/hooks/form";
@@ -34,7 +35,7 @@ export default function DetailOrEditForm() {
     try {
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = `/leave-forms/cancel`;
       const querystring = paramsObjectToQueryString({ id: form?.id });
       const url = `${baseUrl}${endpoint}${querystring}`;
@@ -56,14 +57,14 @@ export default function DetailOrEditForm() {
     }
   }, [form, session]);
 
-  useLayoutEffect(() => {
-    if (!isAllowEdit) return;
-    navigation.setOptions({
-      headerRight: () => (
-        <EditButton isEdit={edit} onToggleEdit={toggleEditMode} />
-      ),
-    });
-  }, [router, edit, toggleEditMode, isAllowEdit]);
+  // useLayoutEffect(() => {
+  //   if (!isAllowEdit) return;
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <EditButton isEdit={edit} onToggleEdit={toggleEditMode} />
+  //     ),
+  //   });
+  // }, [router, edit, toggleEditMode, isAllowEdit]);
 
   return (
     <View>
@@ -77,6 +78,20 @@ export default function DetailOrEditForm() {
 
       {form && edit && <LeaveFormEdit form={form} />}
 
+      {/* <MyFab
+          actions={[
+            {
+              icon: "delete",
+              onPress: () => {},
+              label: "Xoa don",
+            },
+            {
+              icon: edit ? "eye-arrow-left" : "edit",
+              onPress: () => setEdit(!edit),
+              label: edit ? "Xem" : "Sua",
+            },
+          ]}
+        /> */}
       {form?.status === FORM_STATUS.WATING_APPROVE && (
         // <View style={styles.approveContainer}>
         //   <Button
@@ -109,7 +124,7 @@ export default function DetailOrEditForm() {
       {/* Fab Item: delete onClick = ()=>{open confirm delete modal} */}
       {/* Fab Item: edit === true ? view mode onClick = ()=>setEdit(false) : edit mode onClick = ()=>setEdit(true) */}
 
-      {openCfCancelModal && (
+      {/* {openCfCancelModal && (
         <MyModal
           title={"Xác nhận xóa đơn"}
           onClose={() => setOpenCfCancelModal(false)}
@@ -120,7 +135,7 @@ export default function DetailOrEditForm() {
             <NunitoText type="body3">Bạn có chắc xóa đơn xin nghỉ?</NunitoText>
           </View>
         </MyModal>
-      )}
+      )} */}
     </View>
   );
 }

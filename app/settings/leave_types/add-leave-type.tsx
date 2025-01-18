@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Switch } from "react-native-paper";
+import { BASE_URL } from "@/constants/System";
 
 type CreateItem = {
   name: string;
@@ -23,7 +24,7 @@ export default function AddLeaveType() {
   const onCreate = async (data: CreateItem) => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = "/leave-form-types";
     const url = `${baseUrl}${endpoint}`;
 

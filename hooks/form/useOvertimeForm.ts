@@ -7,6 +7,7 @@ import { MyToast } from "@/ui/MyToast";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
+import { BASE_URL } from "@/constants/System";
 
 export function useEditOvertimeForm() {
   const { session } = useSession();
@@ -43,7 +44,7 @@ export function useEditOvertimeForm() {
 
         // make request
         const token = `Bearer ${session}`;
-        const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+        const baseUrl = BASE_URL;
         const endpoint = `/overtime-forms?id=${overtimeFormId}`;
         const url = `${baseUrl}${endpoint}`;
 

@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import moment from "moment";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { BASE_URL } from "@/constants/System";
 
 export default function AddExceptionDay() {
   const { control, handleSubmit } = useForm<TExceptionDayCreateFormFields>();
@@ -19,7 +20,7 @@ export default function AddExceptionDay() {
   const onCreate = async (data: TExceptionDayCreateFormFields) => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = "/exception-dates";
     const url = `${baseUrl}${endpoint}`;
 

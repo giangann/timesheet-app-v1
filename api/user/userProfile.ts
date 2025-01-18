@@ -1,9 +1,10 @@
+import { BASE_URL } from "@/constants/System";
 import { TChangePassword } from "./types";
 
 export async function fetchUserProfile(session: string) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/users/profile`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -20,7 +21,7 @@ export async function fetchUserProfile(session: string) {
 export async function changePassword(session: string | null | undefined, bodyData: TChangePassword) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/auth/change-password`;
   const url = `${baseUrl}${endpoint}`;
 

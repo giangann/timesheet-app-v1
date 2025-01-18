@@ -4,6 +4,7 @@ import { NunitoText } from "@/components/text/NunitoText";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
+import { BASE_URL } from "@/constants/System";
 import { useSession } from "@/contexts/ctx";
 import { BoxStatus } from "@/ui/BoxStatus";
 import { MyToast } from "@/ui/MyToast";
@@ -30,7 +31,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = `/overtime-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -66,7 +67,7 @@ export default function DetailForm() {
       };
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = `/overtime-forms/approve`;
       const url = `${baseUrl}${endpoint}`;
 
@@ -97,7 +98,7 @@ export default function DetailForm() {
   const fetchOvertimeFormDetail = async (formId: string) => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = `/overtime-forms/${formId}`;
     const url = `${baseUrl}${endpoint}`;
 

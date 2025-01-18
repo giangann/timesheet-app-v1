@@ -1,7 +1,9 @@
+import { BASE_URL } from "@/constants/System";
+
 export const fetchWorkingTypes = async (session: string | undefined | null) => {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/working-types";
   const url = `${baseUrl}${endpoint}`;
 

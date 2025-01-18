@@ -17,6 +17,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import moment from "moment";
 import { useCallback, useState } from "react";
 import { useUploadFile } from "./useFile";
+import { BASE_URL } from "@/constants/System";
 
 export function useFetchGroupDutyForms() {
   const [dutyForms, setDutyForms] = useState<TDutyForm[]>([]);
@@ -211,7 +212,7 @@ export function useEditDutyForm() {
 
         // make request
         const token = `Bearer ${session}`;
-        const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+        const baseUrl = BASE_URL;
         const endpoint = `/duty-forms?id=${dutyFormId}`;
         const url = `${baseUrl}${endpoint}`;
 

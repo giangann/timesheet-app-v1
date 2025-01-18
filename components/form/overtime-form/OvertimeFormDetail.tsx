@@ -13,6 +13,7 @@ import moment from "moment";
 import { memo, useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
+import { BASE_URL } from "@/constants/System";
 
 type OvertimeFormDetailProps = {
   form: TOvertimeFormDetail;
@@ -28,7 +29,7 @@ export const OvertimeFormDetail: React.FC<OvertimeFormDetailProps> = memo(({ for
     try {
       const token = `Bearer ${session}`;
 
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = `/overtime-forms/cancel`;
       const querystring = paramsObjectToQueryString({ id: form.id });
       const url = `${baseUrl}${endpoint}${querystring}`;

@@ -2,11 +2,12 @@ import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import { TApproveOvertimeFormFilterParams, TOvertimeFormFilterParams } from "./types";
 import moment from "moment";
+import { BASE_URL } from "@/constants/System";
 
 export async function fetchMyOvertimeForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TOvertimeFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/overtime-forms/filter/user";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -41,7 +42,7 @@ export async function fetchApproveOvertimeForms(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/overtime-forms/filter/user-approve";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -71,7 +72,7 @@ export async function fetchApproveOvertimeForms(
 export async function fetchOvertimeFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/overtime-forms/${formId}`;
   const url = `${baseUrl}${endpoint}`;
 

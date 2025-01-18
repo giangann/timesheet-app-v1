@@ -2,11 +2,12 @@ import { DEFAULT_PAGI_PARAMS } from "@/constants/Misc";
 import { TPagiParams } from "@/types";
 import { TApproveLeaveFormFilterParams, TLeaveFormFilterParams } from "./types";
 import moment from "moment";
+import { BASE_URL } from "@/constants/System";
 
 export async function fetchMyLeaveForms(session: string | undefined | null, pagiParams?: TPagiParams, filterParams?: TLeaveFormFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/leave-forms/filter/user";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -41,7 +42,7 @@ export async function fetchApproveLeaveForms(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/leave-forms/filter/user-approve";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;
@@ -72,7 +73,7 @@ export async function fetchApproveLeaveForms(
 export async function fetchLeaveFormDetail(session: string | null | undefined, formId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/leave-forms/${formId}`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -93,7 +94,7 @@ export async function fetchLeaveFormsInWeekCalendar(
 ) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/leave-forms/filter/all";
 
   const paginationParams = pagiParams ?? DEFAULT_PAGI_PARAMS;

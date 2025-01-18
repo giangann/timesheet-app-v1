@@ -1,10 +1,11 @@
 import { paramsObjectToQueryString } from "@/helper/common";
 import { THolidayCreate, THolidayEdit, THolidayFilterParams } from "./type";
+import { BASE_URL } from "@/constants/System";
 
 export async function fetchHolidaysByYear(session: string | undefined | null, params: THolidayFilterParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/holidays";
 
   const queryString = paramsObjectToQueryString({ ...params, sort: "date,asc" });
@@ -24,7 +25,7 @@ export async function fetchHolidaysByYear(session: string | undefined | null, pa
 export async function fetchHoliday(session: string | undefined | null, holidayId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/holidays/${holidayId}`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -39,7 +40,7 @@ export async function fetchHoliday(session: string | undefined | null, holidayId
 export async function createHoliday(session: string | undefined | null, bodyData: THolidayCreate) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/holidays";
   const url = `${baseUrl}${endpoint}`;
 
@@ -56,7 +57,7 @@ export async function createHoliday(session: string | undefined | null, bodyData
 export async function editHoliday(session: string | undefined | null, holidayId: number, bodyData: THolidayEdit) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/holidays`;
   const url = `${baseUrl}${endpoint}`;
 
@@ -74,7 +75,7 @@ export async function editHoliday(session: string | undefined | null, holidayId:
 export async function deleteHoliday(session: string | undefined | null, holidayId: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/holidays/${holidayId}`;
   const url = `${baseUrl}${endpoint}`;
 

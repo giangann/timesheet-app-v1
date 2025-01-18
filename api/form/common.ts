@@ -1,11 +1,12 @@
 import { ROLE_CODE } from "@/constants/Misc";
 import { TListUserApproveParams } from "./types";
 import { paramsObjectToQueryString } from "@/helper/common";
+import { BASE_URL } from "@/constants/System";
 
 export async function fetchListUserByRole(session: string | null | undefined, params: TListUserApproveParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/users/list-user-by-role";
 
   const queryString = paramsObjectToQueryString(params);
@@ -24,7 +25,7 @@ export async function fetchListUserByRole(session: string | null | undefined, pa
 export async function uploadAttachFile(session: string | null | undefined, file: File) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/attach-files";
   const url = `${baseUrl}${endpoint}`;
 

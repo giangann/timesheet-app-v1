@@ -7,6 +7,7 @@ import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
+import { BASE_URL } from "@/constants/System";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { defaultOtFormDateTime } from "@/helper/date";
@@ -98,7 +99,7 @@ export default function CreateOvertimeForm() {
       });
 
       const token = `Bearer ${session}`;
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = "/overtime-forms";
       const url = `${baseUrl}${endpoint}`;
 
@@ -127,7 +128,7 @@ export default function CreateOvertimeForm() {
   const fetchSalaryCoefTypes = async () => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 

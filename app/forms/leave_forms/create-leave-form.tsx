@@ -6,6 +6,7 @@ import FormUploadImage from "@/components/FormUploadImage";
 import { NunitoText } from "@/components/text/NunitoText";
 import { Colors } from "@/constants/Colors";
 import { ROLE_CODE } from "@/constants/Misc";
+import { BASE_URL } from "@/constants/System";
 import { useSession } from "@/contexts/ctx";
 import { hasNullishValue, pickProperties } from "@/helper/common";
 import { defaultLeaveFormDateTime, formatDateToLocalString, isMoreThanOneDay } from "@/helper/date";
@@ -119,7 +120,7 @@ export default function CreateLeaveForm() {
       });
 
       const token = `Bearer ${session}`;
-      const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+      const baseUrl = BASE_URL;
       const endpoint = "/leave-forms/create";
       const url = `${baseUrl}${endpoint}`;
 

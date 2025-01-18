@@ -13,6 +13,7 @@ import { useCallback, useState } from "react";
 import { Image, Pressable, StyleSheet, TouchableHighlight, View } from "react-native";
 import { Menu } from "react-native-paper";
 const AddNewIconImage = require("@/assets/images/add-new-icon.png");
+import { BASE_URL } from "@/constants/System";
 
 type TSalaryCoefficientType = {
   id: number;
@@ -27,7 +28,7 @@ export default function OutOfWorkingTimeType() {
   const fetchSalaryCoefTypes = async () => {
     const token = `Bearer ${session}`;
 
-    const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+    const baseUrl = BASE_URL;
     const endpoint = "/salary-coefficient-types";
     const url = `${baseUrl}${endpoint}`;
 

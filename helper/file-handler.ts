@@ -1,3 +1,5 @@
+import { BASE_URL } from "@/constants/System";
+
 export const uriToFormDataValidImage = (uri: string) => {
   const fileName = uri.split("/").pop();
   if (!fileName) return null;
@@ -48,7 +50,7 @@ export function extractFileName(url: string): string | null {
 }
 
 export function fileNameToUri(fileName:string|null):string{
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1"
+  const baseUrl = BASE_URL
   const endpoint = "/attach-files/object/"
   
   return `${baseUrl}${endpoint}${fileName}`

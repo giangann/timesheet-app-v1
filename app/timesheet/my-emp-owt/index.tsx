@@ -7,6 +7,7 @@ import moment from "moment";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { BASE_URL } from "@/constants/System";
 
 type TEmpOwtForm = {
   userIdentifyCard: number;
@@ -20,7 +21,7 @@ const currMonth = moment(Date.now()).get("month") + 1;
 const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const years = getAbleYears(startYear, currYear);
 
-const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+const baseUrl = BASE_URL;
 const endpoint = "/users/export-user-overtime-working";
 
 export default function EmpOwt() {

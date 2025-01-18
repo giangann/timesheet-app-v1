@@ -1,10 +1,11 @@
 import { paramsObjectToQueryString } from "@/helper/common";
 import { TExceptionDayParams } from "./type";
+import { BASE_URL } from "@/constants/System";
 
 export async function fetchExceptionDays(session: string | undefined | null, params?: TExceptionDayParams) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = "/exception-dates";
 
   const queryString = paramsObjectToQueryString({ ...params, sort: "date,asc" });
@@ -24,7 +25,7 @@ export async function fetchExceptionDays(session: string | undefined | null, par
 export async function deleteExceptionDay(session: string | undefined | null, id: number) {
   const token = `Bearer ${session}`;
 
-  const baseUrl = "https://chamcong.vptw.dcs.vn/api/api/v1";
+  const baseUrl = BASE_URL;
   const endpoint = `/exception-dates/${id}`;
   const url = `${baseUrl}${endpoint}`;
 
