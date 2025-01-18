@@ -44,7 +44,7 @@ export function extractFileName(url: string): string | null {
 
     return fileName || null;
   } catch (error) {
-    console.error("Invalid URL:", error);
+    // console.error("Invalid URL:", error);
     return null;
   }
 }

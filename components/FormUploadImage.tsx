@@ -1,10 +1,28 @@
 import { OPACITY_TO_HEX } from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { FieldValues, UseControllerProps, useController } from "react-hook-form";
-import { Alert, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import {
+  FieldValues,
+  UseControllerProps,
+  useController,
+} from "react-hook-form";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { NunitoText } from "./text/NunitoText";
 import * as Progress from "react-native-progress";
+import { extractFileName, fileNameToUri } from "@/helper/file-handler";
+import { useSession } from "@/contexts";
+import * as FileSystem from "expo-file-system";
+import { isEmpty } from "./mocks/helper";
+
 const AddImageIcon = require("@/assets/images/add-image.png");
 const ClearImageIcon = require("@/assets/images/x-close_white.png");
 
@@ -26,11 +44,80 @@ export default function FormUploadImage<T extends FieldValues>({
   // Stores any error message
   const [error, setError] = useState(null);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { field } = useController(useControllerProps);
   const { onChange } = field;
 
-  const [fileUri, setFileUri] = useState<string | null>(defaultUri ?? null);
+  const { session } = useSession();
+
+  const [fileUri, setFileUri] = useState<string | null>(null);
+
+  // Calculate the path
+  const path = useMemo(
+    () => fileNameToUri(extractFileName(defaultUri ?? "")),
+    [defaultUri]
+  );
+
+  useEffect(() => {
+    console.log({ defaultUri });
+    // if (isEmpty(defaultUri)) return;
+    if (!defaultUri) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchImage = async () => {
+      try {
+        console.log("fetch image started");
+        const token = `Bearer ${session}`;
+        const localUri = `${FileSystem.cacheDirectory}${extractFileName(path)}`;
+
+        const response = await fetch(path, {
+          method: "GET",
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch image");
+        }
+
+        const blob = await response.blob();
+
+        // Use FileReader to convert the Blob to base64
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64 = reader.result?.toString().split(",")[1]; // Remove metadata prefix
+          if (base64) {
+            // Write the image to the file system
+            await FileSystem.writeAsStringAsync(localUri, base64, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+
+            setFileUri(localUri);
+          }
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error("Error fetching image:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [path, session, defaultUri]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   // Function to pick an image from
   //the device's media library
   const pickImage = async () => {
@@ -49,7 +136,8 @@ export default function FormUploadImage<T extends FieldValues>({
       // Launch the image library and get
       // the selected image
       setIsWaiting(true);
-      const result: ImagePicker.ImagePickerResult = await ImagePicker.launchImageLibraryAsync();
+      const result: ImagePicker.ImagePickerResult =
+        await ImagePicker.launchImageLibraryAsync();
       setIsWaiting(false);
 
       if (!result.canceled) {
@@ -175,5 +263,11 @@ const styles = StyleSheet.create({
   disabled: {
     borderColor: `#000000${OPACITY_TO_HEX["20"]}`,
     backgroundColor: `#000000${OPACITY_TO_HEX["10"]}`,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
