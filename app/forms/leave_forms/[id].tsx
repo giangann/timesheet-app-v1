@@ -2,7 +2,6 @@ import { MyFAB } from "@/components/button/MyFab";
 import { LeaveFormDetail, LeaveFormEdit } from "@/components/form";
 import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
-import { OPACITY_TO_HEX } from "@/constants/Colors";
 import { FORM_STATUS } from "@/constants/Misc";
 import { BASE_URL } from "@/constants/System";
 import { useSession } from "@/contexts";
@@ -11,7 +10,7 @@ import { useDetailLeaveForm } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useTheme } from "react-native-paper";
 
 export default function DetailOrEditForm() {
@@ -131,39 +130,3 @@ export default function DetailOrEditForm() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    minHeight: "100%",
-  },
-  listBox: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 100,
-    gap: 20,
-  },
-  item: {
-    gap: 4,
-    paddingBottom: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: `#000000${OPACITY_TO_HEX["15"]}`,
-  },
-  approveContainer: {
-    position: "absolute",
-    bottom: 0,
-    // left: 0, // make button on the right
-    right: 0,
-    padding: 16,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 6,
-  },
-  buttonItem: {
-    flexGrow: 1,
-  },
-  buttonContained: {
-    height: 44,
-  },
-});

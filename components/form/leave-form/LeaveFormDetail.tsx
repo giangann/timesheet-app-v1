@@ -88,21 +88,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: `#000000${OPACITY_TO_HEX["15"]}`,
   },
-  approveContainer: {
-    position: "absolute",
-    bottom: 0,
-    // left: 0, // make button on the right
-    right: 0,
-    padding: 16,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 6,
-  },
-  buttonItem: {
-    flexGrow: 1,
-  },
-  buttonContained: {
-    height: 44,
-  },
 });
