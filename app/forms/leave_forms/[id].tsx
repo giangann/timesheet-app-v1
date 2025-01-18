@@ -1,4 +1,4 @@
-import { EditButton, MyFab } from "@/components/button";
+import { MyFAB } from "@/components/button/MyFab";
 import { LeaveFormDetail, LeaveFormEdit } from "@/components/form";
 import { MyModal } from "@/components/MyModal";
 import { NunitoText } from "@/components/text/NunitoText";
@@ -9,15 +9,13 @@ import { useSession } from "@/contexts";
 import { paramsObjectToQueryString } from "@/helper/common";
 import { useDetailLeaveForm } from "@/hooks/form";
 import { MyToast } from "@/ui/MyToast";
-import { useNavigation, useRouter } from "expo-router";
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 
 export default function DetailOrEditForm() {
   const router = useRouter();
-  const navigation = useNavigation();
-
   const [edit, setEdit] = useState(false);
   const { form, isLoading } = useDetailLeaveForm();
   const [openCfCancelModal, setOpenCfCancelModal] = useState(false);
@@ -28,6 +26,16 @@ export default function DetailOrEditForm() {
 
   const isAllowEdit = useMemo(
     () => form?.status === FORM_STATUS.WATING_APPROVE,
+    [form]
+  );
+
+  const isAllowDelete = useMemo(
+    () => form?.status === FORM_STATUS.WATING_APPROVE,
+    [form]
+  );
+
+  const isShowFab = useMemo(
+    () => form?.status !== FORM_STATUS.CANCELED,
     [form]
   );
 
@@ -57,15 +65,6 @@ export default function DetailOrEditForm() {
     }
   }, [form, session]);
 
-  // useLayoutEffect(() => {
-  //   if (!isAllowEdit) return;
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <EditButton isEdit={edit} onToggleEdit={toggleEditMode} />
-  //     ),
-  //   });
-  // }, [router, edit, toggleEditMode, isAllowEdit]);
-
   return (
     <View>
       {!form && isLoading && (
@@ -78,53 +77,46 @@ export default function DetailOrEditForm() {
 
       {form && edit && <LeaveFormEdit form={form} />}
 
-      {/* <MyFab
-          actions={[
-            {
-              icon: "delete",
-              onPress: () => {},
-              label: "Xoa don",
-            },
-            {
-              icon: edit ? "eye-arrow-left" : "edit",
-              onPress: () => setEdit(!edit),
-              label: edit ? "Xem" : "Sua",
-            },
-          ]}
-        /> */}
-      {form?.status === FORM_STATUS.WATING_APPROVE && (
-        // <View style={styles.approveContainer}>
-        //   <Button
-        //     onPress={() => setOpenCfCancelModal(true)}
-        //     mode="contained"
-        //     icon="delete-alert"
-        //     buttonColor={theme.colors.error}
-        //     style={styles.buttonContained}
-        //   >
-        //     Xóa đơn
-        //   </Button>
-        // </View>
-        <MyFab
-          actions={[
-            {
-              icon: "delete",
-              onPress: () => {},
-              label: "Xoa don",
-            },
-            {
-              icon: edit ? "eye-arrow-left" : "edit",
-              onPress: () => setEdit(!edit),
-              label: edit ? "Xem" : "Sua",
-            },
-          ]}
-        />
+      {form && isShowFab && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <MyFAB
+            actions={[
+              {
+                icon: "delete",
+                onPress: () => {
+                  console.log("deleted");
+                  setOpenCfCancelModal(true);
+                },
+                style: {
+                  backgroundColor: theme.colors.error,
+                  display: isAllowDelete ? "flex" : "none",
+                },
+                color: "white",
+              },
+              {
+                icon: edit ? "eye-arrow-left" : "pencil",
+                onPress: toggleEditMode,
+                style: {
+                  backgroundColor: theme.colors.tertiary,
+                  display: isAllowEdit ? "flex" : "none",
+                },
+                color: "white",
+              },
+            ]}
+            closingIcon={"menu"}
+          />
+        </View>
       )}
 
-      {/* Fab Group */}
-      {/* Fab Item: delete onClick = ()=>{open confirm delete modal} */}
-      {/* Fab Item: edit === true ? view mode onClick = ()=>setEdit(false) : edit mode onClick = ()=>setEdit(true) */}
-
-      {/* {openCfCancelModal && (
+      {openCfCancelModal && (
         <MyModal
           title={"Xác nhận xóa đơn"}
           onClose={() => setOpenCfCancelModal(false)}
@@ -135,7 +127,7 @@ export default function DetailOrEditForm() {
             <NunitoText type="body3">Bạn có chắc xóa đơn xin nghỉ?</NunitoText>
           </View>
         </MyModal>
-      )} */}
+      )}
     </View>
   );
 }

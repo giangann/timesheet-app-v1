@@ -1,111 +1,52 @@
 import { TLeaveFormDetail } from "@/api/form/types";
-import { MyModal } from "@/components/MyModal";
 import { ViewImageFullScreen } from "@/components/ViewImageFullScreen";
 import { NunitoText } from "@/components/text/NunitoText";
 import { OPACITY_TO_HEX } from "@/constants/Colors";
-import { FORM_STATUS } from "@/constants/Misc";
-import { useSession } from "@/contexts";
-import { paramsObjectToQueryString } from "@/helper/common";
 import { BoxStatus } from "@/ui/BoxStatus";
-import { MyToast } from "@/ui/MyToast";
-import { useRouter } from "expo-router";
 import moment from "moment";
-import { memo, useCallback, useState } from "react";
+import { memo } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, useTheme } from "react-native-paper";
-import { BASE_URL } from "@/constants/System";
 
 type LeaveFormDetailProps = {
   form: TLeaveFormDetail;
 };
 
-export const LeaveFormDetail: React.FC<LeaveFormDetailProps> = memo(({ form }) => {
-  const [openCfCancelModal, setOpenCfCancelModal] = useState(false);
-  const { session } = useSession();
-  const router = useRouter();
-  const theme = useTheme();
+export const LeaveFormDetail: React.FC<LeaveFormDetailProps> = memo(
+  ({ form }) => {
+    return (
+      <>
+        {!form && (
+          <View>
+            <NunitoText>Fetching...</NunitoText>
+          </View>
+        )}
 
-  const onDeleteForm = useCallback(async () => {
-    try {
-      const token = `Bearer ${session}`;
+        {form && (
+          <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.listBox}>
+              <BoxStatus status={form.status} approveDate={form.approveDate} />
+              <Item
+                title="Ngày xin nghỉ"
+                content={`${moment(form.startDate).format(
+                  "DD/MM/YYYY <HH:mm>"
+                )} --> ${moment(form.endDate).format("DD/MM/YYYY <HH:mm>")}`}
+              />
+              <Item title="Loại nghỉ" content={form.leaveFormType} />
+              <Item title="Ghi chú" content={form.note} />
+              <Item
+                title="Người phê duyệt"
+                content={`${form.userApproveName} (${form.userApproveRole.name})`}
+              />
 
-      const baseUrl = BASE_URL;
-      const endpoint = `/leave-forms/cancel`;
-      const querystring = paramsObjectToQueryString({ id: form.id });
-      const url = `${baseUrl}${endpoint}${querystring}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        credentials: "include",
-      });
-      const responseJson = await response.json();
-      if (responseJson.statusCode === 200) {
-        MyToast.success("Xóa thành công");
-        router.back();
-      } else {
-        MyToast.error(responseJson.error);
-      }
-    } catch (error: any) {
-      MyToast.error(error.message);
-    }
-  }, [form, session]);
-
-  return (
-    <>
-      {!form && (
-        <View>
-          <NunitoText>Fetching...</NunitoText>
-        </View>
-      )}
-
-      {form && (
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.listBox}>
-            <BoxStatus status={form.status} approveDate={form.approveDate} />
-            <Item
-              title="Ngày xin nghỉ"
-              content={`${moment(form.startDate).format("DD/MM/YYYY <HH:mm>")} --> ${moment(form.endDate).format("DD/MM/YYYY <HH:mm>")}`}
-            />
-            <Item title="Loại nghỉ" content={form.leaveFormType} />
-            <Item title="Ghi chú" content={form.note} />
-            <Item title="Người phê duyệt" content={`${form.userApproveName} (${form.userApproveRole.name})`} />
-
-            {/* Attach Image */}
-            <AttachImageFile path={form.attachFilePath} />
-          </ScrollView>
-
-          {form.status === FORM_STATUS.WATING_APPROVE && (
-            <View style={styles.approveContainer}>
-              <Button
-                onPress={() => setOpenCfCancelModal(true)}
-                mode="contained"
-                icon="delete-alert"
-                buttonColor={theme.colors.error}
-                style={styles.buttonContained}
-              >
-                Xóa đơn
-              </Button>
-            </View>
-          )}
-
-          {openCfCancelModal && (
-            <MyModal
-              title={"Xác nhận xóa đơn"}
-              onClose={() => setOpenCfCancelModal(false)}
-              cb={onDeleteForm}
-              modalProps={{ animationType: "slide", transparent: true }}
-            >
-              <View>
-                <NunitoText type="body3">Bạn có chắc xóa đơn xin nghỉ?</NunitoText>
-              </View>
-            </MyModal>
-          )}
-        </View>
-      )}
-    </>
-  );
-});
+              {/* Attach Image */}
+              <AttachImageFile path={form.attachFilePath} />
+            </ScrollView>
+          </View>
+        )}
+      </>
+    );
+  }
+);
 
 const Item = ({ title, content }: { title: string; content: string }) => {
   return (
